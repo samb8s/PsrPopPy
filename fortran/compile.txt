@@ -1,0 +1,41 @@
+Need to use 64 bit gfortran I donwloaded yesterday!!
+
+gfortran -O2 -fPIC -fno-second-underscore -c -I. *.f
+
+e.g.
+
+  gfortran -dynamiclib -o libne2001.so -fno-second-underscore ne2001.o getpath.o
+
+  gfortran -dynamiclib -o libykarea.so -fno-second-underscore ykarea.o psrran.o
+
+gfortran -dynamiclib -o libgetseed.so -fno-second-underscore getseed.o psrran.o clock.o
+
+# create libne2001.dylib
+
+
+
+dm:
+ calls dmdsm (ne2001.f), calc_xyz
+
+gfortran -O2 -fPIC -fno-second-underscore -c -I. dm.f ne2001.f calc_xyz.f getpath.f psr_ne.f density.f dist.f glun.f
+
+
+gfortran -O2 -fPIC -fno-second-underscore -c -I. galtfeq.f sla.f
+gfortran -dynamiclib -o libsla.so -fno-second-underscore galtfeq.o sla.o
+
+   """ 
+    def seed:
+        None
+    # making seed a property, so it keeps the same value
+    @property
+    def seed(self):
+        return self._seed
+
+    @seed.setter
+    def seed(self):
+        self._seed = seedlib.getseed(-1)
+
+    @seed.deleter
+    def seed(self):
+        del self._seed
+    """

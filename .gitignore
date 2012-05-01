@@ -1,0 +1,11 @@
+populate.model
+junk
+weff
+junk.py
+*.so
+*.o
+*~
+*pyc
+fortran/build
+*.swp
+
