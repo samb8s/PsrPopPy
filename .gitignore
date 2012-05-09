@@ -9,4 +9,5 @@ junk.py
 *pyc
 fortran/build
 *.swp
+threadpop.py
 
