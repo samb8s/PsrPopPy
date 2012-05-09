@@ -4,6 +4,7 @@ class Population:
     def __init__(self):
         self.population = []
 
+        self._pDistType = None
         self._pmean = None
         self._psigma = None
         
@@ -36,6 +37,19 @@ class Population:
     def size(self):
         return len(self.population)
     
+    # get/get methods for p distn type
+    @property
+    def pDistType(self):
+        return self._pDistType
+
+    @pDistType.setter
+    def pDistType(self, value):
+        self._pDistType = value
+
+    @pDistType.deleter
+    def pDistType(self):
+        del self._pDistType
+
 
     # get/set methods for the mean period
     @property

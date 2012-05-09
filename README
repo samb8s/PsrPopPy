@@ -1,0 +1,12 @@
+PsrPopPy:
+
+Python implementation of PSRPOP (written by D Lorimer)
+The "executables" are:
+
+populate.py, create a population mode using user-defined parameters.
+
+dosurvey.py, run a population model through a survey. Pre-defined surveys are given, but a user may also create their own.
+
+view.py, program for making quick histograms of population model
+
+visualize.py, more detailed population model viewer. Make histograms, scatter plots, etc

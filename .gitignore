@@ -2,6 +2,7 @@ populate.model
 junk
 weff
 junk.py
+*.results
 *.so
 *.o
 *~

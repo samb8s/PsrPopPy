@@ -97,6 +97,8 @@ class Survey(GalacticOps):
 
             else:
                 print "Parameter ",a[1].strip()," not recognized!"
+
+        f.close()
     
     def __str__(self):
         """Method to define how to print the class"""
@@ -115,16 +117,8 @@ class Survey(GalacticOps):
 
         return s
 
-    #@Property
     def nchans(self):
         return self.bw / self.bw_chan
-    """
-        def fset(self):
-            self.result =  self.bw / self.bw_chan
-        def fget(self):
-            return self.result
-        return locals()
-        """
 
 
     def inRegion(self, pulsar):
