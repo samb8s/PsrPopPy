@@ -73,9 +73,7 @@ class Populate(RadialModels, GalacticOps):
             # Declare new pulsar object
             p = Pulsar()
 
-
             # period, alpha, rho, width distribution calls
-
             # check that the distribution type is supported....
             if self.pop.pDistType not in ['lnorm', 'norm']:
                 #, 'gamma', '1d']:

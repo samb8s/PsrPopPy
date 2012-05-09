@@ -83,7 +83,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a survey on your population model')
     parser.add_argument('-f', metavar = 'fname', default='populate.model', 
                          help='file containing population model')
-    parser.add_argument('-surveys', metavar='S', nargs='+', default=None,
+    parser.add_argument('-surveys', metavar='S', nargs='+', required=True,
                          help='surveys to use to detect pulsars')
     
     args = parser.parse_args()
