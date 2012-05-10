@@ -37,6 +37,7 @@ class Populate(RadialModels, GalacticOps):
                  ngen,
                  surveyList=None,
                  pDistType='lnorm',
+                 radialDistType='lfl06',
                  pDistPars=[2.7, -0.34],
                  siDistPars= [-1.6,0.35], 
                  lumDistPars=[-1.1, 0.9],
@@ -47,6 +48,8 @@ class Populate(RadialModels, GalacticOps):
 
         # need to use properties in this class so they're get/set-type props
         self.pop.pDistType = pDistType
+        self.pop.radialDistType = radialDistType
+    
         self.pop.pmean, self.pop.psigma = pDistPars
         self.pop.simean, self.pop.sisigma = siDistPars
         self.pop.lummean, self.pop.lumsigma = lumDistPars
@@ -74,11 +77,16 @@ class Populate(RadialModels, GalacticOps):
             p = Pulsar()
 
             # period, alpha, rho, width distribution calls
-            # check that the distribution type is supported....
+            # check that the distribution types are supported....
             if self.pop.pDistType not in ['lnorm', 'norm']:
                 #, 'gamma', '1d']:
-                print "Unsupported period distribution type {0}".format(
+                print "Unsupported period distribution: {0}".format(
                                                                 self.pop.pDistType)
+            if self.pop.radialDistType not in ['lfl06', 'yk04', 'isotropic']:
+                print "Unsupported radial distribution: {0}".format(
+                                                                self.pop.radialDistType)
+
+            # Start creating the pulsar!
             if self.pop.pDistType == 'lnorm':
                 p.period = self._drawlnorm(self.pop.pmean, self.pop.psigma)
             elif self.pop.pDistType == 'norm':
@@ -86,14 +94,7 @@ class Populate(RadialModels, GalacticOps):
             elif self.pop.pDistType == 'gamma':
                 print "Gamma function not yet supported"
                 sys.exit()
-                """
-                p.period = self._drawgamma(0.0,
-                                           10.0,
-                                           self.pop.pmean,
-                                           self.pop.psigma)
-            elif self.pop.pDistType == '1d':
-                p.period = self._draw1d
-                """
+
 
             p.alpha = self._genAlpha()
             
@@ -107,13 +108,22 @@ class Populate(RadialModels, GalacticOps):
                 continue
 
             p.spindex = random.gauss(self.pop.simean, self.pop.sisigma)
-            # get galactic radial position (method in radialmodels)
-            p.r0 = self.lfl06()
-            #p.r0 =  self.llfr() # python implementation (testing!)
 
-            # then calc xyz,distance, l and b
-            zheight = self._double_sided_exp(zscale)
-            gx,gy  = self.calcXY(p.r0)
+            # get galactic position (method in radialmodels)
+            # first, Galactic distribution models
+            if self.pop.radialDistType == 'isotropic': 
+                pass   
+            else: # we want to use exponential z and a radial dist
+                if self.pop.radialDistType == 'lfl06':
+                    p.r0 = self.lfl06()
+                elif self.pop.radialDistType == 'yk04':
+                    p.r0 = self.ykr()
+
+                # then calc xyz,distance, l and b
+                zheight = self._double_sided_exp(zscale)
+                gx,gy  = self.calcXY(p.r0)
+
+
             p.galCoords = gx, gy, zheight
 
             p.dtrue = self.calc_dtrue(p.galCoords)
@@ -284,6 +294,11 @@ if __name__ == '__main__':
                          help='period distribution mean and std dev \
                                  (def= [-2.7, -0.34])')
 
+    # radial distribution type
+    parser.add_argument('-rdist', nargs=1, required=False, default='lfl06',
+                        help='type of distrbution to use for Galactic radius',
+                        choices=['lfl06', 'yk04', 'isotropic'])
+
     args = parser.parse_args()
 
     # run the code and write out a cPickle population class
@@ -291,6 +306,8 @@ if __name__ == '__main__':
     
     pop.generate(args.n,
                  surveyList=args.surveys,
+                 pDistType=args.pdist,
+                 radialDistType=args.rdist,
                  pDistPars=args.p,
                  siDistPars=args.si,
                  zscale=args.z,

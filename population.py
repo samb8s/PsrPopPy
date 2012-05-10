@@ -1,22 +1,36 @@
 #!/usr/bin/python
 
 class Population:
-    def __init__(self):
+    def __init__(self,
+                 pDistType=None,
+                 radialDistType=None,
+                 pmean=None,
+                 psigma=None,
+                 simean=None,
+                 sisigma=None,
+                 lummean=None,
+                 lumsigma=None,
+                 zscale=None,
+                 ref_freq=1400.0):
         self.population = []
 
-        self._pDistType = None
-        self._pmean = None
-        self._psigma = None
+        # distribution types
+        self.pDistType = pDistType
+        self.radialDistType = radialDistType
+
+        # distribution values
+        self.pmean = pmean
+        self.psigma = psigma
         
-        self._simean = None
-        self._sisigma = None
+        self.simean = simean
+        self.sisigma = sisigma
 
-        self._lummean = None
-        self._lumsigma = None
+        self.lummean = lummean
+        self.lumsigma = lumsigma
 
-        self._zscale = None
+        self.zscale = zscale
 
-        self.ref_freq = 1400.0
+        self.ref_freq = ref_freq
 
         # non-properties
         self.ndet = 0
@@ -36,108 +50,3 @@ class Population:
 
     def size(self):
         return len(self.population)
-    
-    # get/get methods for p distn type
-    @property
-    def pDistType(self):
-        return self._pDistType
-
-    @pDistType.setter
-    def pDistType(self, value):
-        self._pDistType = value
-
-    @pDistType.deleter
-    def pDistType(self):
-        del self._pDistType
-
-
-    # get/set methods for the mean period
-    @property
-    def pmean(self):
-        return self._pmean
-
-    @pmean.setter
-    def pmean(self, value):
-        self._pmean = value
-
-    @pmean.deleter
-    def pmean(self):
-        del self._pmean
-
-    # get/set methods for the period sigma
-    @property
-    def psigma(self):
-        return self._psigma
-
-    @psigma.setter
-    def psigma(self, value):
-        self._psigma = value
-
-    @psigma.deleter
-    def psigma(self):
-        del self._psigma
-
-    # get/set methods for the mean spindex
-    @property
-    def simean(self):
-        return self._simean
-
-    @simean.setter
-    def simean(self, value):
-        self._simean = value
-
-    @simean.deleter
-    def simean(self):
-        del self._simean
-
-    # get/set methods for the spindex sigma
-    @property
-    def sisigma(self):
-        return self._sisigma
-
-    @sisigma.setter
-    def sisigma(self, value):
-        self._sisigma = value
-
-    @sisigma.deleter
-    def sisigma(self):
-        del self._sisigma
-
-    # get/set methods for the mean luminosity
-    @property
-    def lummean(self):
-        return self._lummean
-
-    @lummean.setter
-    def lummean(self, value):
-        self._lummean = value
-
-    @lummean.deleter
-    def lummean(self):
-        del self._lummean
-
-    # get/set methods for the spindex luminosity
-    @property
-    def lumsigma(self):
-        return self._lumsigma
-
-    @lumsigma.setter
-    def lumsigma(self, value):
-        self._lumsigma = value
-
-    @lumsigma.deleter
-    def lumsigma(self):
-        del self._lumsigma
-
-    # get/set methods for the zscale
-    @property
-    def zscale(self):
-        return self._zscale
-
-    @zscale.setter
-    def zscale(self, value):
-        self._zscale = value
-
-    @zscale.deleter
-    def zscale(self):
-        del self._zscale

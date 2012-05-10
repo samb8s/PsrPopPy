@@ -1,0 +1,20 @@
+  1.0  ! survey degradation factor
+  1.75 ! antenna gain (K/Jy)
+  2100 ! integration time (s)
+  0.256! sampling time (ms)
+  100  ! system temperature (K)
+  610  ! centre frequency (MHz)
+  32   ! bandwidth (MHz)
+  .0625  ! channel bandwidth (MHz)
+  2    ! number of polarizations
+  45.  ! full-width half maximum (arcmin)
+  0.   ! minimum RA (deg)
+  360. ! maximum RA (deg)
+ -50.  ! minimum DEC (deg)
+  90.  ! maximum DEC (deg)
+   45  ! minimum Galactic longitude (deg)
+  135  ! maximum Galactic longitude (deg)
+   0   ! minimum abs(Galactic latitude) (deg)
+   1.  ! maximum abs(Galactic latitude) (deg)
+  1.0  ! fractional survey coverage (0-1)
+  9.0  ! minimum signal-to-noise ratio

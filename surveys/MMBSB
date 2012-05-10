@@ -1,0 +1,23 @@
+################################################################################
+# model of the Parkes methanol multibeam survey - main parameters
+################################################################################
+  1.3  ! survey degradation factor
+  0.6  ! antenna gain (K/Jy)
+  1055 ! integration time (s)
+  0.125 ! sampling time (ms)
+  40.  ! system temperature (K)
+  6591 ! centre frequency (MHz)
+  576  ! bandwidth (MHz)
+  3.0  ! channel bandwidth (MHz)
+  2    ! number of polarizations
+  3.2  ! full-width half maximum (arcmin)
+  0.   ! minimum RA (deg)
+  360. ! maximum RA (deg)
+ -90.  ! minimum DEC (deg)
+  90.  ! maximum DEC (deg)
+ -60.  ! minimum Galactic longitude (deg)
+  30.  ! maximum Galactic longitude (deg)
+  0.   ! minimum abs(Galactic latitude) (deg)
+  0.25  ! maximum abs(Galactic latitude) (deg)
+  1.0  ! fractional survey coverage (0-1)
+  9.0  | signal-to-noise ratio
