@@ -11,62 +11,60 @@ import ctypes as C
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 filepath = os.path.join(__dir__, 'fortran')
 yklib = C.CDLL(filepath+'/libykarea.so')
-seedlib = C.CDLL(filepath+'/libgetseed.so')
 yklib.ykr_.restype = C.c_float
 yklib.llfr_.restype = C.c_float
 
+seedlib = C.CDLL(filepath+'/libgetseed.so')
+seedlib.getseed_.restype = C.c_int
 
 # I'd like to implement this without resorting to globals. But for now, it should work
 global FIRST_CALL
 FIRST_CALL=True
 
 class RadialModels:
-    """ Class to store radial model methods"""
+    """ Class to store radial model methods."""
     def __init__(self):
+        """Initialize the class."""
+        pass
 
-        self._seed = None
-
-    # what if I make seed a property, so we run it with same seed every time?
+    def seed(self):
+        return C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
+        #return C.c_int(5)
     
-    def seed(self):
-        #return C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
-        return C.c_int(5)
-    """
-
-    # get/set methods for seed
-    @property
-    def seed(self):
-        return self._seed
-
-    @seed.setter
-    def seed(self):
-        self._seed = C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
-
-    @seed.deleter
-    def seed(self):
-        del self._seed
-    """
     # class methods
+
+    def slabdist(self):
+        x = -15.0 + random.random()*30.0
+        y = -15.0 + random.random()*30.0
+        z = -5.0 + random.random() * 10.0 
+
+        return (x, y, z)
+
+    def diskdist(self):
+        x = -15.0 + random.random()*30.0
+        y = -15.0 + random.random()*30.0
+        return (x, y, 0.0)
     
     def lfl06(self):
         """lfl06 model, using Y&K"""
         #print self.seed
-        #return yklib.llfr_(C.byref(self.seed()))
-        rand = C.c_float(random.random())
-        return yklib.llfr_(C.byref(rand))
+        return yklib.llfr_(C.byref(self.seed()))
+        #rand = C.c_float(random.random())
+        #return yklib.llfr_(C.byref(rand))
 
     def ykr(self):
         """ Y&K Model"""
+        #rand = C.c_float(random.random())
         return yklib.ykr_(C.byref(self.seed()))
 
 
     def llfr(self):
-        """Python implementation of the lfl06 model"""
+        """Python implementation of the lfl06 model. Not in use."""
 
         return self.ykr0(3.51, 7.89, 0.0)
 
     def ykr0(self, a, b, r1):
-        """Python implementation of the Yusifov + Kucuk raidal model"""
+        """Python implementation of the Y&K model. Not in use."""
         if FIRST_CALL:
             # set the global to false so we don't end up here again
             global FIRST_CALL
@@ -79,7 +77,7 @@ class RadialModels:
         return self.ykarea(500.0, area, a, b, r1)
             
     def ykarea(self, r, amax, a, b, r1):
-        """Python implementation of Y+K"""
+        """Python implementation of Y+K, not in use."""
 
         # two "constants"
         DX = 0.01

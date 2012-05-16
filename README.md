@@ -26,4 +26,4 @@ Program for making quick histograms of population model
 visualize.py
 ------------
 
-More detailed population model viewer. Make histograms, scatter plots, etc
+More detailed population model viewer. Make histograms, scatter plots, etc. This is a little slow, I think due to the large number of points being plotted. Thi s might want some work.

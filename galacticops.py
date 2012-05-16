@@ -22,17 +22,21 @@ slalib =  C.CDLL(filepath+'/libsla.so')
 
 # Class definition
 class GalacticOps:
-    """Class for keeping all the galactic methods together"""
+    """
+    Class for keeping all the galactic methods together
+    
+    """
+
     def __init__(self):
         pass
     
     def calc_dtrue(self, (x, y, z)):
-        """Calculate true distance to pulsar from the sun"""
+        """Calculate true distance to pulsar from the sun."""
         rsun = 8.5 # kpc
         return math.sqrt( x*x + (y-rsun)*(y-rsun) + z*z)
 
     def calcXY(self, r0):
-        """Calculate the X, Y, Z alactic coords for the pulsar"""
+        """Calculate the X, Y, Z alactic coords for the pulsar."""
         # calculate a random theta in a unifrom distribution
         theta = 2.0 * math.pi * random.random()
 
@@ -44,7 +48,7 @@ class GalacticOps:
         return x, y
 
     def ne2001_dist_to_dm(self, dist, gl, gb):
-        """Use NE2001 distance model"""
+        """Use NE2001 distance model."""
         dist = C.c_float(dist)
         gl = C.c_float(gl)
         gb = C.c_float(gb)
@@ -55,7 +59,7 @@ class GalacticOps:
                              C.byref(C.c_float(0.0)))
 
     def lm98_dist_to_dm(self, dist, gl, gb):
-        """ Use Lyne & Manchester distance model to compute DM"""
+        """ Use Lyne & Manchester distance model to compute DM."""
         dist = C.c_float(dist)
         gl = C.c_float(gl)
         gb = C.c_float(gb)
@@ -66,7 +70,7 @@ class GalacticOps:
                              C.byref(C.c_float(0.0)))
 
     def lb_to_radec(self, l, b):
-        """Convert l, b to RA, Dec using SLA fortran (should be faster)"""
+        """Convert l, b to RA, Dec using SLA fortran (should be faster)."""
         ra = C.c_float(0.)
         dec = C.c_float(0.)
         l = C.c_float(l)
@@ -81,7 +85,7 @@ class GalacticOps:
 
     def tsky(self, gl, gb, freq):
         """ Calculate Galactic sky temperature for a given observing frequency (MHz), 
-            l and b"""
+            l and b."""
         gl =  C.c_float(gl)
         gb = C.c_float(gb)
         freq = C.c_float(freq)
@@ -91,7 +95,7 @@ class GalacticOps:
         
 
     def xyz_to_lb(self, (x, y, z)):
-        """ Convert galactic xyz in kpc to l and b in degrees"""
+        """ Convert galactic xyz in kpc to l and b in degrees."""
         rsun = 8.5 # kpc
 
         # distance to pulsar
@@ -127,9 +131,21 @@ class GalacticOps:
 
         return l, b
 
+    def lb_to_xyz(self, gl, gb, dist):
+        """ Convert galactic coords to Galactic XYZ."""
+        rsun = 8.5 # kpc
+
+        l = math.radians(gl)
+        b = math.radians(gb)
+
+        x = dist * math.cos(b) * math.sin(l)
+        y = rsun - dist * math.cos(b) * math.cos(l)
+        z = dist * math.sin(b)
+
+        return (x, y, z)
 
     def scatter_bhat(self, dm, scatterindex, freq_mhz):
-        """Calculate bhat et al 2004 scattering timescale for freq in MHz"""
+        """Calculate bhat et al 2004 scattering timescale for freq in MHz."""
         logtau = -6.46 + 0.154*math.log10(dm) + \
                     1.07*math.log10(dm)*math.log10(dm) + \
                     scatterindex*math.log10(freq_mhz/1000.0)

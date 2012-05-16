@@ -12,6 +12,12 @@ from pulsar import Pulsar
 from survey import Survey
 
 class DoSurvey:
+
+    """
+    Run a population model through a (set of) survey(s)
+
+    """
+
     def __init__(self, popfile='populate.model'):
         f = open(popfile, 'rb')
         self.pop = cPickle.load(f)
@@ -20,7 +26,7 @@ class DoSurvey:
         self.surveyPops = []
 
     def write(self, extension='.results'):
-        """Write a survey results population to file outf"""
+        """Write a survey results population to a binary file."""
 
         for surv, survpop in self.surveyPops:
             # create an output file
@@ -32,7 +38,7 @@ class DoSurvey:
             output.close()
     
     def run(self, surveyList):
-        """ Run the surveys and detect the pulsars"""
+        """ Run the surveys and detect the pulsars."""
 
         # print the population
         print "Running doSurvey on population..."

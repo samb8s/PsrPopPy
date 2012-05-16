@@ -19,7 +19,9 @@ import matplotlib.pyplot as plt
 
 
 class View:
+    """Generate basic histograms of pulsar population data."""
     def __init__(self, popfile):
+        """Reads in the population file"""
         try:
             f = open(popfile, 'rb')
         except IOError:
@@ -30,7 +32,8 @@ class View:
         f.close()
 
     def histogram(self, prop, log=False):
-        
+        """Create list and make histogram for the selected parameter"""
+
         if prop == 'period' :
             proplist = [p.period for p in self.pop.population]
         elif prop == 'dm':

@@ -118,11 +118,12 @@ class Survey(GalacticOps):
         return s
 
     def nchans(self):
+        """ Returns the number of channels in the survey backend."""
         return self.bw / self.bw_chan
 
 
     def inRegion(self, pulsar):
-        """Test if pulsar is inside region bounded by survey"""
+        """Test if pulsar is inside region bounded by survey."""
         # check if l, b are outside region first of all
         if pulsar.gl > self.GLmax or pulsar.gl < self.GLmin:
             return False
@@ -146,6 +147,7 @@ class Survey(GalacticOps):
 
 
     def SNRcalc(self, pulsar, pop):
+        """Calculate the S/N ratio of a given pulsar in the survey"""
         # if not in region, S/N = 0
         if self.inRegion(pulsar):
             pass
@@ -181,6 +183,7 @@ class Survey(GalacticOps):
             return self._SNfac(pulsar, pop.ref_freq, degfac, Ttot) * math.sqrt((1.0 -delt)/delt)
 
     def _SNfac(self, pulsar, ref_freq, degfac, Ttot):
+        """The S/N factor from system parameters"""
         # scale flux to survey frequency
         flux = pulsar.s_1400() * (self.freq / ref_freq)**pulsar.spindex
 
@@ -189,4 +192,5 @@ class Survey(GalacticOps):
                   / self.beta / Ttot
 
     def _dmsmear(self, pulsar):
+        """Calculate the smearing due to the pulsar DM"""
         return 8.3E6 * pulsar.dm * self.bw_chan / math.pow(self.freq, 3.0)

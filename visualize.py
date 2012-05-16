@@ -19,13 +19,19 @@ from pulsar import Pulsar
 class Visualize:
     """
     Class for plotting different parameters of a population file
-    using the matplotlib module
+    using the matplotlib module.
+
     """
     def __init__(self, popfile='populate.model'):
+        """Initialise the Visualize object."""
+
         # read in population file to population self.pop
         f = open(popfile, 'rb')
         self.pop = cPickle.load(f)
         f.close()
+
+        # print out the population parameters 
+        print self.pop
 
         self.textlabels = ['Period',
                       'DM',
@@ -38,7 +44,7 @@ class Visualize:
                       'gl',
                       'gb',
                       'D']
-        self.axislabels = ['Period (s)',
+        self.axislabels = ['Period (ms)',
                       'DM (cm^-3 pc)',
                       'X (kpc)',
                       'Y (kpc)',
@@ -81,7 +87,7 @@ class Visualize:
         del self.pop
 
     def display(self):
-        """Method to create the plotting window and fill it with buttons"""
+        """Method to create the plotting window and fill it with buttons."""
         # Create matplotlib window dressing
         self.fig = plt.figure(figsize=(11,9), facecolor='lightgoldenrodyellow')
         #self.fig = plt.figure(facecolor='lightgoldenrodyellow')
