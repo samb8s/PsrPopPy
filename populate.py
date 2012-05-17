@@ -359,6 +359,11 @@ if __name__ == '__main__':
                         help='Galactic electron distribution model to use',
                         choices=['ne2001', 'lm98'])
 
+
+    # output file name
+    parser.add_argument('-o', type=str, metavar='outfile', required=False,
+                        default='populate.model',
+                        help='Output filename for population model')
     args = parser.parse_args()
 
     # run the code and write out a cPickle population class
@@ -375,4 +380,4 @@ if __name__ == '__main__':
                  electronModel=args.dm[0]
                  )
 
-    pop.write()
+    pop.write(outf=args.o)

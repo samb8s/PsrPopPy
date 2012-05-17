@@ -1,7 +1,9 @@
 # makefile.darwin - your system-specific makefile for PSRPOP
-BIN = /Users/sbates/Documents/Physics/Pulsars/code/Python/pypop/fortran
-FFLAGS = -O3
-LDFLAGS = -L/usr/local/lib
-LINK.f=f77 $(FFLAGS) $(LDFLAGS)
+BIN = $(shell pwd)
+FFLAGS = -O2 -fPIC -fno-second-underscore -c -I.
+#LDFLAGS = -L/usr/local/lib
+# set up your compiler here
+GFORTRAN = /Users/sbates/Downloads/usr/local/bin/gfortran
+LINK.f=$(GFORTRAN) $(FFLAGS) $(LDFLAGS)
 # The following may need to be edited by hand...
-LPGPLOT = -lpgplot -lcpgplot -L/usr/X11R6/lib -lX11
+#LPGPLOT = -lpgplot -lcpgplot -L/usr/X11R6/lib -lX11

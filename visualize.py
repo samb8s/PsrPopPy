@@ -26,7 +26,12 @@ class Visualize:
         """Initialise the Visualize object."""
 
         # read in population file to population self.pop
-        f = open(popfile, 'rb')
+        try:
+            f = open(popfile, 'rb')
+        except IOError:
+            print "Could not open file {0}.".format(popfile)
+            sys.exit()
+
         self.pop = cPickle.load(f)
         f.close()
 

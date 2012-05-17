@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+import copy 
+import cPickle
+
 class Population:
 
     """
@@ -68,3 +71,22 @@ class Population:
     def size(self):
         """Returns the number of pulsars in the object."""
         return len(self.population)
+
+    def join(self,poplist):
+        """Join pops in poplist to this population object. Returns a new object"""
+
+        # want to return a new object, so need to do a copy. 
+        newpop = copy.deepcopy(self)
+
+        for pop in poplist:
+            # append each population to the original
+            newpop.population = newpop.population + pop.population
+
+        # return the new object
+        return newpop
+
+    def write(self, outf):
+        """Write the population object to a file"""
+        output = open(outf, 'wb')
+        cPickle.dump(self, output)
+        output.close()
