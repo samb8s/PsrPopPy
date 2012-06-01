@@ -26,9 +26,7 @@ class Populate(RadialModels, GalacticOps):
 
     def __init__(self):
         """Initialise the populate class"""
-        # creat epopulation object
-        #self.population = Population()
-        # generate pulsars
+        # create population object
         self.pop = Population()
 
     def write(self, outf="populate.model"):

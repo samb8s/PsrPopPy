@@ -10,6 +10,8 @@ e.g.
 
 gfortran -dynamiclib -o libgetseed.so -fno-second-underscore getseed.o psrran.o clock.o
 
+gfortran -dynamiclib -o libsla.so -fno-second-underscore galtfeq.o sla.o
+
 # create libne2001.dylib
 
 
@@ -21,7 +23,7 @@ gfortran -O2 -fPIC -fno-second-underscore -c -I. dm.f ne2001.f calc_xyz.f getpat
 
 
 gfortran -O2 -fPIC -fno-second-underscore -c -I. galtfeq.f sla.f
-gfortran -dynamiclib -o libsla.so -fno-second-underscore galtfeq.o sla.o
+
 
    """ 
     def seed:

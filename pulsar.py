@@ -2,7 +2,7 @@
 
 class Pulsar:
     """ Class to store an individual pulsar"""
-    def __init__(self=None,
+    def __init__(self,
                  period=None,
                  dm=None,
                  gl=None,
