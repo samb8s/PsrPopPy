@@ -9,7 +9,7 @@ class Pulsar:
                  gb=None,
                  galCoords=None,
                  dtrue=None,
-                 lum1400=None,
+                 lum_1400=None,
                  spindex=None,
                  scindex=None,
                  alpha=None,
@@ -24,7 +24,7 @@ class Pulsar:
         self.galCoords = galCoords
         self.dtrue = dtrue
 
-        self.lum1400 = lum1400
+        self.lum_1400 = lum_1400
         self.spindex = spindex
         self.scindex = scindex
         self.alpha = alpha

@@ -96,7 +96,7 @@ class Survey(GalacticOps):
                 self.SNRlimit = float(a[0].strip())
 
             else:
-                print "Parameter ",a[1].strip()," not recognized!"
+                print "Parameter '",a[1].strip(),"' not recognized!"
 
         f.close()
     
