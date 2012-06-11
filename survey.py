@@ -86,7 +86,7 @@ class Survey(GalacticOps):
             elif a[1].count('maximum abs'):
                 # max latitude
                 self.GBmax = float(a[0].strip())
-            elif a[1].count('survey coverage'):
+            elif a[1].count('coverage'):
                 # coverage fraction
                 self.coverage = float(a[0].strip())
                 if self.coverage > 1.0:
