@@ -11,10 +11,10 @@ class Pulsar:
                  dtrue=None,
                  lum_1400=None,
                  spindex=None,
-                 scindex=None,
                  alpha=None,
                  rho=None,
-                 width_degree=None):
+                 width_degree=None,
+                 scindex=-3.86):
         """___init___ function for the Pulsar class"""
         self.period = period
         self.dm = dm

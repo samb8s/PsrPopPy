@@ -11,8 +11,8 @@ The other main requirement is [matplotlib](matplotlib.sourceforge.net), which is
 Compiling
 ---------
 
-To compile on mac or linux, go into the fortran directory, edit make_mac.csh or make_linux.csh (as appropriate).
-Change the variable gf to point to your local gfortran compiler, then run the script. Fingers crossed, it should all work.
+Inside the fortran directory, edit getpath.f and set the lpth variable to point to the current directory. Still the fortran directory, edit make_mac.csh or make_linux.csh (as appropriate) -- change the variable `gf' to point to your local gfortran compiler, then run the script. Fingers crossed, it should all work.
+
 
 A brief description of the "executables" follows.
 

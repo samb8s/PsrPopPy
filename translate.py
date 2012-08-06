@@ -14,7 +14,8 @@ def makepulsar(line):
                dm = float(a[4]),
                dtrue = float(a[7]),
                lum_1400 = float(a[9]),
-               scindex = float(a[11])
+               spindex = float(a[11]),
+               scindex = -3.86
                )
     return p
 
