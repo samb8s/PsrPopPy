@@ -225,13 +225,13 @@ class Populate(RadialModels, GalacticOps):
 
     def _double_sided_exp(self, scale, origin=0.0):
         """Exponential distribution around origin, with scale height scale."""
-        rn1 = random.random()
-        rn2 = random.random()
-        sgn = 1.0
-        if rn1 < 0.5:
-            sgn = -1.0
+        if scale == 0.0:
+            return origin
 
-        return origin + sgn * scale * math.log(rn2)
+        rn = random.random()
+        sign = random.choice([-1.0, 1.0])
+
+        return origin + sign * scale * math.log(rn)
 
     def _drawlnorm(self, mean, sigma):
         """Get a random log-normal number."""

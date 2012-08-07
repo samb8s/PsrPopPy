@@ -34,9 +34,16 @@ class Pulsar:
     # methods to calculate derived properties
     def s_1400(self):
         """Calculate the flux of the pulsar"""
-        return self.lum_1400 / self.dtrue / self.dtrue
+        
+        try:
+            return self.lum_1400 / self.dtrue / self.dtrue
+        except TypeError:
+            print "lum_1400 or dtrue not defined"
 
     def width_ms(self):
         """Return the pulse width in milliseconds"""
-        return self.width_degree * self.period / 360.0
+        try:
+            return self.width_degree * self.period / 360.0
+        except TypeError:
+            print "period or width_degree not defined"
 

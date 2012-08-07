@@ -73,7 +73,12 @@ class Population:
         return len(self.population)
 
     def join(self,poplist):
-        """Join pops in poplist to this population object. Returns a new object"""
+        """
+        Join pops in poplist to this population object. Returns a new object
+        
+        Be aware that population properties such as distribution type etc will be
+        retained ONLY for the original population model.
+        """
 
         # want to return a new object, so need to do a copy. 
         newpop = copy.deepcopy(self)
