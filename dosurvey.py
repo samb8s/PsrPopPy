@@ -24,16 +24,22 @@ class DoSurvey:
 
         self.surveyPops = []
 
-    def write(self, extension='.results'):
+    def write(self, extension='.results', asc=False):
         """Write a survey results population to a binary file."""
 
         for surv, survpop in self.surveyPops:
             # create an output file
-            s = surv + extension
+            s = surv + '.results'
 
             # write the survpop to the file
             with open(s,'wb') as output:
                 cPickle.dump(survpop, output)
+
+
+            # Write ascii file if required
+            if asc:
+                surv.pop.write_asc(surv+ '.det')
+
     
     def run(self, surveyList):
         """ Run the surveys and detect the pulsars."""
@@ -59,8 +65,10 @@ class DoSurvey:
             # loop over the pulsars in the population list
             for psr in self.pop.population:
                 # is the pulsar over the detection threshold?
-                if s.SNRcalc(psr, self.pop) > s.SNRlimit:
+                snr = s.SNRcalc(psr, self.pop)
+                if snr > s.SNRlimit:
                     ndet += 1
+                    psr.snr = snr
                     survpop.population.append(psr)
 
                 elif s.SNRcalc(psr, self.pop) == -1.0:
@@ -89,6 +97,8 @@ if __name__ == '__main__':
                          help='file containing population model')
     parser.add_argument('-surveys', metavar='S', nargs='+', required=True,
                          help='surveys to use to detect pulsars')
+    parser.add_argument('--asc', nargs='?', const=True, default=False,
+                         help='flag for ascii output')
     
     args = parser.parse_args()
 
@@ -96,4 +106,4 @@ if __name__ == '__main__':
 
     # run the survey and write the results to file
     ds.run(args.surveys)
-    ds.write()
+    ds.write(asc=args.asc)

@@ -95,3 +95,26 @@ class Population:
         output = open(outf, 'wb')
         cPickle.dump(self, output)
         output.close()
+
+    def write_asc(self, outf):
+        """Write population to an ascii file"""
+        with open(outf, 'w') as f:
+            f.write("Period_ms DM Width_ms GL GB S1400 L1400 SPINDEX SNR DTRUE X Y Z\n")
+            for psr in self.population:
+            
+                s = "{0}".format(self.period)
+                s = "\t".join([s, "{0}".format(psr.dm)])
+                s = "\t".join([s, "{0}".format(psr.width_ms())])
+                s = "\t".join([s, "{0}".format(psr.gl)])
+                s = "\t".join([s, "{0}".format(psr.gb)])
+                s = "\t".join([s, "{0}".format(psr.s_1400())])
+                s = "\t".join([s, "{0}".format(psr.lum_1400)])
+                s = "\t".join([s, "{0}".format(psr.spindex)])
+                s = "\t".join([s, "{0}".format(psr.snr)])
+                s = "\t".join([s, "{0}".format(psr.dtrue)])
+                s = "\t".join([s, "{0}".format(psr.galCoords[0])])
+                s = "\t".join([s, "{0}".format(psr.galCoords[1])])
+                s = "\t".join([s, "{0}".format(psr.galCoords[2])])
+                s = "".join([s, "\n"])
+
+                f.write(s)

@@ -14,6 +14,7 @@ class Pulsar:
                  alpha=None,
                  rho=None,
                  width_degree=None,
+                 snr=None,
                  scindex=-3.86):
         """___init___ function for the Pulsar class"""
         self.period = period
@@ -31,6 +32,8 @@ class Pulsar:
         self.rho = rho
         self.width_degree = width_degree
 
+        self.snr=snr
+
     # methods to calculate derived properties
     def s_1400(self):
         """Calculate the flux of the pulsar"""
@@ -46,4 +49,3 @@ class Pulsar:
             return self.width_degree * self.period / 360.0
         except TypeError:
             print "period or width_degree not defined"
-
