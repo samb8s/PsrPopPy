@@ -19,9 +19,8 @@ class DoSurvey:
     """
 
     def __init__(self, popfile='populate.model'):
-        f = open(popfile, 'rb')
-        self.pop = cPickle.load(f)
-        f.close()
+        with open(popfile, 'rb') as f:
+            self.pop = cPickle.load(f)
 
         self.surveyPops = []
 
@@ -33,9 +32,8 @@ class DoSurvey:
             s = surv + extension
 
             # write the survpop to the file
-            output = open(s,'wb')
-            cPickle.dump(survpop, output)
-            output.close()
+            with open(s,'wb') as output:
+                cPickle.dump(survpop, output)
     
     def run(self, surveyList):
         """ Run the surveys and detect the pulsars."""
