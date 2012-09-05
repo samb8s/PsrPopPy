@@ -364,6 +364,12 @@ if __name__ == '__main__':
                         help='Output filename for population model')
     args = parser.parse_args()
 
+
+    # write command line to populate.cmd file
+    with open('populate.cmd', 'a') as f:
+        f.write(" ".join(sys.argv))
+        f.write('\n')
+
     # run the code and write out a cPickle population class
     pop = Populate()
     
