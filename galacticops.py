@@ -83,6 +83,23 @@ class GalacticOps:
                         C.byref(C.c_int(1)))
         return ra.value, dec.value
 
+    def radec_to_lb(self, ra, dec):
+        """Convert RA, Dec to l, b using SLA fortran.
+        Be sure to return l in range -180 -> +180"""
+        l = C.c_float(0.)
+        b = C.c_float(0.)
+        ra = C.c_float(ra)
+        dec = C.c_float(dec)
+        # call with arg = -1 to convert in reverse!
+        slalib.galtfeq_(C.byref(l), 
+                        C.byref(b),
+                        C.byref(ra),
+                        C.byref(dec),
+                        C.byref(C.c_int(1)))
+        if l.value>180.:
+            l.value -= 360.
+        return l.value, b.value
+
     def tsky(self, gl, gb, freq):
         """ Calculate Galactic sky temperature for a given observing frequency (MHz), 
             l and b."""
@@ -153,3 +170,21 @@ class GalacticOps:
         # seems like scattering timescale is tooooooo big? Definitely my weffs are too big
         # return tau with power scattered with a gaussian, width 0.8
         return math.pow(10.0, random.gauss(logtau, 0.8)) 
+
+    def _glgboffset(self, gl1, gb1, gl2, gb2):
+        """Calculate the angular distance (deg) between two
+        points in galactic coordinates"""
+        # Angular offset in polar coordinates
+        # taken brazenly from
+        #http://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php
+
+        # requires gb conversion from +90 -> -90 to 0 -> 180
+        gb1 = 90.0 - gb1
+        gb2 = 90.0 - gb2
+
+        term1 = math.cos(math.radians(gb1)) * math.cos(math.radians(gb2))
+        term2 = math.sin(math.radians(gb1)) * math.sin(math.radians(gb2)) 
+        term3 = math.cos(math.radians(gl1) - math.radians(gl2))
+        cosalpha = term1 + term2*term3
+
+        return math.degrees(math.acos(cosalpha))

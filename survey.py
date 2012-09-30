@@ -10,6 +10,37 @@ import random
 from galacticops import GalacticOps
 from population import Population
 
+class CoordinateException(Exception):
+    pass
+
+class SurveyFileException(Exception):
+    pass
+
+class Pointing(GalacticOps):
+    """Simple class -- pointing has a gl and gb position"""
+
+    def __init__(self, coord1, coord2, coordtype):
+        """Set the coordinates of the pointing.
+            Convert to gl and gb if in RA and Dec"""
+
+        if coordtype not in ['eq', 'gal']:
+            raise CoordinateException('Wrong coordtype passed to Pointing')
+
+        if coordtype == 'eq':
+            # assume pointings in decimal degrees
+            ra = coord1
+            dec = coord2
+
+            # convert to l and b :)
+            self.gl, self.gb = self.radec_to_lb(ra, dec)
+
+        else:
+            if coord1>180.:
+                coord1=coord1-360.
+
+            self.gl = coord1
+            self.gb = coord2
+
 class Survey(GalacticOps):
     """Class to store survey parameters and methods"""
     def __init__(self, surveyName):
@@ -24,6 +55,10 @@ class Survey(GalacticOps):
             sys.exit()
 
         self.surveyName = surveyName
+        # initialise the pointings list to None
+        # only change this is there is a list of pointings to be used
+        self.pointingslist = None
+
         # Parse the file line by line
         for line in f.readlines():
             # ignore any lines starting '#'
@@ -32,7 +67,42 @@ class Survey(GalacticOps):
             # otherwise, parse!
             a = line.split('!')
             
-            if a[1].count('survey degradation'):
+            # new feature - possible to have a list of positions in survey,
+            # rather than a range of l,b or ra,dec
+            if a[1].count('pointing list'):
+                pointfname = a[0].strip()
+                pointfpath = os.path.join(__dir__, 'surveys', pointfname)
+
+                # try to open the pointing list
+                try:
+                    pointfptr = open(pointfpath, 'r')
+                except:
+                    s = 'File {0} does not exist!!!'.format(pointfpath)
+                    raise CoordinateException(s)
+
+                # read in the pointing list
+                self.pointingslist = []
+                if a[1].count('galactic'):
+                    # already galactic coordinates
+                    for line in pointfptr.readlines():
+                        a = line.split()
+                        p = Pointing(float(a[0]), float(a[1]), 'gal')
+                        self.pointingslist.append(p)
+
+                elif a[1].count('equatorial'):
+                    # need to be converted from ra dec to gl gb
+                    for line in pointfptr.readlines():
+                        a = line.split()
+                        p = Pointing(float(a[0]), float(a[1]), 'eq')
+                        self.pointingslist.append(p)
+
+                else:
+                    s = 'Coordinate type unspecified in {0}.'.format(surveyName)
+                    raise CoordinateException(s)
+
+                pointfptr.close()
+
+            elif a[1].count('survey degradation'):
                 # beta
                 self.beta = float(a[0].strip())
             elif a[1].count('gain'):
@@ -125,6 +195,8 @@ class Survey(GalacticOps):
     def inRegion(self, pulsar):
         """Test if pulsar is inside region bounded by survey."""
         # check if l, b are outside region first of all
+        if pulsar.gl>180.:
+            pulsar.gl -= 360.
         if pulsar.gl > self.GLmax or pulsar.gl < self.GLmin:
             return False
         if math.fabs(pulsar.gb) > self.GBmax or  math.fabs(pulsar.gb) < self.GBmin:
@@ -143,20 +215,46 @@ class Survey(GalacticOps):
         if random.random() > self.coverage:
             return False
         
-        return True
+        return True 
 
+    def inPointing(self, pulsar):
+        """Calculate whether pulsar is inside FWHM/2 of pointing position.
+        Currently breaks as soon as it finds a match. !!!Could be a closer
+        position further down the list!!!"""
+        # loop over pointings
+        for point in self.pointingslist:
+            #calc offset
+            offset_deg = self._glgboffset(point.gl, point.gb, pulsar.gl, pulsar.gb)
+            if offset_deg*60.0 < self.fwhm/2.0:
+                break
+                
+        return offset_deg
 
     def SNRcalc(self, pulsar, pop):
         """Calculate the S/N ratio of a given pulsar in the survey"""
         # if not in region, S/N = 0
-        if self.inRegion(pulsar):
-            pass
+
+        # if we have a list of pointings, use this bit of code
+        # haven't tested yet, but presumably a lot slower
+        # (loops over the list of pointings....)
+        if self.pointingslist is not None:
+            # convert offset from degree to arcmin
+            offset = self.inPointing(pulsar) * 60.0
+
+            if offset >= self.fwhm/2.0:
+                # ie. if inPointing returns false
+                # not in pointings
+                return -2.0 
+
+        # otherwise check if pulsar is in entire region
+        elif self.inRegion(pulsar):
+            # calculate offset as a random offset within FWHM/2
+            offset = self.fwhm * math.sqrt(random.random()) / 2.0
+
         else:
             return -2.0
 
-        # calculate offset as a random offset within FWHM/2
-        # why is this a sqrt???
-        offset = self.fwhm * math.sqrt(random.random()) / 2.0
+        #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
         degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
 
         # don't think I need to do this - I'm using the survey freq in call

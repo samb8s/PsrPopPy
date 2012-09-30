@@ -20,6 +20,10 @@ class Pulsar:
         self.period = period
         self.dm = dm
         
+        # convert to -180->+180 range
+        if gl >180.:
+            gl -= 360.
+
         self.gl = gl
         self.gb = gb
         self.galCoords = galCoords
