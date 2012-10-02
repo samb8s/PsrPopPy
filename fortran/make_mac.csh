@@ -1,5 +1,7 @@
 #!/bin/tcsh
 
+setenv CFLAGS -m32
+
 set gf = ~/bin/gfortran
 
 $gf -O2 -fPIC -fno-second-underscore -c -I. *.f

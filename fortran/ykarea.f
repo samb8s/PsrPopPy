@@ -24,38 +24,38 @@ c
       enddo
       end
 c==============================================================================
-      real function ykr(rndm)
+      real function ykr(seed)
 c==============================================================================
 c
 c     uses ykarea to draw a random deviate from Yusifov & Kukuk's 
 c     radial distribution. a=1.64,b=4.01,r1=0.55
 c
-      real rndm
+      integer seed
       real ykr0
-      ykr=ykr0(rndm,1.64,4.01,0.55)
+      ykr=ykr0(seed,1.64,4.01,0.55)
 c      ykr= 5.0
       end function
 c==============================================================================
-      real function llfr(rndm)
+      real function llfr(seed)
 c==============================================================================
 c
 c     uses ykarea to draw a random deviate from Yusifov & Kukuk's 
 c     radial distribution. a=1.64,b=4.01,r1=0.0
 c
-      real rndm
+      integer seed
       real ykr0
-      llfr=ykr0(rndm,3.51,7.89,0.0)
+      llfr=ykr0(seed,3.51,7.89,0.0)
       end
 c==============================================================================
-      real function ykr0(rndm,a,b,r1)
+      real function ykr0(seed,a,b,r1)
 c==============================================================================
 c
 c     uses ykarea to draw a random deviate from Yusifov & Kukuk's 
 c     radial distribution. a=1.64,b=4.01,r1=0.55
 c
       implicit none
-      real amax,area,ykarea,a,b,r1
-      real rndm
+      real amax,area,ykarea,a,b,r1,psrran
+      integer seed
       logical first
       data first/.true./
       save
@@ -66,7 +66,7 @@ c
 c         write(*,*) "first!!!"
          first=.false.
       endif
-      area = rndm * amax
+      area = psrran(seed) * amax
       ykr0 = ykarea(500.0,area,a,b,r1)
       end
 c==============================================================================

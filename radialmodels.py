@@ -7,7 +7,7 @@ import math
 
 import ctypes as C
 
-# get the c libraries
+# get the FORTRAN libraries
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 filepath = os.path.join(__dir__, 'fortran')
 yklib = C.CDLL(filepath+'/libykarea.so')
@@ -18,8 +18,8 @@ seedlib = C.CDLL(filepath+'/libgetseed.so')
 seedlib.getseed_.restype = C.c_int
 
 # I'd like to implement this without resorting to globals. But for now, it should work
-global FIRST_CALL
-FIRST_CALL=True
+#global FIRST_CALL
+#FIRST_CALL=True
 
 class RadialModels:
     """ Class to store radial model methods."""

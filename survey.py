@@ -36,7 +36,7 @@ class Pointing(GalacticOps):
 
         else:
             if coord1>180.:
-                coord1=coord1-360.
+                coord1 -= 360.
 
             self.gl = coord1
             self.gb = coord2

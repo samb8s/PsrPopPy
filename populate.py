@@ -118,10 +118,10 @@ class Populate(RadialModels, GalacticOps):
                 print "Gamma function not yet supported"
                 sys.exit()
 
-
             p.alpha = self._genAlpha()
             
             p.rho, p.width_degree = self._genRhoWidth(p)
+
             if p.width_degree == 0.0 and p.rho ==0.0:
                 continue
             # is pulsar beaming at us? If not, move on!
@@ -238,19 +238,6 @@ class Populate(RadialModels, GalacticOps):
         #print mean, sigma
         return 10.0**random.gauss(mean, sigma)
     
-    def _genAlpha(self):
-        """Pick an inclination angle from 0-> 90 degrees."""
-        angle = math.degrees(math.asin(random.uniform(-1,1)))
-        return math.fabs(angle)
-
-    def _rhoLaw(self, p_ms):
-        """Calculate rho based on Rankin law of rho(period)."""
-        return 5.4 / math.sqrt(0.001 * p_ms)
-
-    def _sindegree(self, angle):
-        """Return the sine of an angle in degrees."""
-        return math.sin(math.radians(angle))
-
     def _cc97(self):
         """A model for MSP period distribution."""
         p = 0.0
@@ -267,17 +254,13 @@ class Populate(RadialModels, GalacticOps):
         # find fraction of 4pi steradians that the pulsars beams to
         # for alpha and rho in degrees
         
-        thetal = math.radians(max([0.0, psr.alpha - psr.rho]))
-        thetau = math.radians(min([90.0, psr.alpha + psr.rho]))
+        thetal = math.radians(max([0.0, psr.alpha-psr.rho]))
+        thetau = math.radians(min([90.0, psr.alpha+psr.rho]))
 
         beamfrac = math.cos(thetal) - math.cos(thetau)
 
         # compare beamfrac vs a random number
         return random.random() < beamfrac
-        #if random.uniform(0,1) < beamfrac:
-        #    return True
-        #else:
-        #    return False
 
     def _genRhoWidth(self, psr):
         """Calculate the opening angle of pulsar, and the beamwidth."""
@@ -307,9 +290,22 @@ class Populate(RadialModels, GalacticOps):
         else:
             width = math.sqrt(width)
             # convert the width into degrees
-            width = math.degrees(math.asin(width)*4.0) 
+            width = math.degrees(math.asin(width))*4.0
 
         return rho, width
+
+    def _genAlpha(self):
+        """Pick an inclination angle from 0-> 90 degrees."""
+        angle = math.degrees(math.asin(random.uniform(-1,1)))
+        return math.fabs(angle)
+
+    def _rhoLaw(self, p_ms):
+        """Calculate rho based on Rankin law of rho(period_ms)."""
+        return 5.4 / math.sqrt(0.001 * p_ms)
+        
+    def _sindegree(self, angle):
+        """Return the sine of an angle in degrees."""
+        return math.sin(math.radians(angle))
 
 
 if __name__ == '__main__':

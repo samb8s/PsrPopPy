@@ -44,22 +44,30 @@ class Visualize:
                       'Gal Y',
                       'Gal Z',
                       'W',
+                      'alpha',
+                      'rho',
                       'SI',
                       'S1400',
                       'gl',
                       'gb',
-                      'D']
+                      'D',
+                      'r0',
+                      'n']
         self.axislabels = ['Period (ms)',
                       'DM (cm^-3 pc)',
                       'X (kpc)',
                       'Y (kpc)',
                       'Z (kpc)',
                       'Width (degrees)',
+                      'alpha (deg)',
+                      'rho (deg)',
                       'Spectral Index',
                       'S1400 (mJy)',
                       'Galactic Longitude (degrees)',
                       'Galactic Latitude (degrees)',
-                      'Distance (kpc)']
+                      'Distance (kpc)',
+                      'GalacticRadius (kpc)',
+                      'Array Index']
 
         if len(self.textlabels) != len(self.axislabels):
             print "Label list lengths not identical."
@@ -79,11 +87,15 @@ class Visualize:
             dataArray[3][npsr] = psr.galCoords[1]
             dataArray[4][npsr] = psr.galCoords[2]
             dataArray[5][npsr] = psr.width_degree
-            dataArray[6][npsr] = psr.spindex
-            dataArray[7][npsr] = psr.s_1400()
-            dataArray[8][npsr] = psr.gl
-            dataArray[9][npsr] = psr.gb
-            dataArray[10][npsr] = psr.dtrue     
+            dataArray[6][npsr] = psr.alpha
+            dataArray[7][npsr] = psr.rho
+            dataArray[8][npsr] = psr.spindex
+            dataArray[9][npsr] = psr.s_1400()
+            dataArray[10][npsr] = psr.gl
+            dataArray[11][npsr] = psr.gb
+            dataArray[12][npsr] = psr.dtrue 
+            dataArray[13][npsr] = psr.r0
+            dataArray[14][npsr] = npsr
             npsr+=1
 
         self.dataArray = dataArray
