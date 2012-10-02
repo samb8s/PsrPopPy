@@ -32,8 +32,13 @@ class Pointing(GalacticOps):
             dec = coord2
 
             # convert to l and b :)
-            self.gl, self.gb = self.radec_to_lb(ra, dec)
+            gl,gb = self.radec_to_lb(ra, dec)
 
+            if gl>180.:
+                gl -= 360.
+
+            self.gl = gl
+            self.gb = gb
         else:
             if coord1>180.:
                 coord1 -= 360.
@@ -221,10 +226,27 @@ class Survey(GalacticOps):
         """Calculate whether pulsar is inside FWHM/2 of pointing position.
         Currently breaks as soon as it finds a match. !!!Could be a closer
         position further down the list!!!"""
+        # initialise offset_deg to be a big old number
+        # FWHM is in arcmin so always multiply by 60
+        offset_deg = 10.0 * self.fwhm
+
         # loop over pointings
         for point in self.pointingslist:
-            #calc offset
+            # do a really basic check first
+            gld = math.fabs(point.gl - pulsar.gl)
+
+            if gld*60.0 > self.fwhm/2.0:
+                continue
+
+            gbd = math.fabs(point.gb - pulsar.gb) 
+
+            if gbd*60.0 > self.fwhm/2.0:
+                continue
+
+            #if close-ish calc offset
             offset_deg = self._glgboffset(point.gl, point.gb, pulsar.gl, pulsar.gb)
+
+            # if the beam is close enough, break out of the loop
             if offset_deg*60.0 < self.fwhm/2.0:
                 break
                 

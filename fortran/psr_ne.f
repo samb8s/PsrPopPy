@@ -44,13 +44,13 @@ c
 c       Calc Position of the Gum nebula
 c
         call calc_xyz(lgn,bgn,dgn,xgn,ygn,zgn)
-        if (dmod.eq.0) write(lout,*) 'LMT distance model'
-        if (dmod.eq.1) write(lout,*) 'BWHV distance model'
-        if (dmod.eq.2) write(lout,*) 'CWFSR distance model'
-        if (dmod.eq.3) write(lout,*) 'TC93 distance model'
-        if (dmod.eq.4) write(lout,*) 'NE2001 distance model'
-        if (dmod.eq.5) write(lout,*) 'NE0.03 distance model'
-        if (dmod.eq.6) write(lout,*) 'GBC01 distance model'
+c        if (dmod.eq.0) write(lout,*) 'LMT distance model'
+c        if (dmod.eq.1) write(lout,*) 'BWHV distance model'
+c        if (dmod.eq.2) write(lout,*) 'CWFSR distance model'
+c        if (dmod.eq.3) write(lout,*) 'TC93 distance model'
+c        if (dmod.eq.4) write(lout,*) 'NE2001 distance model'
+c        if (dmod.eq.5) write(lout,*) 'NE0.03 distance model'
+c        if (dmod.eq.6) write(lout,*) 'GBC01 distance model'
 	write(lout,*)
         first = .false.
       end if
