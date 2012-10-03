@@ -109,7 +109,7 @@ class GalacticOps:
         return tskylib.psr_tsky_(C.byref(gl),
                                  C.byref(gb),
                                  C.byref(freq))
-        
+
 
     def xyz_to_lb(self, (x, y, z)):
         """ Convert galactic xyz in kpc to l and b in degrees."""

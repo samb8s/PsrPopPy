@@ -363,7 +363,7 @@ if __name__ == '__main__':
 
     # write command line to populate.cmd file
     with open('populate.cmd', 'a') as f:
-        f.write(" ".join(sys.argv))
+        f.write(' '.join(sys.argv))
         f.write('\n')
 
     # run the code and write out a cPickle population class

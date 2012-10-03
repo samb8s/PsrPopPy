@@ -204,7 +204,7 @@ class Survey(GalacticOps):
             pulsar.gl -= 360.
         if pulsar.gl > self.GLmax or pulsar.gl < self.GLmin:
             return False
-        if math.fabs(pulsar.gb) > self.GBmax or  math.fabs(pulsar.gb) < self.GBmin:
+        if math.fabs(pulsar.gb) > self.GBmax or math.fabs(pulsar.gb) < self.GBmin:
             return False
 
         # need to compute ra/dec of pulsar from the l and b (galtfeq)
@@ -307,7 +307,7 @@ class Survey(GalacticOps):
         # scale flux to survey frequency
         flux = pulsar.s_1400() * (self.freq / ref_freq)**pulsar.spindex
 
-        return pulsar.s_1400() * degfac * self.gain * \
+        return flux * degfac * self.gain * \
                   math.sqrt(self.npol * self.bw * self.tobs) \
                   / self.beta / Ttot
 

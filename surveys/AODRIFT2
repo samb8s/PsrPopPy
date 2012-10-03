@@ -11,11 +11,10 @@
   0.0488  ! channel bandwidth (MHz)
   2    ! number of polarizations
   16.5  ! full-width half maximum (arcmin)
-  AODRIFT.glgb ! pointing list galactic
   0.   ! minimum RA (deg)
   360. ! maximum RA (deg)
- -90.  ! minimum DEC (deg)
-  90.  ! maximum DEC (deg)
+  7.5  ! minimum DEC (deg)
+  31.  ! maximum DEC (deg)
  -180  ! minimum Galactic longitude (deg)
   180.  ! maximum Galactic longitude (deg)
   -90.   ! minimum abs(Galactic latitude) (deg)

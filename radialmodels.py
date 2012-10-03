@@ -65,12 +65,12 @@ class RadialModels:
 
     def ykr0(self, a, b, r1):
         """Python implementation of the Y&K model. Not in use."""
-        if FIRST_CALL:
+        #if FIRST_CALL:
             # set the global to false so we don't end up here again
-            global FIRST_CALL
-            FIRST_CALL = False
+            #global FIRST_CALL
+            #FIRST_CALL = False
 
-            self.amax = self.ykarea(500.0, 0.0, a, b, r1)
+        self.amax = self.ykarea(500.0, 0.0, a, b, r1)
 
         # now get the result
         area = random.random() * self.amax
