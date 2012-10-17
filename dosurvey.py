@@ -11,6 +11,18 @@ from population import Population
 from pulsar import Pulsar
 from survey import Survey
 
+class Detections:
+    """Just a simple object to store survey detection summary"""
+    def __init__(self,
+                 ndet=None,
+                 nsmear=None,
+                 nout=None,
+                 ntf=None):
+        self.ndet = ndet
+        self.nsmear=nsmear
+        self.nout = nout
+        self.nfaint = ntf
+
 class DoSurvey:
 
     """
@@ -24,21 +36,33 @@ class DoSurvey:
 
         self.surveyPops = []
 
-    def write(self, extension='.results', asc=False):
+    def write(self, extension='.results', asc=False, summary=False):
         """Write a survey results population to a binary file."""
 
-        for surv, survpop in self.surveyPops:
+        for surv, survpop, detected in self.surveyPops:
             # create an output file
-            s = surv + '.results'
+            s = ''.join([surv,'.results'])
 
             # write the survpop to the file
             with open(s,'wb') as output:
                 cPickle.dump(survpop, output)
 
-
             # Write ascii file if required
             if asc:
                 surv.pop.write_asc(surv+ '.det')
+
+            if summary:
+                # Write a summary file for the survey (if true)
+                filename = ''.join([surv,'.summary'])
+                s = 'Detected {0}'.format(detected.ndet)
+                s = '\n'.join([s, 'Nsmear {0}'.format(detected.nsmear)])
+                s = '\n'.join([s, 'Nfaint {0}'.format(detected.nfaint)])
+                s = '\n'.join([s, 'Nout {0}'.format(detected.nout)])
+                s = ''.join([s, '\n'])
+
+                with open(filename, 'w') as output:
+                    output.write(s)
+
 
     
     def run(self, surveyList):
@@ -71,9 +95,9 @@ class DoSurvey:
                     psr.snr = snr
                     survpop.population.append(psr)
 
-                elif s.SNRcalc(psr, self.pop) == -1.0:
+                elif snr == -1.0:
                     nsmear += 1
-                elif s.SNRcalc(psr, self.pop) == -2.0:
+                elif snr == -2.0:
                     nout += 1
                 else:
                     ntf += 1
@@ -85,7 +109,8 @@ class DoSurvey:
             print "Number out = {0}".format(nout)
             print "\n"
 
-            self.surveyPops.append([surv,survpop])
+            d = Detections(ndet=ndet, ntf=ntf, nsmear=nsmear, nout=nout)
+            self.surveyPops.append([surv,survpop,d])
 
 
 if __name__ == '__main__':
@@ -99,6 +124,8 @@ if __name__ == '__main__':
                          help='surveys to use to detect pulsars')
     parser.add_argument('--asc', nargs='?', const=True, default=False,
                          help='flag for ascii output')
+    parser.add_argument('--summary', nargs='?', const=True, default=False,
+                         help='flag for ascii summary file output')
     
     args = parser.parse_args()
 
@@ -106,4 +133,4 @@ if __name__ == '__main__':
 
     # run the survey and write the results to file
     ds.run(args.surveys)
-    ds.write(asc=args.asc)
+    ds.write(asc=args.asc, summary=args.summary)

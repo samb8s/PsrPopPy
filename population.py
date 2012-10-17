@@ -13,6 +13,7 @@ class Population:
     def __init__(self,
                  pDistType=None,
                  radialDistType=None,
+                 lumDistType=None,
                  pmean=None,
                  psigma=None,
                  simean=None,
@@ -30,6 +31,7 @@ class Population:
         # distribution types
         self.pDistType = pDistType
         self.radialDistType = radialDistType
+        self.lumDistType = lumDistType
         self.electronModel=electronModel
 
         # distribution values

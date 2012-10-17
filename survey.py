@@ -10,11 +10,7 @@ import random
 from galacticops import GalacticOps
 from population import Population
 
-class CoordinateException(Exception):
-    pass
-
-class SurveyFileException(Exception):
-    pass
+import exceptions as ex
 
 class Pointing(GalacticOps):
     """Simple class -- pointing has a gl and gb position"""
@@ -24,7 +20,7 @@ class Pointing(GalacticOps):
             Convert to gl and gb if in RA and Dec"""
 
         if coordtype not in ['eq', 'gal']:
-            raise CoordinateException('Wrong coordtype passed to Pointing')
+            raise ex.CoordinateException('Wrong coordtype passed to Pointing')
 
         if coordtype == 'eq':
             # assume pointings in decimal degrees
@@ -83,7 +79,7 @@ class Survey(GalacticOps):
                     pointfptr = open(pointfpath, 'r')
                 except:
                     s = 'File {0} does not exist!!!'.format(pointfpath)
-                    raise CoordinateException(s)
+                    raise ex.CoordinateException(s)
 
                 # read in the pointing list
                 self.pointingslist = []
@@ -103,7 +99,7 @@ class Survey(GalacticOps):
 
                 else:
                     s = 'Coordinate type unspecified in {0}.'.format(surveyName)
-                    raise CoordinateException(s)
+                    raise ex.CoordinateException(s)
 
                 pointfptr.close()
 
@@ -259,20 +255,23 @@ class Survey(GalacticOps):
         # if we have a list of pointings, use this bit of code
         # haven't tested yet, but presumably a lot slower
         # (loops over the list of pointings....)
-        if self.pointingslist is not None:
-            # convert offset from degree to arcmin
-            offset = self.inPointing(pulsar) * 60.0
-
-            if offset >= self.fwhm/2.0:
-                # ie. if inPointing returns false
-                # not in pointings
-                return -2.0 
+ 
 
         # otherwise check if pulsar is in entire region
-        elif self.inRegion(pulsar):
-            # calculate offset as a random offset within FWHM/2
-            offset = self.fwhm * math.sqrt(random.random()) / 2.0
+        if self.inRegion(pulsar):
+            # If pointing list is provided, check how close nearest 
+            # pointing is
+            if self.pointingslist is not None:
+                # convert offset from degree to arcmin
+                offset = self.inPointing(pulsar) * 60.0
 
+                if offset >= self.fwhm/2.0:
+                    # ie. if inPointing returns false
+                    # not in pointings
+                    return -2.0
+            else:
+                # calculate offset as a random offset within FWHM/2
+                offset = self.fwhm * math.sqrt(random.random()) / 2.0
         else:
             return -2.0
 

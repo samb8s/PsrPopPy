@@ -1,0 +1,23 @@
+###############################################################################
+# model of putative pulsar survey with LOFAR
+###############################################################################
+  1.0  ! survey degradation factor
+  5.6  ! antenna gain (K/Jy)    #SEFD(=G*Tsys) is given as 2.8 for 150MHz, this is my best guess
+  1020 ! integration time (s)
+  1.31 ! sampling time (ms)
+  500  ! system temperature (K) #dominated by sky temperature, given by T=60*\lambda**2.55
+  143  ! centre frequency (MHz)
+  47.66 ! bandwidth (MHz)
+  0.012 ! channel bandwidth (MHz)
+  2    ! number of polarizations
+  290  ! full-width half maximum (arcmin)
+  0.   ! minimum RA (deg)
+  360. ! maximum RA (deg)
+ -30.  ! minimum DEC (deg)      #not sure about this, but -30 is about right
+  90.  ! maximum DEC (deg)
+ -180  ! minimum Galactic longitude (deg) 
+  180  ! maximum Galactic longitude (deg)
+  0.   ! minimum abs(Galactic latitude) (deg)
+  90   ! maximum abs(Galactic latitude) (deg)
+  1.0  ! fractional survey coverage (0-1)
+  9.0  ! signal-to-noise ratio

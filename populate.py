@@ -43,8 +43,10 @@ class Populate(RadialModels, GalacticOps):
                  electronModel='ne2001',
                  pDistPars=[2.7, -0.34],
                  siDistPars= [-1.6,0.35], 
+                 lumDistType='lnorm',
                  lumDistPars=[-1.1, 0.9],
                  zscale=0.33, 
+                 duty=0,
                  scindex=-3.86):
 
         """
@@ -63,25 +65,35 @@ class Populate(RadialModels, GalacticOps):
         """
 
         # check that the distribution types are supported....
+        if lumDistType not in ['lnorm', 'pow']:
+            print "Unsupported luminosity distribution: {0}".format(lumDistType)
+
         if pDistType not in ['lnorm', 'norm', 'cc97']:
             print "Unsupported period distribution: {0}".format(pDistType)
 
         if radialDistType not in ['lfl06', 'yk04', 'isotropic',
-                                              'slab', 'disk']:
+                                     'slab', 'disk']:
             print "Unsupported radial distribution: {0}".format(radialDistType)
         
         if electronModel not in ['ne2001', 'lm98']:
             print "Unsupported electron model: {0}".format(electronModel)
 
+        if duty<0.:
+            print "Unsupported value of duty cycle: {0}".format(duty)
 
         # need to use properties in this class so they're get/set-type props
         self.pop.pDistType = pDistType
         self.pop.radialDistType = radialDistType
         self.pop.electronModel = electronModel
+        self.pop.lumDistType = lumDistType
     
         self.pop.pmean, self.pop.psigma = pDistPars
         self.pop.simean, self.pop.sisigma = siDistPars
-        self.pop.lummean, self.pop.lumsigma = lumDistPars
+        if self.pop.lumDistType == 'lnorm':
+            self.pop.lummean, self.pop.lumsigma = lumDistPars
+        else:
+            self.pop.lummin, self.pop.lummax, self.pop.lumpow = lumDistPars
+
         self.pop.zscale = zscale
 
         print "\tGenerating pulsars with parameters:"
@@ -94,6 +106,8 @@ class Populate(RadialModels, GalacticOps):
         print "\t\tSpectral index mean, sigma = {0}, {1}".format(self.pop.simean,
                                                                  self.pop.sisigma)
         print "\t\tGalactic z scale height = {0} kpc".format(self.pop.zscale)
+
+        print "\t\tWidth {0}% -- (0 == model)".format(duty)
         
         # set up progress bar for fun :)
         prog = ProgressBar(min_value = 0,max_value=ngen, width=65, mode='dynamic')
@@ -118,17 +132,27 @@ class Populate(RadialModels, GalacticOps):
                 print "Gamma function not yet supported"
                 sys.exit()
 
-            p.alpha = self._genAlpha()
-            
-            p.rho, p.width_degree = self._genRhoWidth(p)
+            if duty>0.:
+                # use a simple duty cycle for each pulsar
+                # with a log-normal scatter
+                width = (float(duty)/100.) * p.period**0.9
+                width = math.log10(width)
+                width = self._drawlnorm(width, 0.3)
 
-            if p.width_degree == 0.0 and p.rho ==0.0:
-                continue
-            # is pulsar beaming at us? If not, move on!
-            p.beaming = self._beaming(p)
-            if not p.beaming:
-                nnb += 1
-                continue
+                p.width_degree = width*360./p.period
+            else:
+                # use the model to caculate if beaming
+                p.alpha = self._genAlpha()
+                
+                p.rho, p.width_degree = self._genRhoWidth(p)
+
+                if p.width_degree == 0.0 and p.rho ==0.0:
+                    continue
+                # is pulsar beaming at us? If not, move on!
+                p.beaming = self._beaming(p)
+                if not p.beaming:
+                    nnb += 1
+                    continue
 
             p.spindex = random.gauss(self.pop.simean, self.pop.sisigma)
 
@@ -177,7 +201,13 @@ class Populate(RadialModels, GalacticOps):
             p.scindex = scindex
             # then calc scatter time
             
-            p.lum_1400 = self._drawlnorm(self.pop.lummean, self.pop.lumsigma)
+            if self.pop.lumDistType == 'lnorm':
+                p.lum_1400 = self._drawlnorm(self.pop.lummean,
+                                             self.pop.lumsigma)
+            else:
+                p.lum_1400 = self._powerlaw(self.pop.lummin,
+                                            self.pop.lummax,
+                                            self.pop.lumpow)
 
             # if no surveys, just generate ngen pulsars
             if surveyList is None:
@@ -188,10 +218,12 @@ class Populate(RadialModels, GalacticOps):
             else:
                 for surv in surveyList:
                     # pulsar in survey region 
-                    # is pulsar detectable in the survey
+                    # is pulsar detectable in the survey?
                     s = Survey(surv)
-                    #print s.SNRcalc(p, self.pop), s.SNRlimit, s.inRegion(p)
-                    if s.SNRcalc(p, self.pop) > s.SNRlimit:
+
+                    SNR = s.SNRcalc(p, self.pop)
+
+                    if SNR > s.SNRlimit:
                         self.pop.population.append(p)
                         self.pop.ndet += 1
                         prog.increment_amount()
@@ -200,11 +232,11 @@ class Populate(RadialModels, GalacticOps):
                         # ok, the pulsar was detected in one of the surveys,
                         # so we can break out of the surveys loop now
                         break
-                    elif s.SNRcalc(p, self.pop) == -1.0:
+                    elif SNR == -1.0:
                         nsmear += 1
                         self.pop.population.append(p)
                         break
-                    elif s.SNRcalc(p, self.pop) == -2.0:
+                    elif SNR == -2.0:
                         nout += 1
                         self.pop.population.append(p)
                         break
@@ -237,6 +269,26 @@ class Populate(RadialModels, GalacticOps):
         """Get a random log-normal number."""
         #print mean, sigma
         return 10.0**random.gauss(mean, sigma)
+
+    def _powerlaw(self, minval, maxval, power):
+        """Draw a value randomly from the specified power law"""
+
+        logmin = math.log10(minval)
+        logmax = math.log10(maxval)
+
+        c = -1.0 * logmax * power
+        nmax = 10.0**(power*logmin + c)
+
+        # Dunc's code uses a goto statement
+        # slightly worried about inf loops here...
+        while True:
+            log = logmin + (logmax-logmin)*random.random()
+            n = 10.0**(power*log + c)
+
+            if nmax*random.random() <= n:
+                break
+
+        return 10.0**log
     
     def _cc97(self):
         """A model for MSP period distribution."""
@@ -289,7 +341,8 @@ class Populate(RadialModels, GalacticOps):
             rho = 0.0
         else:
             width = math.sqrt(width)
-            # convert the width into degrees
+
+            # convert the width into degrees 0 -> 360 (ie. 90*4)
             width = math.degrees(math.asin(width))*4.0
 
         return rho, width
@@ -323,6 +376,10 @@ if __name__ == '__main__':
     # galactic-Z distn
     parser.add_argument('-z', type=float, required=False, default=0.33,
                          help='exponential z-scale to use (def=0.33kpc)')
+
+    # galactic-Z distn
+    parser.add_argument('-w', type=float, required=False, default=0,
+                         help='pulse width % (def=0=rankin model)')
 
     # spectral index distribution
     parser.add_argument('-si', nargs=2, type=float,
@@ -376,6 +433,7 @@ if __name__ == '__main__':
                  pDistPars=args.p,
                  siDistPars=args.si,
                  zscale=args.z,
+                 duty=args.w,
                  scindex=args.sc,
                  electronModel=args.dm[0]
                  )
