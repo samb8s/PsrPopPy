@@ -278,7 +278,8 @@ class Survey(GalacticOps):
         #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
         degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
 
-        # don't think I need to do this - I'm using the survey freq in call
+        # Dunc's code here uses a ^-2.6 to convert frequencies
+        # don't think I need to do this - I'm using the frequency in call
         Ttot = self.tsys + self.tsky(pulsar.gl, pulsar.gb, self.freq)
 
         # calc dispersion smearing across single channel
@@ -299,17 +300,35 @@ class Survey(GalacticOps):
             #print weff_ms, tscat, pulsar.dm, pulsar.gl, pulsar.gb, pulsar.dtrue
             return -1.0
         else:
-            return self._SNfac(pulsar, pop.ref_freq, degfac, Ttot) * math.sqrt((1.0 -delt)/delt)
+            return self._SNfac(pulsar, pop.ref_freq, degfac, Ttot) \
+                                  * math.sqrt((1.0 -delt)/delt)
 
-    def _SNfac(self, pulsar, ref_freq, degfac, Ttot):
+    def _SNfac(self, psr, ref_freq, degfac, Ttot):
         """The S/N factor from system parameters"""
         # scale flux to survey frequency
-        flux = pulsar.s_1400() * (self.freq / ref_freq)**pulsar.spindex
+        if psr.gpsFlag == 1:
+            # do crazy flux calculation for GPS sources
+            flux = self._gpsFlux(psr, ref_freq)
+
+        elif psr.brokenFlag == 1 and self.freq < ref_freq:
+            # assuming the alpha_1 value is for freq<ref_freq (which is ~1GHz)
+            flux = psr.s_1400() * (self.freq / ref_freq)**psr.brokenSI
+        
+        else:
+            flux = psr.s_1400() * (self.freq / ref_freq)**psr.spindex
 
         return flux * degfac * self.gain * \
                   math.sqrt(self.npol * self.bw * self.tobs) \
                   / self.beta / Ttot
 
-    def _dmsmear(self, pulsar):
+    def _gpsFlux(self, psr, ref_freq):
+        """Calculate the flux assuming GPS spectrum shape, spindex===b"""
+        log_nu_1 = math.log10(ref_freq/1000.)
+        log_nu_2 = math.log10(self.freq/1000.)
+        gpsC = math.log10(psr.s_1400()) - (psr.gpsA * log_nu_1**2) \
+                                            - psr.spindex * log_nu_1
+        return 10.**(psr.gpsA * log_nu_2**2 + psr.spindex * log_nu_2 + gpsC)
+
+    def _dmsmear(self, psr):
         """Calculate the smearing due to the pulsar DM"""
-        return 8.3E6 * pulsar.dm * self.bw_chan / math.pow(self.freq, 3.0)
+        return 8.3E6 * psr.dm * self.bw_chan / math.pow(self.freq, 3.0)

@@ -22,6 +22,10 @@ class Population:
                  lumsigma=None,
                  zscale=None,
                  electronModel=None,
+                 gpsFrac=None,
+                 gpsA=None,
+                 brokenFrac=None,
+                 brokenSI=None,
                  ref_freq=1400.0):
 
         """Initialise the population object."""
@@ -47,6 +51,12 @@ class Population:
         self.zscale = zscale
 
         self.ref_freq = ref_freq
+
+        # GPS and double SI values
+        self.gpsFrac = gpsFrac
+        self.gpsA = gpsA
+        self.brokenFrac = brokenFrac
+        self.brokenSI = brokenSI
 
         # non-"properties"
         self.ndet = 0

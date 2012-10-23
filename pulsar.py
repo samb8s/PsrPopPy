@@ -20,7 +20,11 @@ class Pulsar:
                  width_degree=None,
                  snr=None,
                  beaming=None,
-                 scindex=-3.86):
+                 scindex=-3.86,
+                 gpsFlag=0,
+                 gpsA=None,
+                 brokenFlag=0,
+                 brokenSI=None):
         """___init___ function for the Pulsar class"""
         self.period = period
         self.dm = dm
@@ -38,17 +42,18 @@ class Pulsar:
         self.lum_1400 = lum_1400
         self.spindex = spindex
         self.scindex = scindex
-        #if alpha is not None:
+
         self.alpha = alpha
-        #else:
-        #    self.alpha = self._genAlpha()
-        #if rho is not None or width_degree is not None:
         self.rho = rho
         self.width_degree = width_degree
-        #else:
-        #self.rho, self.width_degree = self._genRhoWidth()
             
         self.beaming = beaming
+
+        self.gpsFlag = gpsFlag
+        self.gpsA = gpsA
+
+        self.brokenFlag= brokenFlag
+        self.brokenSI = brokenSI
 
         self.snr=snr
 

@@ -36,16 +36,17 @@ class DoSurvey:
 
         self.surveyPops = []
 
-    def write(self, extension='.results', asc=False, summary=False):
+    def write(self, extension='.results', nores=True, asc=False, summary=False):
         """Write a survey results population to a binary file."""
 
         for surv, survpop, detected in self.surveyPops:
-            # create an output file
-            s = ''.join([surv,'.results'])
+            # create an output file, if required
+            if not nores:
+                s = ''.join([surv,'.results'])
 
-            # write the survpop to the file
-            with open(s,'wb') as output:
-                cPickle.dump(survpop, output)
+                # write the survpop to the file
+                with open(s,'wb') as output:
+                    cPickle.dump(survpop, output)
 
             # Write ascii file if required
             if asc:
@@ -120,12 +121,18 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a survey on your population model')
     parser.add_argument('-f', metavar = 'fname', default='populate.model', 
                          help='file containing population model')
+
     parser.add_argument('-surveys', metavar='S', nargs='+', required=True,
                          help='surveys to use to detect pulsars')
+
+    parser.add_argument('--noresults', nargs='?', const=True, default=False,
+                         help='flag to switch off pickled .results file (def=False)')
+
     parser.add_argument('--asc', nargs='?', const=True, default=False,
-                         help='flag for ascii output')
+                         help='flag to create ascii population file (def=False)')
+    
     parser.add_argument('--summary', nargs='?', const=True, default=False,
-                         help='flag for ascii summary file output')
+                         help='flag to create ascii summary file (def=False)')
     
     args = parser.parse_args()
 
@@ -133,4 +140,4 @@ if __name__ == '__main__':
 
     # run the survey and write the results to file
     ds.run(args.surveys)
-    ds.write(asc=args.asc, summary=args.summary)
+    ds.write(nores=args.noresults, asc=args.asc, summary=args.summary)

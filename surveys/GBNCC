@@ -1,5 +1,5 @@
 ################################################################################
-# model of the Parkes methanol multibeam survey - main parameters
+# model of the GBNCC survey
 ################################################################################
   1.3  ! survey degradation factor
   2.0  ! antenna gain (K/Jy)

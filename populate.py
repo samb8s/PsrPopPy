@@ -47,7 +47,9 @@ class Populate(RadialModels, GalacticOps):
                  lumDistPars=[-1.1, 0.9],
                  zscale=0.33, 
                  duty=0,
-                 scindex=-3.86):
+                 scindex=-3.86,
+                 gpsArgs=[None, None],
+                 doubleSpec=[None, None]):
 
         """
         Generate a population of pulsars.
@@ -89,6 +91,10 @@ class Populate(RadialModels, GalacticOps):
     
         self.pop.pmean, self.pop.psigma = pDistPars
         self.pop.simean, self.pop.sisigma = siDistPars
+
+        self.pop.gpsFrac, self.pop.gpsA = gpsArgs
+        self.pop.brokenFrac, self.pop.brokenSI = doubleSpec
+
         if self.pop.lumDistType == 'lnorm':
             self.pop.lummean, self.pop.lumsigma = lumDistPars
         else:
@@ -109,6 +115,14 @@ class Populate(RadialModels, GalacticOps):
 
         print "\t\tWidth {0}% -- (0 == model)".format(duty)
         
+        if self.pop.gpsFrac:
+            print "\n\t\tGPS Fraction = {0}, a = {1}".format(self.pop.gpsFrac,
+                                                              self.pop.gpsA)
+        if self.pop.brokenFrac:
+            print "\n\t\tDbl Spectrum Fraction = {0}, a = {1}".format(
+                                                              self.pop.brokenFrac,
+                                                              self.pop.brokenSI)
+
         # set up progress bar for fun :)
         prog = ProgressBar(min_value = 0,max_value=ngen, width=65, mode='dynamic')
 
@@ -153,6 +167,25 @@ class Populate(RadialModels, GalacticOps):
                 if not p.beaming:
                     nnb += 1
                     continue
+
+            # Spectral index stuff here
+
+            # suppose it might be nice to be able to have GPS sources 
+            # AND double spectra. But for now I assume only have one or
+            # none of these types.
+            if random.random() > self.pop.gpsFrac:
+                # This will evaluate true when gpsArgs[0] is NoneType
+                # might have to change in future
+                p.gpsFlag = 0
+            else:
+                p.gpsFlag = 1
+                p.gpsA = self.pop.gpsA
+                
+            if random.random() > self.pop.brokenFrac:
+                p.brokenFlag=0
+            else:
+                p.brokenFlag=1
+                p.brokenSI = self.pop.brokenSI
 
             p.spindex = random.gauss(self.pop.simean, self.pop.sisigma)
 
@@ -406,15 +439,26 @@ if __name__ == '__main__':
                         choices=['lfl06', 'yk04', 'isotropic', 'slab', 'disk'])
 
     # electron/dm model
-    parser.add_argument('-dm', type=str, nargs=1, required=False, default=['ne2001'],
+    parser.add_argument('-dm', type=str, nargs=1, required=False,
+                        default=['ne2001'],
                         help='Galactic electron distribution model to use',
                         choices=['ne2001', 'lm98'])
+    
+    # GPS sources
+    parser.add_argument('-gps', type=float, nargs=2, required=False,
+                        default=[None,None],
+                        help='GPS fraction and "a" value')
 
+    # double-spectral-index sources
+    parser.add_argument('-doublespec', type=float, nargs=2, required=False,
+                        default=[None,None],
+                        help='Dbl spec fraction and alpha value')
 
     # output file name
     parser.add_argument('-o', type=str, metavar='outfile', required=False,
                         default='populate.model',
                         help='Output filename for population model')
+
     args = parser.parse_args()
 
 
@@ -435,7 +479,9 @@ if __name__ == '__main__':
                  zscale=args.z,
                  duty=args.w,
                  scindex=args.sc,
-                 electronModel=args.dm[0]
+                 electronModel=args.dm[0],
+                 gpsArgs=args.gps,
+                 doubleSpec = args.doublespec
                  )
 
     pop.write(outf=args.o)
