@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting started &mdash; PsrPopPy 1 documentation</title>
+    <title>Installation &mdash; PsrPopPy 1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,9 +26,15 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="PsrPopPy 1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial - Basic Usage" href="tutorial-basic.html" />
     <link rel="prev" title="Welcome to the PsrPopPy documentation!" href="index.html" /> 
   </head>
   <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo2.png" border="0" alt="py4sci"/></a>
+</div>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -36,33 +42,76 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
+          <a href="tutorial-basic.html" title="Tutorial - Basic Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="index.html" title="Welcome to the PsrPopPy documentation!"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">PsrPopPy 1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
       </ul>
-    </div>  
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#download-the-package">Download the package</a></li>
+<li><a class="reference internal" href="#compile-the-fortran">Compile the FORTRAN</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to the PsrPopPy documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial-basic.html"
+                        title="next chapter">Tutorial - Basic Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/installation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="getting-started">
-<span id="id1"></span><h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>To get started with PsrPopPy there are a few steps you&#8217;ll need to
 go through.</p>
-<p>PsrPopPy is currently supported on Linux and Mac OS X.</p>
-<div class="section" id="installation">
-<span id="id2"></span><h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>PsrPopPy is currently supported on Linux and Mac OS X, and for
+full feature support, it is recommended to install the
+<a class="reference external" href="http://matplotlib.org/">Matplotlib</a> package.</p>
 <div class="section" id="download-the-package">
-<span id="download-package"></span><h3>Download the package<a class="headerlink" href="#download-the-package" title="Permalink to this headline">¶</a></h3>
+<span id="download-package"></span><h2>Download the package<a class="headerlink" href="#download-the-package" title="Permalink to this headline">¶</a></h2>
 <p>The source for PsrPopPy can be downloaded from <a class="reference external" href="http://github.com">GitHub</a>
 from the <a class="reference external" href="https://github.com/samb8s/PsrPopPy">PsrPopPy page</a>.
 The source will contain the Python modules and scripts needed both for
 basic and advanced use.</p>
 </div>
 <div class="section" id="compile-the-fortran">
-<span id="compiling-fortran"></span><h3>Compile the FORTRAN<a class="headerlink" href="#compile-the-fortran" title="Permalink to this headline">¶</a></h3>
+<span id="compiling-fortran"></span><h2>Compile the FORTRAN<a class="headerlink" href="#compile-the-fortran" title="Permalink to this headline">¶</a></h2>
 <p>Although PsrPopPy is a Python-based package, some of the algorithms
 have been kept in their native FORTRAN for speed and ease of
 programming (e.g. the NE2001 electron model, coordinate conversion...).
@@ -81,47 +130,9 @@ compiler. Running the script:</p>
 Assuming this went to plan, the installation process is completed.</p>
 </div>
 </div>
-</div>
 
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Getting started</a><ul>
-<li><a class="reference internal" href="#installation">Installation</a><ul>
-<li><a class="reference internal" href="#download-the-package">Download the package</a></li>
-<li><a class="reference internal" href="#compile-the-fortran">Compile the FORTRAN</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to the PsrPopPy documentation!</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/getting_started.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -133,9 +144,14 @@ Assuming this went to plan, the installation process is completed.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
+          <a href="tutorial-basic.html" title="Tutorial - Basic Usage"
+             >next</a> |</li>
+        <li class="right" >
           <a href="index.html" title="Welcome to the PsrPopPy documentation!"
              >previous</a> |</li>
-        <li><a href="index.html">PsrPopPy 1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
       </ul>
     </div>
     <div class="footer">

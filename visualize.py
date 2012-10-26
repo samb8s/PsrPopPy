@@ -22,7 +22,7 @@ class Visualize:
     using the matplotlib module.
 
     """
-    def __init__(self, popfile='populate.model'):
+    def __init__(self, popfile='populate.model', frac=None):
         """Initialise the Visualize object."""
 
         # read in population file to population self.pop
@@ -80,23 +80,31 @@ class Visualize:
         dataArray = np.zeros((len(self.textlabels), self.pop.size()), float)
         # loop over pulsars and fill array
         npsr = 0
+
+        # going to throw in a factor to reduce the number of plotted pulsars
+        # to improve speed
+        # make this an option
+        if frac is None or frac > 1.0:
+            frac = 1.0
+
         for psr in self.pop.population:
-            dataArray[0][npsr] = psr.period
-            dataArray[1][npsr] = psr.dm
-            dataArray[2][npsr] = psr.galCoords[0]
-            dataArray[3][npsr] = psr.galCoords[1]
-            dataArray[4][npsr] = psr.galCoords[2]
-            dataArray[5][npsr] = psr.width_degree
-            dataArray[6][npsr] = psr.alpha
-            dataArray[7][npsr] = psr.rho
-            dataArray[8][npsr] = psr.spindex
-            dataArray[9][npsr] = psr.s_1400()
-            dataArray[10][npsr] = psr.gl
-            dataArray[11][npsr] = psr.gb
-            dataArray[12][npsr] = psr.dtrue 
-            dataArray[13][npsr] = psr.r0
-            dataArray[14][npsr] = npsr
-            npsr+=1
+            if random.random() < frac:
+                dataArray[0][npsr] = psr.period
+                dataArray[1][npsr] = psr.dm
+                dataArray[2][npsr] = psr.galCoords[0]
+                dataArray[3][npsr] = psr.galCoords[1]
+                dataArray[4][npsr] = psr.galCoords[2]
+                dataArray[5][npsr] = psr.width_degree
+                dataArray[6][npsr] = psr.alpha
+                dataArray[7][npsr] = psr.rho
+                dataArray[8][npsr] = psr.spindex
+                dataArray[9][npsr] = psr.s_1400()
+                dataArray[10][npsr] = psr.gl
+                dataArray[11][npsr] = psr.gb
+                dataArray[12][npsr] = psr.dtrue 
+                dataArray[13][npsr] = psr.r0
+                dataArray[14][npsr] = npsr
+                npsr+=1
 
         self.dataArray = dataArray
         # delete population object, we don't need it now (I think!)
@@ -124,14 +132,16 @@ class Visualize:
                                     actives=[False])
         self.xlog = False
 
-        buttonYLog = CheckButtons(plt.axes([0.001+2.5*buttonW, .3, 1.5*buttonW, 1.5*buttonH]),
+        buttonYLog = CheckButtons(plt.axes([0.001+2.5*buttonW, .3,
+                                            1.5*buttonW, 1.5*buttonH]),
                                     ['log y'],
                                     actives=[False])
         self.ylog = False
 
 
         # button to do plot
-        buttonPlot = Button(plt.axes([0.001+2.0*buttonW, 0.2, 1.5*buttonW, buttonH]), 'Plot')
+        buttonPlot = Button(plt.axes([0.001+2.0*buttonW, 0.2, 1.5*buttonW, buttonH]),
+                                'Plot')
         
         self.fig.text(0.003, 0.98, 'PLOT SELECTION')
         self.fig.text(0.003, 0.95, 'X Axis')
@@ -227,8 +237,11 @@ if __name__ == '__main__':
     parser.add_argument('-f', metavar='fname', default='populate.model',
                           help='file containing population model (def="populate.model")')
 
+    parser.add_argument('--frac', default=None, 
+                          help='plot only this fraction of pulsars')
+
     args = parser.parse_args()
 
-    v = Visualize(popfile = args.f)
+    v = Visualize(popfile = args.f, frac=args.frac)
 
     v.display()

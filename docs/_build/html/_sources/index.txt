@@ -4,15 +4,15 @@
    contain the root `toctree` directive.
 
 Welcome to the PsrPopPy documentation!
-====================================
+======================================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   getting_started
-   tutorial
+   installation
+   tutorial-basic
 
 
 

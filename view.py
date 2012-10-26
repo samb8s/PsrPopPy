@@ -31,7 +31,7 @@ class View:
         self.pop = cPickle.load(f)
         f.close()
 
-    def histogram(self, prop, log=False):
+    def histogram(self, prop, logx=False, logy=False, nbins=50):
         """Create list and make histogram for the selected parameter"""
 
         if prop == 'period' :
@@ -64,11 +64,21 @@ class View:
 
         # if asked for a log plot, take logs
         print "Plotting property '{0}'".format(prop)
-        if log:
+        if logx:
             proplist = [math.log10(p) for p in proplist]
+            xstring = ' '.join([r'log (', prop, ')'])
+        else:
+            xstring = prop.title()
 
         # show histogram
-        plt.hist(proplist)
+        plt.hist(proplist, nbins)
+        plt.ylabel('Frequency', fontsize=18)
+        plt.xlabel(xstring, fontsize=18)
+
+        # switch on log y scale if required
+        #if logy:
+        #    plt.yscale('log')
+
         plt.show()
 
 
@@ -88,9 +98,15 @@ if __name__ == '__main__':
                         choices = ['period','dm','gl','gb','lum',
                                     'alpha','r0','rho','width',
                                     'spindex', 'scindex', 'dist'])
-    parser.add_argument('--log', nargs='?', const=True, default=False,
-                         help = 'flag to indicate a log scale plot')
+    parser.add_argument('--logx', nargs='?', const=True, default=False,
+                         help = 'logscale X plot')
+
+    #parser.add_argument('--logy', nargs='?', const=True, default=False,
+    #                     help = 'logscale Y plot')
+
+    parser.add_argument('-b', default=50, type=int, required=False)
 
     args = parser.parse_args()
     v = View(args.f)
-    v.histogram(args.p, log=args.log)
+    #print args.b
+    v.histogram(args.p, logx=args.logx, nbins = args.b)
