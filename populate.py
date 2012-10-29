@@ -49,7 +49,8 @@ class Populate(RadialModels, GalacticOps):
                  duty=0,
                  scindex=-3.86,
                  gpsArgs=[None, None],
-                 doubleSpec=[None, None]):
+                 doubleSpec=[None, None],
+                 stdout=True):
 
         """
         Generate a population of pulsars.
@@ -102,29 +103,40 @@ class Populate(RadialModels, GalacticOps):
 
         self.pop.zscale = zscale
 
-        print "\tGenerating pulsars with parameters:"
-        print "\t\tngen = {0}".format(ngen)
-        print "\t\tUsing electron distn model {0}".format(self.pop.electronModel)
-        print "\n\t\tPeriod mean, sigma = {0}, {1}".format(self.pop.pmean,
-                                                         self.pop.psigma)
-        print "\t\tLuminosity mean, sigma = {0}, {1}".format(self.pop.lummean,
-                                                             self.pop.lumsigma)
-        print "\t\tSpectral index mean, sigma = {0}, {1}".format(self.pop.simean,
-                                                                 self.pop.sisigma)
-        print "\t\tGalactic z scale height = {0} kpc".format(self.pop.zscale)
+        if stdout:
+            print "\tGenerating pulsars with parameters:"
+            print "\t\tngen = {0}".format(ngen)
+            print "\t\tUsing electron distn model {0}".format(
+                                            self.pop.electronModel)
+            print "\n\t\tPeriod mean, sigma = {0}, {1}".format(
+                                                        self.pop.pmean,
+                                                        self.pop.psigma)
+            print "\t\tLuminosity mean, sigma = {0}, {1}".format(
+                                                        self.pop.lummean,
+                                                        self.pop.lumsigma)
+            print "\t\tSpectral index mean, sigma = {0}, {1}".format(
+                                                        self.pop.simean,
+                                                        self.pop.sisigma)
+            print "\t\tGalactic z scale height = {0} kpc".format(
+                                                        self.pop.zscale)
 
-        print "\t\tWidth {0}% -- (0 == model)".format(duty)
+            print "\t\tWidth {0}% -- (0 == model)".format(duty)
         
-        if self.pop.gpsFrac:
-            print "\n\t\tGPS Fraction = {0}, a = {1}".format(self.pop.gpsFrac,
-                                                              self.pop.gpsA)
-        if self.pop.brokenFrac:
+        if self.pop.gpsFrac and stdout:
+            print "\n\t\tGPS Fraction = {0}, a = {1}".format(
+                                                        self.pop.gpsFrac,
+                                                        self.pop.gpsA)
+        if self.pop.brokenFrac and stdout:
             print "\n\t\tDbl Spectrum Fraction = {0}, a = {1}".format(
-                                                              self.pop.brokenFrac,
-                                                              self.pop.brokenSI)
+                                                        self.pop.brokenFrac,
+                                                        self.pop.brokenSI)
 
         # set up progress bar for fun :)
-        prog = ProgressBar(min_value = 0,max_value=ngen, width=65, mode='dynamic')
+        if stdout:
+            prog = ProgressBar(min_value = 0,
+                               max_value=ngen,
+                               width=65,
+                               mode='dynamic')
 
         nnb = 0
         ntf = 0
@@ -259,10 +271,11 @@ class Populate(RadialModels, GalacticOps):
                     if SNR > s.SNRlimit:
                         self.pop.population.append(p)
                         self.pop.ndet += 1
-                        prog.increment_amount()
-                        print prog, '\r',
+                        if stdout:
+                            prog.increment_amount()
+                            print prog, '\r',
                         sys.stdout.flush()
-                        # ok, the pulsar was detected in one of the surveys,
+                        # the pulsar was detected in one of the surveys,
                         # so we can break out of the surveys loop now
                         break
                     elif SNR == -1.0:
@@ -279,13 +292,14 @@ class Populate(RadialModels, GalacticOps):
                         break
                # print p.lum_1400
 
-        print "\n\n"
-        print "  Total pulsars = {0}".format(len(self.pop.population))
-        print "  Number detected = {0}".format(self.pop.ndet)
-        print "  Number not beaming = {0}".format(nnb)
-        print "  Number too faint = {0}".format(ntf)
-        print "  Number smeared = {0}".format(nsmear)
-        print "  Number outside survey area = {0}".format(nout)
+        if stdout:
+            print "\n\n"
+            print "  Total pulsars = {0}".format(len(self.pop.population))
+            print "  Number detected = {0}".format(self.pop.ndet)
+            print "  Number not beaming = {0}".format(nnb)
+            print "  Number too faint = {0}".format(ntf)
+            print "  Number smeared = {0}".format(nsmear)
+            print "  Number outside survey area = {0}".format(nout)
 
 
     def _double_sided_exp(self, scale, origin=0.0):
@@ -459,6 +473,9 @@ if __name__ == '__main__':
                         default='populate.model',
                         help='Output filename for population model')
 
+    parser.add_argument('--nostdout', nargs='?', const=False, default=True,
+                         help='flag to switch off std output (def=False)')
+
     args = parser.parse_args()
 
 
@@ -481,7 +498,8 @@ if __name__ == '__main__':
                  scindex=args.sc,
                  electronModel=args.dm[0],
                  gpsArgs=args.gps,
-                 doubleSpec = args.doublespec
+                 doubleSpec = args.doublespec,
+                 stdout=args.nostdout
                  )
 
     pop.write(outf=args.o)

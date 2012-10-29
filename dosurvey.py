@@ -66,17 +66,19 @@ class DoSurvey:
 
 
     
-    def run(self, surveyList):
+    def run(self, surveyList, stdout=True):
         """ Run the surveys and detect the pulsars."""
 
         # print the population
-        print "Running doSurvey on population..."
-        print self.pop
+        if stdout:
+            print "Running doSurvey on population..."
+            print self.pop
 
         # loop over the surveys we want to run on the pop file
         for surv in surveyList:
             s = Survey(surv)
-            print "\nRunning survey {0}".format(surv)
+            if stdout:
+                print "\nRunning survey {0}".format(surv)
 
             # create a new population object to store discovered pulsars in 
             survpop = Population()
@@ -104,11 +106,12 @@ class DoSurvey:
                     ntf += 1
 
             # report the results
-            print "Number of pulsars detected by survey {0} = {1}".format(surv,ndet)
-            print "Number too faint = {0}".format(ntf)
-            print "Number smeared = {0}".format(nsmear)
-            print "Number out = {0}".format(nout)
-            print "\n"
+            if stdout:
+                print "Number detected by survey {0} = {1}".format(surv,ndet)
+                print "Number too faint = {0}".format(ntf)
+                print "Number smeared = {0}".format(nsmear)
+                print "Number out = {0}".format(nout)
+                print "\n"
 
             d = Detections(ndet=ndet, ntf=ntf, nsmear=nsmear, nout=nout)
             self.surveyPops.append([surv,survpop,d])
@@ -134,10 +137,13 @@ if __name__ == '__main__':
     parser.add_argument('--summary', nargs='?', const=True, default=False,
                          help='flag to create ascii summary file (def=False)')
     
+    parser.add_argument('--nostdout', nargs='?', const=False, default=True,
+                         help='flag to switch off std output (def=False)')
+
     args = parser.parse_args()
 
     ds = DoSurvey(popfile=args.f)
 
     # run the survey and write the results to file
-    ds.run(args.surveys)
+    ds.run(args.surveys, stdout=args.nostdout)
     ds.write(nores=args.noresults, asc=args.asc, summary=args.summary)
