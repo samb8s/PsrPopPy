@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Documentation for the command-line scripts &mdash; PsrPopPy 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PsrPopPy 1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial - Basic Usage" href="tutorial-basic.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo2.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorial-basic.html" title="Tutorial - Basic Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Documentation for the command-line scripts</a><ul>
+<li><a class="reference internal" href="#populate-py">Populate.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial-basic.html"
+                        title="next chapter">Tutorial - Basic Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/cmd-line-docs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="documentation-for-the-command-line-scripts">
+<span id="command-line-docs"></span><h1>Documentation for the command-line scripts<a class="headerlink" href="#documentation-for-the-command-line-scripts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="populate-py">
+<h2>Populate.py<a class="headerlink" href="#populate-py" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-n">
+<tt class="descname">-n</tt><tt class="descclassname"> &lt;number of pulsars&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required: Number of pulsars to generate; or to detect in a survey</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-surveys">
+<tt class="descname">-surveys</tt><tt class="descclassname"> &lt;SURVEY NAME(S)&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-surveys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of surveys to use when trying to detect pulsars (default=None)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-z">
+<tt class="descname">-z</tt><tt class="descclassname"> &lt;scale height&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale height of pulsars about Galactic plane, in kpc (default=0.33)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-w">
+<tt class="descname">-w</tt><tt class="descclassname"> &lt;width&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulse width to use when generating pulsars (default=0, use beaming model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-si">
+<tt class="descname">-si</tt><tt class="descclassname"> &lt;SImean SIsigma&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-si" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spectral index mean and standard deviation (default=-1.6, 0.35)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-sc">
+<tt class="descname">-sc</tt><tt class="descclassname"> &lt;scatter index&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-sc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spectral index of scattering law to use (default=-3.86, Bhat et al model)</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorial-basic.html" title="Tutorial - Basic Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, S Bates.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
