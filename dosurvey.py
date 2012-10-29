@@ -66,18 +66,18 @@ class DoSurvey:
 
 
     
-    def run(self, surveyList, stdout=True):
+    def run(self, surveyList, nostdout=False):
         """ Run the surveys and detect the pulsars."""
 
         # print the population
-        if stdout:
+        if not nostdout:
             print "Running doSurvey on population..."
             print self.pop
 
         # loop over the surveys we want to run on the pop file
         for surv in surveyList:
             s = Survey(surv)
-            if stdout:
+            if not nostdout:
                 print "\nRunning survey {0}".format(surv)
 
             # create a new population object to store discovered pulsars in 
@@ -106,7 +106,7 @@ class DoSurvey:
                     ntf += 1
 
             # report the results
-            if stdout:
+            if not nostdout:
                 print "Number detected by survey {0} = {1}".format(surv,ndet)
                 print "Number too faint = {0}".format(ntf)
                 print "Number smeared = {0}".format(nsmear)
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('--summary', nargs='?', const=True, default=False,
                          help='flag to create ascii summary file (def=False)')
     
-    parser.add_argument('--nostdout', nargs='?', const=False, default=True,
+    parser.add_argument('--nostdout', nargs='?', const=True, default=False,
                          help='flag to switch off std output (def=False)')
 
     args = parser.parse_args()
@@ -145,5 +145,5 @@ if __name__ == '__main__':
     ds = DoSurvey(popfile=args.f)
 
     # run the survey and write the results to file
-    ds.run(args.surveys, stdout=args.nostdout)
+    ds.run(args.surveys, nostdout=args.nostdout)
     ds.write(nores=args.noresults, asc=args.asc, summary=args.summary)

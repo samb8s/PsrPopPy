@@ -50,7 +50,7 @@ class Populate(RadialModels, GalacticOps):
                  scindex=-3.86,
                  gpsArgs=[None, None],
                  doubleSpec=[None, None],
-                 stdout=True):
+                 nostdout=False):
 
         """
         Generate a population of pulsars.
@@ -103,7 +103,7 @@ class Populate(RadialModels, GalacticOps):
 
         self.pop.zscale = zscale
 
-        if stdout:
+        if not nostdout:
             print "\tGenerating pulsars with parameters:"
             print "\t\tngen = {0}".format(ngen)
             print "\t\tUsing electron distn model {0}".format(
@@ -122,17 +122,17 @@ class Populate(RadialModels, GalacticOps):
 
             print "\t\tWidth {0}% -- (0 == model)".format(duty)
         
-        if self.pop.gpsFrac and stdout:
+        if self.pop.gpsFrac and not nostdout:
             print "\n\t\tGPS Fraction = {0}, a = {1}".format(
                                                         self.pop.gpsFrac,
                                                         self.pop.gpsA)
-        if self.pop.brokenFrac and stdout:
+        if self.pop.brokenFrac and not nostdout:
             print "\n\t\tDbl Spectrum Fraction = {0}, a = {1}".format(
                                                         self.pop.brokenFrac,
                                                         self.pop.brokenSI)
 
         # set up progress bar for fun :)
-        if stdout:
+        if not nostdout:
             prog = ProgressBar(min_value = 0,
                                max_value=ngen,
                                width=65,
@@ -271,10 +271,10 @@ class Populate(RadialModels, GalacticOps):
                     if SNR > s.SNRlimit:
                         self.pop.population.append(p)
                         self.pop.ndet += 1
-                        if stdout:
+                        if not nostdout:
                             prog.increment_amount()
                             print prog, '\r',
-                        sys.stdout.flush()
+                            sys.stdout.flush()
                         # the pulsar was detected in one of the surveys,
                         # so we can break out of the surveys loop now
                         break
@@ -292,7 +292,7 @@ class Populate(RadialModels, GalacticOps):
                         break
                # print p.lum_1400
 
-        if stdout:
+        if not nostdout:
             print "\n\n"
             print "  Total pulsars = {0}".format(len(self.pop.population))
             print "  Number detected = {0}".format(self.pop.ndet)
@@ -473,7 +473,7 @@ if __name__ == '__main__':
                         default='populate.model',
                         help='Output filename for population model')
 
-    parser.add_argument('--nostdout', nargs='?', const=False, default=True,
+    parser.add_argument('--nostdout', nargs='?', const=True, default=False,
                          help='flag to switch off std output (def=False)')
 
     args = parser.parse_args()
@@ -499,7 +499,7 @@ if __name__ == '__main__':
                  electronModel=args.dm[0],
                  gpsArgs=args.gps,
                  doubleSpec = args.doublespec,
-                 stdout=args.nostdout
+                 nostdout=args.nostdout
                  )
 
     pop.write(outf=args.o)
