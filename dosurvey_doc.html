@@ -1,0 +1,147 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dosurvey.py &mdash; PsrPopPy 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PsrPopPy 1 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo2.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/dosurvey_doc.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dosurvey-py">
+<h1>dosurvey.py<a class="headerlink" href="#dosurvey-py" title="Permalink to this headline">¶</a></h1>
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py-f">
+<tt class="descname">-f</tt><tt class="descclassname"> &lt;filename&gt;</tt><a class="headerlink" href="#cmdoption-dosurvey.py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input population model to use (default=populate.model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py-surveys">
+<tt class="descname">-surveys</tt><tt class="descclassname"> &lt;SURVEY NAME(S)&gt;</tt><a class="headerlink" href="#cmdoption-dosurvey.py-surveys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required: Name(s) of surveys to simulate on the population model</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--noresults">
+<tt class="descname">--noresults</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--noresults" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, a .results file is written, containing a model of the population
+detected in the survey. This option switches off the writing of this file.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--asc">
+<tt class="descname">--asc</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--asc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the survey model in plain ascii (psrpop old style). Not recommended,
+since the cPickle &#8216;.results&#8217; file is easier to work with.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--summary">
+<tt class="descname">--summary</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a short .summary file (per survey) describing number of detections,
+number of pulsars outside survey area, number smeared, and number not beaming</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--nostdout">
+<tt class="descname">--nostdout</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--nostdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off writing to stdout. Useful for many iterations eg. in large simulations</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, S Bates.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

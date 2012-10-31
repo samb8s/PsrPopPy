@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Command-line scripts &mdash; PsrPopPy 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PsrPopPy 1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial - Basic Usage" href="tutorial-basic.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo2.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial-basic.html" title="Tutorial - Basic Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Command-line scripts</a><ul>
+<li><a class="reference internal" href="#populate-py">populate.py</a></li>
+<li><a class="reference internal" href="#dosurvey-py">dosurvey.py</a></li>
+<li><a class="reference internal" href="#view-py">view.py</a></li>
+<li><a class="reference internal" href="#visualize-py">visualize.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial-basic.html"
+                        title="next chapter">Tutorial - Basic Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/cmd-line-docs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="command-line-scripts">
+<span id="command-line-docs"></span><h1>Command-line scripts<a class="headerlink" href="#command-line-scripts" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="populate-py">
+<span id="populate-docs"></span><h2>populate.py<a class="headerlink" href="#populate-py" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-n">
+<tt class="descname">-n</tt><tt class="descclassname"> &lt;number of pulsars&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required: Number of pulsars to generate; or to detect in a survey</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-o">
+<tt class="descname">-o</tt><tt class="descclassname"> &lt;output&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output file name for population model (def=populate.model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-surveys">
+<tt class="descname">-surveys</tt><tt class="descclassname"> &lt;SURVEY NAME(S)&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-surveys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of surveys to use when trying to detect pulsars (default=None)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-z">
+<tt class="descname">-z</tt><tt class="descclassname"> &lt;scale height&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale height of pulsars about Galactic plane, in kpc (default=0.33)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-w">
+<tt class="descname">-w</tt><tt class="descclassname"> &lt;width&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulse width to use when generating pulsars (default=0, use beaming model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-si">
+<tt class="descname">-si</tt><tt class="descclassname"> &lt;SImean SIsigma&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-si" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spectral index mean and standard deviation (default=-1.6, 0.35)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-sc">
+<tt class="descname">-sc</tt><tt class="descclassname"> &lt;scatter index&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-sc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spectral index of scattering law to use (default=-3.86, Bhat et al model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-pdist">
+<tt class="descname">-pdist</tt><tt class="descclassname"> &lt;distribution name&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-pdist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distribution type for pulse periods (default=lnorm)</p>
+<p>Supported: &#8216;lnorm&#8217;, &#8216;norm&#8217;, &#8216;cc97&#8217;</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-p">
+<tt class="descname">-p</tt><tt class="descclassname"> &lt;mean stddev&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mean and standard deviation to use in period dist &#8216;lnorm&#8217; or &#8216;norm&#8217; (def=-2.7, 0.34)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-rdist">
+<tt class="descname">-rdist</tt><tt class="descclassname"> &lt;radial model&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-rdist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to use for Galactic radial distribution of pulsars</p>
+<p>Supported: &#8216;lfl06&#8217;, &#8216;yk04&#8217;, &#8216;isotropic&#8217;, &#8216;slab&#8217;, &#8216;disk&#8217;</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-dm">
+<tt class="descname">-dm</tt><tt class="descclassname"> &lt;Electron model&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-dm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Model to describe the Galactic electron distribution</p>
+<p>Supported: &#8216;ne2001&#8217;, &#8216;lm98&#8217;</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-gps">
+<tt class="descname">-gps</tt><tt class="descclassname"> &lt;fraction 'a'&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-gps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;fraction&gt; pulsars with GHz-frequency turnovers with index a</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py-doublespec">
+<tt class="descname">-doublespec</tt><tt class="descclassname"> &lt;fraction alpha1&gt;</tt><a class="headerlink" href="#cmdoption-populate.py-doublespec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;fraction&gt; pulsars with low-frequency (below 1GHz) spectral index of alpha1</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-populate.py--nostdout">
+<tt class="descname">--nostdout</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-populate.py--nostdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off writing to stdout. Useful for many iterations eg. in large simulations</p>
+</dd></dl>
+
+</div>
+<div class="section" id="dosurvey-py">
+<span id="dosurvey-docs"></span><h2>dosurvey.py<a class="headerlink" href="#dosurvey-py" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py-f">
+<tt class="descname">-f</tt><tt class="descclassname"> &lt;filename&gt;</tt><a class="headerlink" href="#cmdoption-dosurvey.py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input population model to use (default=populate.model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py-surveys">
+<tt class="descname">-surveys</tt><tt class="descclassname"> &lt;SURVEY NAME(S)&gt;</tt><a class="headerlink" href="#cmdoption-dosurvey.py-surveys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required: Name(s) of surveys to simulate on the population model</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--noresults">
+<tt class="descname">--noresults</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--noresults" title="Permalink to this definition">¶</a></dt>
+<dd><p>By default, a .results file is written, containing a model of the population
+detected in the survey. This option switches off the writing of this file.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--asc">
+<tt class="descname">--asc</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--asc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the survey model in plain ascii (psrpop old style). Not recommended,
+since the cPickle &#8216;.results&#8217; file is easier to work with.</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--summary">
+<tt class="descname">--summary</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a short .summary file (per survey) describing number of detections,
+number of pulsars outside survey area, number smeared, and number not beaming</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-dosurvey.py--nostdout">
+<tt class="descname">--nostdout</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-dosurvey.py--nostdout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn off writing to stdout. Useful for many iterations eg. in large simulations</p>
+</dd></dl>
+
+</div>
+<div class="section" id="view-py">
+<span id="view-docs"></span><h2>view.py<a class="headerlink" href="#view-py" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-view.py-f">
+<tt class="descname">-f</tt><tt class="descclassname"> &lt;input model&gt;</tt><a class="headerlink" href="#cmdoption-view.py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the population model to view (default=populate.model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-view.py-p">
+<tt class="descname">-p</tt><tt class="descclassname"> &lt;param name&gt;</tt><a class="headerlink" href="#cmdoption-view.py-p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select the population parameter to plot</p>
+<p>Supported: &#8216;period&#8217;, &#8216;dm&#8217;, &#8216;gl&#8217;, &#8216;gb&#8217;, &#8216;lum&#8217;, &#8216;alpha&#8217;, &#8216;r0&#8217;, &#8216;rho&#8217;, &#8216;width&#8217;, &#8216;spindex&#8217;, &#8216;scindex&#8217;, &#8216;dist&#8217;</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-view.py--logx">
+<tt class="descname">--logx</tt><tt class="descclassname"></tt><a class="headerlink" href="#cmdoption-view.py--logx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot log10 of the values</p>
+</dd></dl>
+
+</div>
+<div class="section" id="visualize-py">
+<span id="visualize-docs"></span><h2>visualize.py<a class="headerlink" href="#visualize-py" title="Permalink to this headline">¶</a></h2>
+<dl class="cmdoption">
+<dt id="cmdoption-visualize.py-f">
+<tt class="descname">-f</tt><tt class="descclassname"> &lt;model&gt;</tt><a class="headerlink" href="#cmdoption-visualize.py-f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select a population model to plot (default = populate.model)</p>
+</dd></dl>
+
+<dl class="cmdoption">
+<dt id="cmdoption-visualize.py-frac">
+<tt class="descname">-frac</tt><tt class="descclassname"> &lt;F&gt;</tt><a class="headerlink" href="#cmdoption-visualize.py-frac" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a fraction &lt;F&gt; of the population for speed gains</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tutorial-basic.html" title="Tutorial - Basic Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, S Bates.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

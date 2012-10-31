@@ -1,8 +1,0 @@
-# makefile.darwin - your system-specific makefile for PSRPOP
-BIN = $(shell pwd)
-FFLAGS = -O2 -fPIC -fno-second-underscore -c -I.
-#LDFLAGS = -L/usr/local/lib
-# set up your compiler here
-f90 = gfortran
-#LINK.f=$(GFORTRAN) $(FFLAGS) $(LDFLAGS)
-LINK.f=$(f90) $(FFLAGS)
