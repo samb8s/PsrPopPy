@@ -1,33 +1,17 @@
 .. _command_line_docs:
 
-******************************************
-Documentation for the command-line scripts
-******************************************
+********************
+Command-line scripts
+********************
 
-Populate.py
-===========
-.. program:: populate.py
+.. _populate_docs:
+.. include:: populate_doc.rst
 
-.. cmdoption:: -n <number of pulsars>
-  
-   Required: Number of pulsars to generate; or to detect in a survey
+.. _dosurvey_docs:
+.. include:: dosurvey_doc.rst
 
-.. cmdoption:: -surveys <SURVEY NAME(S)>
+.. _view_docs:
+.. include:: view_doc.rst
 
-   List of surveys to use when trying to detect pulsars (default=None)
-
-.. cmdoption:: -z <scale height>
-
-   Scale height of pulsars about Galactic plane, in kpc (default=0.33)
-
-.. cmdoption:: -w <width>
-
-   Pulse width to use when generating pulsars (default=0, use beaming model)
-
-.. cmdoption:: -si <SImean SIsigma>
-
-   Spectral index mean and standard deviation (default=-1.6, 0.35)
-
-.. cmdoption:: -sc <scatter index>
-
-   Spectral index of scattering law to use (default=-3.86, Bhat et al model)
+.. _visualize_docs:
+.. include:: visualize_doc.rst

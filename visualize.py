@@ -237,7 +237,7 @@ if __name__ == '__main__':
     parser.add_argument('-f', metavar='fname', default='populate.model',
                           help='file containing population model (def="populate.model")')
 
-    parser.add_argument('--frac', default=None, 
+    parser.add_argument('-frac', nargs=1, type=float, default=None, 
                           help='plot only this fraction of pulsars')
 
     args = parser.parse_args()

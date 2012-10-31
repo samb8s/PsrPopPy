@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>galacticops – Container for functions relating to the Galaxy &mdash; PsrPopPy 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PsrPopPy 1 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo2.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/galacticops_module_docs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="galacticops-container-for-functions-relating-to-the-galaxy">
+<h1><tt class="xref py py-mod docutils literal"><span class="pre">galacticops</span></tt> &#8211; Container for functions relating to the Galaxy<a class="headerlink" href="#galacticops-container-for-functions-relating-to-the-galaxy" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="GalacticOps">
+<em class="property">class </em><tt class="descname">GalacticOps</tt><a class="headerlink" href="#GalacticOps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="calc_dtrue">
+<tt class="descname">calc_dtrue</tt><big>(</big><em>(x</em>, <em>y</em>, <em>z)</em><big>)</big><a class="headerlink" href="#calc_dtrue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance from the Sun to Galactic coords (x, y, z) (NB. tuple)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="calcXY">
+<tt class="descname">calcXY</tt><big>(</big><em>r0</em><big>)</big><a class="headerlink" href="#calcXY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a Galactic radius r0, choose an (x, y) position at random <img class="math" src="_images/math/52e8ed7a3ba22130ad3984eb2cd413406475a689.png" alt="\theta"/></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ne2001_dist_to_dm">
+<tt class="descname">ne2001_dist_to_dm</tt><big>(</big><em>dist</em>, <em>gl</em>, <em>gb</em><big>)</big><a class="headerlink" href="#ne2001_dist_to_dm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a distance and Galactic coordinates, calculate DM according to NE2001</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lm98_dist_to_dm">
+<tt class="descname">lm98_dist_to_dm</tt><big>(</big><em>dist</em>, <em>gl</em>, <em>gb</em><big>)</big><a class="headerlink" href="#lm98_dist_to_dm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a distance and Galactic coordinates, calculate DM according to lm98</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lb_to_radec">
+<tt class="descname">lb_to_radec</tt><big>(</big><em>gl</em>, <em>gb</em><big>)</big><a class="headerlink" href="#lb_to_radec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Galactic coordinates to equatorial</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ra_dec_to_lb">
+<tt class="descname">ra_dec_to_lb</tt><big>(</big><em>ra</em>, <em>dec</em><big>)</big><a class="headerlink" href="#ra_dec_to_lb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert equatorial coordinates to Galactic</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="tsky">
+<tt class="descname">tsky</tt><big>(</big><em>gl</em>, <em>gb</em>, <em>freq</em><big>)</big><a class="headerlink" href="#tsky" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate sky temperature at observing frequency freq and at Galactic coordinates gl, gb according to Haslam et al</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="xyz_to_lb">
+<tt class="descname">xyz_to_lb</tt><big>(</big><em>(x</em>, <em>y</em>, <em>z)</em><big>)</big><a class="headerlink" href="#xyz_to_lb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the tuple (x, y, z) to Galactic sky coordinates.</p>
+<p>Returns l, b in degrees</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lb_to_xyz">
+<tt class="descname">lb_to_xyz</tt><big>(</big><em>l</em>, <em>b</em>, <em>dist</em><big>)</big><a class="headerlink" href="#lb_to_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert Galactic sky coordinates at a distance dist to x,y,z coordinates.</p>
+<p>Returns position as a tuple</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scatter_bhat">
+<tt class="descname">scatter_bhat</tt><big>(</big><em>dm</em>, <em>scatterindex</em>, <em>freq_mhz</em><big>)</big><a class="headerlink" href="#scatter_bhat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the scatter time according to Bhat et al at. Frequency in MHz, pulsar with dispersion measure dm, and using a scattering spectral index of scatterindex.</p>
+<p>Calculated as</p>
+<p><img class="math" src="_images/math/1446ea9b0a17ab5412383ef7be45bc4a388b6dee.png" alt="\tau = -6.46 + 0.154 \log_{10}({\rm{dm}}) + 1.07\log_{10}({\rm{dm}})^2 + {\rm{scatterindex}} \times \log_{10}(\frac{\rm{freq\_mhz}}{1000})"/></p>
+<p>and typically <img class="math" src="_images/math/1ac72c2e8ea042e69e1f8e71b0eff14c4c5f4741.png" alt="{\rm{scatterindex}} = -3.86"/> (but there is an option to vary it!)</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, S Bates.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

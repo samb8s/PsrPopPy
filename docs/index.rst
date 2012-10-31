@@ -11,9 +11,12 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   includeme
+   introduction
    installation
    cmd-line-docs
    tutorial-basic
+   module-level-docs
 
 
 

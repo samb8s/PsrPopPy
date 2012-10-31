@@ -9,7 +9,8 @@ go through.
 
 PsrPopPy is currently supported on Linux and Mac OS X, and for
 full feature support, it is recommended to install the 
-`Matplotlib <http://matplotlib.org/>`_ package.
+`Matplotlib <http://matplotlib.org/>`_ package and either use
+Python versions >2.6, or install the argparse module.
 
 .. _download_package:
 

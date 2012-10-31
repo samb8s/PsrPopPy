@@ -1,0 +1,165 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>survey – Read a survey file into a survey object &mdash; PsrPopPy 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="PsrPopPy 1 documentation" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo2.png" border="0" alt="py4sci"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/survey_module_docs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-survey">
+<span id="survey-read-a-survey-file-into-a-survey-object"></span><h1><a class="reference internal" href="#module-survey" title="survey: Store survey information"><tt class="xref py py-mod docutils literal"><span class="pre">survey</span></tt></a> &#8211; Read a survey file into a survey object<a class="headerlink" href="#module-survey" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="survey.Survey">
+<em class="property">class </em><tt class="descclassname">survey.</tt><tt class="descname">Survey</tt><a class="headerlink" href="#survey.Survey" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="survey.Survey.__init__">
+<tt class="descclassname">Survey.</tt><tt class="descname">__init__</tt><big>(</big><em>surveyName</em><big>)</big><a class="headerlink" href="#survey.Survey.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in a (correctly formatted!) survey file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="survey.Survey.__str__">
+<tt class="descclassname">Survey.</tt><tt class="descname">__str__</tt><big>(</big><big>)</big><a class="headerlink" href="#survey.Survey.__str__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define how to perform <tt class="docutils literal"><span class="pre">print</span> <span class="pre">Survey</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="survey.Survey.nchans">
+<tt class="descclassname">Survey.</tt><tt class="descname">nchans</tt><big>(</big><big>)</big><a class="headerlink" href="#survey.Survey.nchans" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of channels, calculated as</p>
+<p><img class="math" src="_images/math/bba300285ef9f5814e3303f1ec1aecf0f00fdd86.png" alt="n_{\rm{chans}} = \frac{ {\rm{BW}}_{\rm{total}} }{ {\rm{BM}}_{\rm{chan}} }"/></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="survey.Survey.inRegion">
+<tt class="descclassname">Survey.</tt><tt class="descname">inRegion</tt><big>(</big><em>pulsar</em><big>)</big><a class="headerlink" href="#survey.Survey.inRegion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if <a class="reference internal" href="module-level-docs.html#pulsar.Pulsar" title="pulsar.Pulsar"><tt class="xref py py-class docutils literal"><span class="pre">Pulsar</span></tt></a> is inside survey region. Returns True or False accordingly</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="survey.Survey.inPointing">
+<tt class="descclassname">Survey.</tt><tt class="descname">inPointing</tt><big>(</big><em>pulsar</em><big>)</big><a class="headerlink" href="#survey.Survey.inPointing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if <a class="reference internal" href="module-level-docs.html#pulsar.Pulsar" title="pulsar.Pulsar"><tt class="xref py py-class docutils literal"><span class="pre">Pulsar</span></tt></a> is inside one of the survey&#8217;s <a class="reference internal" href="#survey.Pointing" title="survey.Pointing"><tt class="xref py py-class docutils literal"><span class="pre">pointings</span></tt></a>. Returns the offset from beam centre to the pulsar.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="survey.Survey.SNRcalc">
+<tt class="descclassname">Survey.</tt><tt class="descname">SNRcalc</tt><big>(</big><em>pulsar</em>, <em>pop</em><big>)</big><a class="headerlink" href="#survey.Survey.SNRcalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the SNR of a <a class="reference internal" href="module-level-docs.html#pulsar.Pulsar" title="pulsar.Pulsar"><tt class="xref py py-class docutils literal"><span class="pre">Pulsar</span></tt></a> from <a class="reference internal" href="module-level-docs.html#population.Population" title="population.Population"><tt class="xref py py-class docutils literal"><span class="pre">Population</span></tt></a> <tt class="docutils literal"><span class="pre">pop</span></tt> in the survey. Returns -1 if pulse is smeared, and -2 if pulsar is outside survey region. SNR is calculated (with familiar terms) as</p>
+<p><img class="math" src="_images/math/ed890be379149850eb2d46dbb71470913982a87b.png" alt="{\rm{SNR}} = \frac{S_{1400} G \sqrt{n_{\rm{pol}} BW \tau}}{\beta T_{\rm{tot}}} \sqrt{\frac{1-\delta}{\delta}} \eta"/></p>
+<p>where</p>
+<p><img class="math" src="_images/math/81ce525eadf8eaf2407a3411ffff35507598dafe.png" alt="\eta = \exp(-2.7727 \times {\rm{offset}}^2 / {\rm{fwhm}}^2)"/></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="survey.Pointing">
+<em class="property">class </em><tt class="descclassname">survey.</tt><tt class="descname">Pointing</tt><a class="headerlink" href="#survey.Pointing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="survey.Pointing.__init__">
+<tt class="descclassname">Pointing.</tt><tt class="descname">__init__</tt><big>(</big><em>coord1</em>, <em>coord2</em>, <em>coordtype</em><big>)</big><a class="headerlink" href="#survey.Pointing.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts (coord1, coord2) into correctly formatted (l, b). Coordtype must be
+either <tt class="docutils literal"><span class="pre">eq</span></tt> or <tt class="docutils literal"><span class="pre">gal</span></tt>. If <tt class="docutils literal"><span class="pre">eq</span></tt>, the RA and Dec are converted internally</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">home</a>|&nbsp;</li>
+        <li><a href="search.html">search</a>|&nbsp;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, S Bates.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
