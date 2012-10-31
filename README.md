@@ -1,7 +1,7 @@
 PsrPopPy
 ========
 
-(For full documentation, see http://samb8s.github.com/PsrPopPy/)
+(For full documentation, see http://samb8s.github.com/PsrPopPy/ or manual.pdf)
 
 Python implementation of PSRPOP (which was written by D Lorimer).
 Several of the old models from that (e.g. NE2001) are still included in their native fortran, since re-writing those is beyond the scope of this work. Currently, only a rudimentary makefile is included. This is something that needs work from a willing volunteer!
