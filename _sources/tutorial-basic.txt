@@ -91,3 +91,10 @@ parameter for the x-axis, one for the y-axis, and select whether you want to
 plot the logarithms of these parameters (see screenshot below).
   
 .. image:: _static/visualize_screenshot2.png
+
+If you have the wxPython plugin working (seems on newer macs this is a non-trivial
+piece of software to install!) then I recommend using ``wxView.py`` in place of
+``visualize.py``. This code is a bit more robust, faster, and more pleasing to the eye
+(see another screenshot below).
+
+.. image:: _static/wxView.png
