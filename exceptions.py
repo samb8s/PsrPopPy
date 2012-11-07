@@ -6,4 +6,5 @@ class CoordinateException(Exception):
 class SurveyFileException(Exception):
     pass
 
-
+class PulsarException(Exception):
+    pass
