@@ -3,7 +3,8 @@
 import math
 import random
 
-import exceptions as ex
+class PulsarException(Exception):
+    pass
 
 class Pulsar:
     """ Class to store an individual pulsar"""
@@ -63,10 +64,10 @@ class Pulsar:
     def s_1400(self):
         """Calculate the flux of the pulsar"""
         if self.lum_1400 is None:
-            raise ex.PulsarException(
+            raise PulsarException(
                    'Luminosity is not defined')
         elif self.dtrue is None:
-            raise ex.PulsarException(
+            raise PulsarException(
                     'Distance not defined')
 
         return self.lum_1400 / self.dtrue / self.dtrue
@@ -74,10 +75,10 @@ class Pulsar:
     def width_ms(self):
         """Return the pulse width in milliseconds"""
         if self.period is None:
-            raise ex.PulsarException(
+            raise PulsarException(
                     'period not defined')
         elif self.width_degree is None:
-            raise ex.PulsarException(
+            raise PulsarException(
                     'width_degree not defined')
 
         return self.width_degree * self.period / 360.0

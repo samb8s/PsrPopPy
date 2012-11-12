@@ -3,14 +3,14 @@
 import os
 import sys
 
-#import ephem
 import math
 import random
 
 from galacticops import GalacticOps
 from population import Population
 
-import exceptions as ex
+class CoordinateException(Exception):
+    pass
 
 class Pointing(GalacticOps):
     """Simple class -- pointing has a gl and gb position"""
@@ -20,7 +20,7 @@ class Pointing(GalacticOps):
             Convert to gl and gb if in RA and Dec"""
 
         if coordtype not in ['eq', 'gal']:
-            raise ex.CoordinateException('Wrong coordtype passed to Pointing')
+            raise CoordinateException('Wrong coordtype passed to Pointing')
 
         if coordtype == 'eq':
             # assume pointings in decimal degrees
@@ -79,7 +79,7 @@ class Survey(GalacticOps):
                     pointfptr = open(pointfpath, 'r')
                 except:
                     s = 'File {0} does not exist!!!'.format(pointfpath)
-                    raise ex.CoordinateException(s)
+                    raise CoordinateException(s)
 
                 # read in the pointing list
                 self.pointingslist = []
@@ -99,7 +99,7 @@ class Survey(GalacticOps):
 
                 else:
                     s = 'Coordinate type unspecified in {0}.'.format(surveyName)
-                    raise ex.CoordinateException(s)
+                    raise CoordinateException(s)
 
                 pointfptr.close()
 
@@ -268,12 +268,12 @@ class Survey(GalacticOps):
                 if offset >= self.fwhm/2.0:
                     # ie. if inPointing returns false
                     # not in pointings
-                    return -2.0
+                    return -2
             else:
                 # calculate offset as a random offset within FWHM/2
                 offset = self.fwhm * math.sqrt(random.random()) / 2.0
         else:
-            return -2.0
+            return -2
 
         #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
         degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
@@ -298,7 +298,7 @@ class Survey(GalacticOps):
         # if pulse is smeared out, return -1.0
         if delt > 1.0:
             #print weff_ms, tscat, pulsar.dm, pulsar.gl, pulsar.gb, pulsar.dtrue
-            return -1.0
+            return -1
         else:
             return self._SNfac(pulsar, pop.ref_freq, degfac, Ttot) \
                                   * math.sqrt((1.0 -delt)/delt)

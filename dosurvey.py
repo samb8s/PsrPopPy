@@ -30,9 +30,14 @@ class DoSurvey:
 
     """
 
-    def __init__(self, popfile='populate.model'):
-        with open(popfile, 'rb') as f:
-            self.pop = cPickle.load(f)
+    def __init__(self, popfile='populate.model', popmodel=None):
+        """Loads in either a model from disk (popfile, cPickle), 
+           or pass in a model from memory (popmodel)"""
+        if popmodel is None:
+            with open(popfile, 'rb') as f:
+                self.pop = cPickle.load(f)
+        else:
+            self.pop = popmodel
 
         self.surveyPops = []
 

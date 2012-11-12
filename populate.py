@@ -122,17 +122,16 @@ class Populate(RadialModels, GalacticOps):
 
             print "\t\tWidth {0}% -- (0 == model)".format(duty)
         
-        if self.pop.gpsFrac and not nostdout:
-            print "\n\t\tGPS Fraction = {0}, a = {1}".format(
+            if self.pop.gpsFrac:
+                print "\n\t\tGPS Fraction = {0}, a = {1}".format(
                                                         self.pop.gpsFrac,
                                                         self.pop.gpsA)
-        if self.pop.brokenFrac and not nostdout:
-            print "\n\t\tDbl Spectrum Fraction = {0}, a = {1}".format(
+            if self.pop.brokenFrac:
+                print "\n\t\tDbl Spectrum Fraction = {0}, a = {1}".format(
                                                         self.pop.brokenFrac,
                                                         self.pop.brokenSI)
 
-        # set up progress bar for fun :)
-        if not nostdout:
+            # set up progress bar for fun :)
             prog = ProgressBar(min_value = 0,
                                max_value=ngen,
                                width=65,
@@ -142,6 +141,11 @@ class Populate(RadialModels, GalacticOps):
         ntf = 0
         nsmear = 0
         nout=0
+
+        # create survey objects here and put them in a list
+        if surveyList is not None:
+            surveys = [Survey(surv) for surv in surveyList]
+
         while self.pop.ndet < ngen:
             # Declare new pulsar object
             p = Pulsar()
@@ -261,14 +265,12 @@ class Populate(RadialModels, GalacticOps):
             # if surveys are given, check if pulsar detected or not
             # in ANY of the surveys
             else:
-                for surv in surveyList:
+                for surv in surveys:
                     # pulsar in survey region 
                     # is pulsar detectable in the survey?
-                    s = Survey(surv)
+                    SNR = surv.SNRcalc(p, self.pop)
 
-                    SNR = s.SNRcalc(p, self.pop)
-
-                    if SNR > s.SNRlimit:
+                    if SNR > surv.SNRlimit:
                         self.pop.population.append(p)
                         self.pop.ndet += 1
                         if not nostdout:
@@ -278,11 +280,11 @@ class Populate(RadialModels, GalacticOps):
                         # the pulsar was detected in one of the surveys,
                         # so we can break out of the surveys loop now
                         break
-                    elif SNR == -1.0:
+                    elif SNR == -1:
                         nsmear += 1
                         self.pop.population.append(p)
                         break
-                    elif SNR == -2.0:
+                    elif SNR == -2:
                         nout += 1
                         self.pop.population.append(p)
                         break
