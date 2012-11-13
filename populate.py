@@ -97,9 +97,11 @@ class Populate(RadialModels, GalacticOps):
         self.pop.brokenFrac, self.pop.brokenSI = doubleSpec
 
         if self.pop.lumDistType == 'lnorm':
-            self.pop.lummean, self.pop.lumsigma = lumDistPars
+            self.pop.lummean, self.pop.lumsigma = \
+                    lumDistPars[0], lumDistPars[1]
         else:
-            self.pop.lummin, self.pop.lummax, self.pop.lumpow = lumDistPars
+            self.pop.lummin, self.pop.lummax, self.pop.lumpow = \
+                    lumDistPars[0], lumDistPars[1], lumDistPars[2]
 
         self.pop.zscale = zscale
 
@@ -453,7 +455,7 @@ if __name__ == '__main__':
     parser.add_argument('-ldist', nargs=1, required=False, default=['lnorm'],
                         help='distribution to use for luminosities',
                         choices=['lnorm', 'pow'])
-    parser.add_argument('-l', nargs=2, required=False,
+    parser.add_argument('-l', nargs='+', required=False,
                         default=[-1.1, 0.9],
                         help='luminosity distribution mean and std dev \
                                 (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)'
