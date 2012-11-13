@@ -447,7 +447,16 @@ if __name__ == '__main__':
     parser.add_argument('-p', nargs=2, required=False,
                          default=[2.7, -0.34],
                          help='period distribution mean and std dev \
-                                 (def= [-2.7, -0.34], Lorimer et al. 2006)')
+                                 (def= [2.7, -0.34], Lorimer et al. 2006)')
+
+    # luminosity distribution parameters
+    parser.add_argument('-ldist', nargs=1, required=False, default=['lnorm'],
+                        help='distribution to use for luminosities',
+                        choices=['lnorm', 'pow'])
+    parser.add_argument('-l', nargs=2, required=False,
+                        default=[-1.1, 0.9],
+                        help='luminosity distribution mean and std dev \
+                                (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)'
 
     # radial distribution type
     parser.add_argument('-rdist', type=str, nargs=1, required=False, default=['lfl06'],
