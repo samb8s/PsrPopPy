@@ -78,7 +78,7 @@ class Populate(RadialModels, GalacticOps):
                                      'slab', 'disk']:
             print "Unsupported radial distribution: {0}".format(radialDistType)
         
-        if electronModel not in ['ne2001', 'lm98']:
+        if electronModel not in ['ne2001', 'lmt85']:
             print "Unsupported electron model: {0}".format(electronModel)
 
         if duty<0.:
@@ -246,8 +246,8 @@ class Populate(RadialModels, GalacticOps):
             # then calc DM  using fortran libs
             if self.pop.electronModel == 'ne2001':
                 p.dm = self.ne2001_dist_to_dm(p.dtrue, p.gl, p.gb)
-            elif self.pop.electronModel == 'lm98':
-                p.dm = self.lm98_dist_to_dm(p.dtrue, p.gl, p.gb)
+            elif self.pop.electronModel == 'lmt85':
+                p.dm = self.lmt85_dist_to_dm(p.dtrue, p.gl, p.gb)
 
             p.scindex = scindex
             # then calc scatter time
@@ -458,7 +458,7 @@ if __name__ == '__main__':
     parser.add_argument('-l', nargs='+', required=False,
                         default=[-1.1, 0.9],
                         help='luminosity distribution mean and std dev \
-                                (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)'
+                                (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)')
 
     # radial distribution type
     parser.add_argument('-rdist', type=str, nargs=1, required=False, default=['lfl06'],
@@ -469,7 +469,7 @@ if __name__ == '__main__':
     parser.add_argument('-dm', type=str, nargs=1, required=False,
                         default=['ne2001'],
                         help='Galactic electron distribution model to use',
-                        choices=['ne2001', 'lm98'])
+                        choices=['ne2001', 'lmt85'])
     
     # GPS sources
     parser.add_argument('-gps', type=float, nargs=2, required=False,

@@ -58,8 +58,8 @@ class GalacticOps:
                              C.byref(C.c_int(4)),
                              C.byref(C.c_float(0.0)))
 
-    def lm98_dist_to_dm(self, dist, gl, gb):
-        """ Use Lyne & Manchester distance model to compute DM."""
+    def lmt85_dist_to_dm(self, dist, gl, gb):
+        """ Use Lyne, Manchester & Taylor distance model to compute DM."""
         dist = C.c_float(dist)
         gl = C.c_float(gl)
         gb = C.c_float(gb)
