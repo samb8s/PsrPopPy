@@ -104,7 +104,8 @@ if __name__ == '__main__':
     #parser.add_argument('--logy', nargs='?', const=True, default=False,
     #                     help = 'logscale Y plot')
 
-    parser.add_argument('-b', default=50, type=int, required=False)
+    parser.add_argument('-b', default=50, type=int, required=False,
+                        help = 'Number of bins to use')
 
     args = parser.parse_args()
     v = View(args.f)

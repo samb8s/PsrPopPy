@@ -269,8 +269,10 @@ class VisualizeFrame(wx.Frame):
             #                   )
 
         if len(self.modelCheckList.GetChecked())>0:
-            self.axes.set_xlabel(self.dataObjList[0].axislabels[self.xIndex], fontsize=10)
-            self.axes.set_ylabel(self.dataObjList[0].axislabels[self.yIndex], fontsize=10)
+            self.axes.set_xlabel(self.dataObjList[0].axislabels[self.xIndex], 
+                                    fontsize=10)
+            self.axes.set_ylabel(self.dataObjList[0].axislabels[self.yIndex],
+                                    fontsize=10)
 
             for label in self.axes.get_xticklabels():
                 label.set_fontsize(7)

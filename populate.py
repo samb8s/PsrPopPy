@@ -15,8 +15,6 @@ from survey import Survey
 
 from progressbar import ProgressBar
 
-
-
 class Populate(RadialModels, GalacticOps):
 
     """
@@ -146,7 +144,14 @@ class Populate(RadialModels, GalacticOps):
 
         # create survey objects here and put them in a list
         if surveyList is not None:
-            surveys = [Survey(surv) for surv in surveyList]
+            surveys = [Survey(s) for s in surveyList]
+
+        # initialise these counters to zero 
+        for surv in surveys:
+            surv.ndet =0 # number detected
+            surv.nout=0 # number outside survey region
+            surv.nsmear=0 # number smeared out
+            surv.ntf=0 # number too faint
 
         while self.pop.ndet < ngen:
             # Declare new pulsar object
@@ -267,43 +272,60 @@ class Populate(RadialModels, GalacticOps):
             # if surveys are given, check if pulsar detected or not
             # in ANY of the surveys
             else:
+                detect_int = 0 # just a flag to increment if pulsar is detected
                 for surv in surveys:
-                    # pulsar in survey region 
-                    # is pulsar detectable in the survey?
+                    # do SNR calculation
                     SNR = surv.SNRcalc(p, self.pop)
 
                     if SNR > surv.SNRlimit:
-                        self.pop.population.append(p)
-                        self.pop.ndet += 1
-                        if not nostdout:
-                            prog.increment_amount()
-                            print prog, '\r',
-                            sys.stdout.flush()
-                        # the pulsar was detected in one of the surveys,
-                        # so we can break out of the surveys loop now
-                        break
-                    elif SNR == -1:
-                        nsmear += 1
-                        self.pop.population.append(p)
-                        break
-                    elif SNR == -2:
-                        nout += 1
-                        self.pop.population.append(p)
-                        break
-                    else:
-                        ntf += 1
-                        self.pop.population.append(p)
-                        break
-               # print p.lum_1400
+                        # SNR is over threshold
+                        
+                        # increment the flag 
+                        # and survey ndetected
+                        detect_int += 1
+                        surv.ndet += 1
+                        continue
 
+                    elif SNR == -1:
+                        # pulse is smeared out
+                        surv.nsmear += 1
+                        continue
+
+                    elif SNR == -2:
+                        # pulsar is outside survey region
+                        surv.nout += 1
+                        continue
+
+                    else:
+                        #pulsar is just too faint
+                        surv.ntf += 1
+                        continue 
+                
+                # add the pulsar to the population
+                self.pop.population.append(p)
+
+                # if detected, increment ndet (for whole population)
+                # and redraw the progress bar
+                if detect_int:
+                    self.pop.ndet += 1
+                    if not nostdout:
+                        prog.increment_amount()
+                        print prog, '\r',
+                        sys.stdout.flush()
+
+        # print info to stdout 
         if not nostdout:
             print "\n\n"
             print "  Total pulsars = {0}".format(len(self.pop.population))
-            print "  Number detected = {0}".format(self.pop.ndet)
+            print "  Total detected = {0}".format(self.pop.ndet)
             print "  Number not beaming = {0}".format(nnb)
-            print "  Number too faint = {0}".format(ntf)
-            print "  Number smeared = {0}".format(nsmear)
-            print "  Number outside survey area = {0}".format(nout)
+
+            for surv in surveys:
+                print "\n  Results for survey '{0}'".format(surv.surveyName)
+                print "    Number detected = {0}".format(surv.ndet)
+                print "    Number too faint = {0}".format(surv.ntf)
+                print "    Number smeared = {0}".format(surv.nsmear)
+                print "    Number outside survey area = {0}".format(surv.nout)
 
 
     def _double_sided_exp(self, scale, origin=0.0):

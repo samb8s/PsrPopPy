@@ -240,7 +240,10 @@ class Survey(GalacticOps):
                 continue
 
             #if close-ish calc offset
-            offset_deg = self._glgboffset(point.gl, point.gb, pulsar.gl, pulsar.gb)
+            offset_deg = self._glgboffset(point.gl,
+                                          point.gb,
+                                          pulsar.gl,
+                                          pulsar.gb)
 
             # if the beam is close enough, break out of the loop
             if offset_deg*60.0 < self.fwhm/2.0:
@@ -330,5 +333,5 @@ class Survey(GalacticOps):
         return 10.**(psr.gpsA * log_nu_2**2 + psr.spindex * log_nu_2 + gpsC)
 
     def _dmsmear(self, psr):
-        """Calculate the smearing due to the pulsar DM"""
+        """Calculate the smearing across a channel due to the pulsar DM"""
         return 8.3E6 * psr.dm * self.bw_chan / math.pow(self.freq, 3.0)
