@@ -145,13 +145,17 @@ class Populate(RadialModels, GalacticOps):
         # create survey objects here and put them in a list
         if surveyList is not None:
             surveys = [Survey(s) for s in surveyList]
+        else:
+            # make an empty list here - makes some code just a little
+            # simpler - can still loop over an empty list (ie zero times)
+            surveys=[]
 
-            # initialise these counters to zero 
-            for surv in surveys:
-                surv.ndet =0 # number detected
-                surv.nout=0 # number outside survey region
-                surv.nsmear=0 # number smeared out
-                surv.ntf=0 # number too faint
+        # initialise these counters to zero 
+        for surv in surveys:
+            surv.ndet =0 # number detected
+            surv.nout=0 # number outside survey region
+            surv.nsmear=0 # number smeared out
+            surv.ntf=0 # number too faint
 
         while self.pop.ndet < ngen:
             # Declare new pulsar object
