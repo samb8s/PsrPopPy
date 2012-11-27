@@ -146,12 +146,12 @@ class Populate(RadialModels, GalacticOps):
         if surveyList is not None:
             surveys = [Survey(s) for s in surveyList]
 
-        # initialise these counters to zero 
-        for surv in surveys:
-            surv.ndet =0 # number detected
-            surv.nout=0 # number outside survey region
-            surv.nsmear=0 # number smeared out
-            surv.ntf=0 # number too faint
+            # initialise these counters to zero 
+            for surv in surveys:
+                surv.ndet =0 # number detected
+                surv.nout=0 # number outside survey region
+                surv.nsmear=0 # number smeared out
+                surv.ntf=0 # number too faint
 
         while self.pop.ndet < ngen:
             # Declare new pulsar object
@@ -340,7 +340,6 @@ class Populate(RadialModels, GalacticOps):
 
     def _drawlnorm(self, mean, sigma):
         """Get a random log-normal number."""
-        #print mean, sigma
         return 10.0**random.gauss(mean, sigma)
 
     def _powerlaw(self, minval, maxval, power):
