@@ -256,10 +256,12 @@ class VisualizeFrame(QMainWindow):
     def _getCheckedRBIndex(self, buttonlist):
         for i, b in enumerate(buttonlist):
             if b.isChecked():
-                indx = i
-                break
+                return i
 
-        return i
+        # if we got here, something's broken - radio buttons 
+        # should always have one checked! 
+        raise ViewException('No radio button selected for plotting(!) ')
+
 
     def draw_figure(self):
         self.axes.clear()

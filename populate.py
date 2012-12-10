@@ -38,6 +38,7 @@ class Populate(RadialModels, GalacticOps):
                  surveyList=None,
                  pDistType='lnorm',
                  radialDistType='lfl06',
+                 radialDistPars=7.5,
                  electronModel='ne2001',
                  pDistPars=[2.7, -0.34],
                  siDistPars= [-1.6,0.35], 
@@ -69,11 +70,11 @@ class Populate(RadialModels, GalacticOps):
         if lumDistType not in ['lnorm', 'pow']:
             print "Unsupported luminosity distribution: {0}".format(lumDistType)
 
-        if pDistType not in ['lnorm', 'norm', 'cc97']:
+        if pDistType not in ['lnorm', 'norm', 'cc97', 'lorimer12']:
             print "Unsupported period distribution: {0}".format(pDistType)
 
         if radialDistType not in ['lfl06', 'yk04', 'isotropic',
-                                     'slab', 'disk']:
+                                     'slab', 'disk', 'gauss']:
             print "Unsupported radial distribution: {0}".format(radialDistType)
         
         if electronModel not in ['ne2001', 'lmt85']:
@@ -88,6 +89,7 @@ class Populate(RadialModels, GalacticOps):
         self.pop.electronModel = electronModel
         self.pop.lumDistType = lumDistType
     
+        self.pop.rsigma = rDistPars
         self.pop.pmean, self.pop.psigma = pDistPars
         self.pop.simean, self.pop.sisigma = siDistPars
 
@@ -172,6 +174,8 @@ class Populate(RadialModels, GalacticOps):
             elif self.pop.pDistType == 'gamma':
                 print "Gamma function not yet supported"
                 sys.exit()
+            elif self.pop.pDistType == 'lorimer12':
+                p.period = self._lorimer2012_msp_periods()
 
             if duty>0.:
                 # use a simple duty cycle for each pulsar
@@ -243,6 +247,10 @@ class Populate(RadialModels, GalacticOps):
                     p.r0 = self.lfl06()
                 elif self.pop.radialDistType == 'yk04':
                     p.r0 = self.ykr()
+                elif self.pop.radialDistType == 'gauss':
+                    # guassian of mean 0
+                    # and stdDev given by parameter (kpc)
+                    p.r0 = random.gauss(0., self.pop.rsigma) 
 
                 # then calc xyz,distance, l and b
                 zheight = self._double_sided_exp(zscale)
@@ -341,6 +349,14 @@ class Populate(RadialModels, GalacticOps):
         sign = random.choice([-1.0, 1.0])
 
         return origin + sign * scale * math.log(rn)
+
+    def _lorimer2012_msp_periods(self):
+        """Picks a period at random from Dunc's
+           distribution as mentioned in IAU 
+           (China 2012) proceedings
+        """
+        distribution = [1.,3.,5.,16.,9.,5.,5.,3.,2.]
+        return random.choice(distribution)
 
     def _drawlnorm(self, mean, sigma):
         """Get a random log-normal number."""
@@ -470,7 +486,8 @@ if __name__ == '__main__':
     # period distribution parameters
     parser.add_argument('-pdist', nargs=1, required=False, default=['lnorm'],
                         help='type of distribution to use for pulse periods',
-                        choices=['lnorm', 'norm', 'cc97'])#, 'gamma', '1d'])
+                        choices=['lnorm', 'norm', 'cc97', 'lorimer12'])
+
     parser.add_argument('-p', nargs=2, required=False,
                          default=[2.7, -0.34],
                          help='period distribution mean and std dev \
@@ -488,7 +505,12 @@ if __name__ == '__main__':
     # radial distribution type
     parser.add_argument('-rdist', type=str, nargs=1, required=False, default=['lfl06'],
                         help='type of distrbution to use for Galactic radius',
-                        choices=['lfl06', 'yk04', 'isotropic', 'slab', 'disk'])
+                        choices=['lfl06', 'yk04', 'isotropic', 'slab', 'disk', 'gauss'])
+    parser.add_argument('-r', nargs='+', required = False,
+                        default = 7.5,
+                        help = 'radial distribution parameters \
+                                (required for "-rdist gauss"')
+
 
     # electron/dm model
     parser.add_argument('-dm', type=str, nargs=1, required=False,
@@ -529,6 +551,7 @@ if __name__ == '__main__':
                  surveyList=args.surveys,
                  pDistType=args.pdist[0],
                  radialDistType=args.rdist[0],
+                 radialDistPars=args.r,
                  pDistPars=args.p,
                  siDistPars=args.si,
                  zscale=args.z,
