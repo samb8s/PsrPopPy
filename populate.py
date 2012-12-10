@@ -89,7 +89,7 @@ class Populate(RadialModels, GalacticOps):
         self.pop.electronModel = electronModel
         self.pop.lumDistType = lumDistType
     
-        self.pop.rsigma = rDistPars
+        self.pop.rsigma = radialDistPars[0]
         self.pop.pmean, self.pop.psigma = pDistPars
         self.pop.simean, self.pop.sisigma = siDistPars
 
@@ -507,7 +507,7 @@ if __name__ == '__main__':
                         help='type of distrbution to use for Galactic radius',
                         choices=['lfl06', 'yk04', 'isotropic', 'slab', 'disk', 'gauss'])
     parser.add_argument('-r', nargs='+', required = False,
-                        default = 7.5,
+                        default = 7.5, type=float,
                         help = 'radial distribution parameters \
                                 (required for "-rdist gauss"')
 
