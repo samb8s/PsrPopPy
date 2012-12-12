@@ -355,8 +355,34 @@ class Populate(RadialModels, GalacticOps):
            distribution as mentioned in IAU 
            (China 2012) proceedings
         """
-        distribution = [1.,3.,5.,16.,9.,5.,5.,3.,2.]
-        return random.choice(distribution)
+        # min max and n in distribution
+        logpmin = 0.
+        logpmax = 1.5
+        dist = [1.,3.,5.,16.,9.,5.,5.,3.,2.]
+
+        # calculate which bin to take value of
+        #
+        bin_num = self._draw1d(dist)
+        
+        # assume linear distn inside the bins
+        logp = logpmin + (logpmax-logpmin)*(bin_num+random.random())/len(dist)
+
+        return 10.**logp
+
+    def _draw1d(self, dist):
+        """Draw a bin number form a home-made distribution
+            (dist is a list of numbers per bin)
+        """
+        # sum of distribution
+        total = sum(dist)
+        #cumulative distn
+        cumulative = [sum(dist[:x+1])/total for x in range(len(dist))]
+
+        rand_num = random.random()
+        for i, c in enumerate(cumulative):
+            if rand_num <= c:
+                return i
+
 
     def _drawlnorm(self, mean, sigma):
         """Get a random log-normal number."""
