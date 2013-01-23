@@ -1,5 +1,8 @@
 PMSURV.results
 populate.model
+populate.cmd
+evolve.model
+evolve.cmd
 junk
 weff
 junk.py

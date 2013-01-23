@@ -1,0 +1,10 @@
+The examples contained in this directory can be used as
+a basis for generating your own workflow scripts.
+
+ - populate_and_survey.py
+   This script calls first the populate script, and then 
+   the dosurvey script. Instead of writing the population
+   model to disk and then reading it back into memory again,
+   the model is kept in memory between the two steps, which
+   speeds up the process. The model can still be written
+   to disk at any point, as is demonstrated in the script.
