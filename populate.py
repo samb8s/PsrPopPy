@@ -58,12 +58,17 @@ class Populate(RadialModels, GalacticOps):
         ngen -- the number of pulsars to generate (or detect)
         surveyList -- a list of surveys you want to use to try and detect the pulsars
         pDistType -- the pulsar period distribution model to use (def=lnorm)
+        radialDistType -- radial distribution model
         electronModel -- mode to use for Galactic electron distribution
         pDistPars -- parameters to use for period distribution
         siDistPars -- parameters to use for spectral index distribution
         lumDistPars -- parameters to use for luminosity distribution
+        radialDistPars -- parameters for radial distribution
         zscale -- if using exponential z height, set it here (in kpc)
         scindex -- spectral index of the scattering model
+        gpsArgs -- add GPS-type spectrum sources
+        doubleSpec -- add double-spectrum type sources
+        nostdout -- (bool) switch off stdout
         """
 
         # check that the distribution types are supported....
@@ -89,7 +94,7 @@ class Populate(RadialModels, GalacticOps):
         self.pop.electronModel = electronModel
         self.pop.lumDistType = lumDistType
     
-        self.pop.rsigma = radialDistPars[0]
+        self.pop.rsigma = radialDistPars
         self.pop.pmean, self.pop.psigma = pDistPars
         self.pop.simean, self.pop.sisigma = siDistPars
 
@@ -139,10 +144,6 @@ class Populate(RadialModels, GalacticOps):
                                width=65,
                                mode='dynamic')
 
-        nnb = 0
-        ntf = 0
-        nsmear = 0
-        nout=0
 
         # create survey objects here and put them in a list
         if surveyList is not None:
@@ -154,6 +155,7 @@ class Populate(RadialModels, GalacticOps):
 
         # initialise these counters to zero 
         for surv in surveys:
+            surv.nnb = 0 # number not beaming
             surv.ndet =0 # number detected
             surv.nout=0 # number outside survey region
             surv.nsmear=0 # number smeared out
@@ -196,7 +198,7 @@ class Populate(RadialModels, GalacticOps):
                 # is pulsar beaming at us? If not, move on!
                 p.beaming = self._beaming(p)
                 if not p.beaming:
-                    nnb += 1
+                    surv.nnb += 1
                     continue
 
             # Spectral index stuff here
@@ -330,7 +332,7 @@ class Populate(RadialModels, GalacticOps):
             print "\n\n"
             print "  Total pulsars = {0}".format(len(self.pop.population))
             print "  Total detected = {0}".format(self.pop.ndet)
-            print "  Number not beaming = {0}".format(nnb)
+            print "  Number not beaming = {0}".format(surv.nnb)
 
             for surv in surveys:
                 print "\n  Results for survey '{0}'".format(surv.surveyName)
@@ -339,16 +341,6 @@ class Populate(RadialModels, GalacticOps):
                 print "    Number smeared = {0}".format(surv.nsmear)
                 print "    Number outside survey area = {0}".format(surv.nout)
 
-
-    def _double_sided_exp(self, scale, origin=0.0):
-        """Exponential distribution around origin, with scale height scale."""
-        if scale == 0.0:
-            return origin
-
-        rn = random.random()
-        sign = random.choice([-1.0, 1.0])
-
-        return origin + sign * scale * math.log(rn)
 
     def _lorimer2012_msp_periods(self):
         """Picks a period at random from Dunc's

@@ -17,10 +17,6 @@ yklib.llfr_.restype = C.c_float
 seedlib = C.CDLL(filepath+'/libgetseed.so')
 seedlib.getseed_.restype = C.c_int
 
-# I'd like to implement this without resorting to globals. But for now, it should work
-#global FIRST_CALL
-#FIRST_CALL=True
-
 class RadialModels:
     """ Class to store radial model methods."""
     def __init__(self):
@@ -29,7 +25,6 @@ class RadialModels:
 
     def seed(self):
         return C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
-        #return C.c_int(5)
     
     # class methods
 
@@ -49,51 +44,54 @@ class RadialModels:
         """lfl06 model, using Y&K"""
         #print self.seed
         return yklib.llfr_(C.byref(self.seed()))
-        #rand = C.c_float(random.random())
-        #return yklib.llfr_(C.byref(rand))
 
     def ykr(self):
         """ Y&K Model"""
-        #rand = C.c_float(random.random())
         return yklib.ykr_(C.byref(self.seed()))
 
+    def spiralize(self, r):
+        """ Make spiral arms, as seen in Fuacher-Giguere & Kaspi 2006"""
 
-    def llfr(self):
-        """Python implementation of the lfl06 model. Not in use."""
+        # definitions
+        k_list = [4.25,4.25,4.89,4.89]
+        r0_list = [3.48,3.48,4.9,4.9]
+        theta0_list = [1.57,4.71,4.09,0.95]
+        
+        # select a spiral arm ( 1->4)
+        arm = random.choice([0,1,2,3]) 
+        k = k_list[arm]
+        r0 = r0_list[arm]
+        theta0 = theta0_list[arm]
 
-        return self.ykr0(3.51, 7.89, 0.0)
+        # pick an angle
+        theta = k * math.log(r/r0) + theta0
 
-    def ykr0(self, a, b, r1):
-        """Python implementation of the Y&K model. Not in use."""
-        #if FIRST_CALL:
-            # set the global to false so we don't end up here again
-            #global FIRST_CALL
-            #FIRST_CALL = False
+        # blurring angle
+        angle = 2*math.pi * random.random() * math.exp(-0.35* r)
 
-        self.amax = self.ykarea(500.0, 0.0, a, b, r1)
+        if random.random()<0.5:
+            angle = 0 - angle
 
-        # now get the result
-        area = random.random() * self.amax
-        return self.ykarea(500.0, area, a, b, r1)
-            
-    def ykarea(self, r, amax, a, b, r1):
-        """Python implementation of Y+K, not in use."""
+        #modify theta
+        theta += angle
 
-        # two "constants"
-        DX = 0.01
-        RSUN = 8.5 #kpc
+        # blur in radial direction a little
+        dr = math.fabs(random.gauss(0.0, 0.5 * r))
+        angle = random.random() * 2.0 * math.pi
+        dx=dr * math.cos(angle)
+        dy = dr * math.sin(angle)
 
-        # do the code
-        r0 = RSUN + r1
-        ykarea = 0.0
+        x = r * math.cos(theta) + dx
+        y = r * math.cos(theta) + dy
 
-        # create list to loop over
-        nloops = int(math.ceil(r/DX))
-        looplist = [x * DX for x in range(nloops)]
+        return x, y
 
-        for x in looplist:
-            ykarea = ykarea + (((x+r1)/r0)**a) * math.exp(-1.0*b*(x-RSUN)/r0)*x*DX
-            if amax > 0.0 and ykarea > amax:
-                return x
+    def _double_sided_exp(self, scale, origin=0.0):
+        """Exponential distribution around origin, with scale height scale."""
+        if scale == 0.0:
+            return origin
 
-        return ykarea
+        rn = random.random()
+        sign = random.choice([-1.0, 1.0])
+
+        return origin + sign * scale * math.log(rn)

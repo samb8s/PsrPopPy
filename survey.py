@@ -297,6 +297,7 @@ class Survey(GalacticOps):
 
         # calculate duty cycle (period is in ms)
         delt = weff_ms / pulsar.period
+        #print weff_ms, pulsar.period
 
         # if pulse is smeared out, return -1.0
         if delt > 1.0:
