@@ -12,13 +12,12 @@ import ctypes as C
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 filepath = os.path.join(__dir__, 'fortran')
 
-ne2001lib = C.CDLL(filepath+'/libne2001.so')
+ne2001lib = C.CDLL(os.path.join(filepath,'libne2001.so'))
 ne2001lib.dm_.restype = C.c_float
-tskylib = C.CDLL(filepath+'/libtsky.so')
+tskylib = C.CDLL(os.path.join(filepath,'libtsky.so'))
 tskylib.psr_tsky_.restype = C.c_float
-slalib =  C.CDLL(filepath+'/libsla.so')
-
-
+slalib =  C.CDLL(os.path.join(filepath,'libsla.so'))
+vxyzlib = C.CDLL(os.path.join(filepath, 'libvxyz.so'))
 
 # Class definition
 class GalacticOps:
@@ -30,6 +29,43 @@ class GalacticOps:
     def __init__(self):
         pass
     
+    def vxyz(self, pulsar):
+        """Evolve a pulsar through galactic potential"""
+        x,y,z = pulsar.galCoords
+        vx,vy,vz = pulsar.vx, pulsar.vy, pulsar.vz
+        age_Myr = pulsar.age/1.0E6
+
+        x,y,z = C.c_float(x), C.c_float(y),C.c_float(z)
+        vx,vy,vz = C.c_float(vx), C.c_float(vy),C.c_float(vz)
+        age_Myr = C.c_float(age_Myr)
+        bound = C.c_long(0)
+
+        # run the evolution code
+        vxyzlib.vxyz_(C.byref(C.c_float(0.005)),
+                      C.byref(x),
+                      C.byref(y),
+                      C.byref(z),
+                      C.byref(age_Myr),
+                      C.byref(vx),
+                      C.byref(vy),
+                      C.byref(vz),
+                      C.byref(x),
+                      C.byref(y),
+                      C.byref(z),
+                      C.byref(vx),
+                      C.byref(vy),
+                      C.byref(vz),
+                      C.byref(bound)
+                      )
+
+        # convert the output C types to python numbers
+        pulsar.galCoords = x.value, y.value, z.value
+        pulsar.vx = vx.value
+        pulsar.vy = vy.value
+        pulsar.vz = vz.value
+
+
+
     def calc_dtrue(self, (x, y, z)):
         """Calculate true distance to pulsar from the sun."""
         rsun = 8.5 # kpc
@@ -44,7 +80,6 @@ class GalacticOps:
         x = r0 * math.cos(theta)
         y = r0 * math.sin(theta)
 
-        # calculate z - for now use exponential distribution of expenential tail zscale
         return x, y
 
     def ne2001_dist_to_dm(self, dist, gl, gb):
