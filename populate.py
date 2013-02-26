@@ -155,7 +155,7 @@ class Populate(RadialModels, GalacticOps):
 
         # initialise these counters to zero 
         for surv in surveys:
-            surv.nnb = 0 # number not beaming
+            pulsars_not_beaming = 0 # number not beaming
             surv.ndet =0 # number detected
             surv.nout=0 # number outside survey region
             surv.nsmear=0 # number smeared out
@@ -198,7 +198,7 @@ class Populate(RadialModels, GalacticOps):
                 # is pulsar beaming at us? If not, move on!
                 p.beaming = self._beaming(p)
                 if not p.beaming:
-                    surv.nnb += 1
+                    pulsars_not_beaming += 1
                     continue
 
             # Spectral index stuff here
@@ -332,7 +332,7 @@ class Populate(RadialModels, GalacticOps):
             print "\n\n"
             print "  Total pulsars = {0}".format(len(self.pop.population))
             print "  Total detected = {0}".format(self.pop.ndet)
-            print "  Number not beaming = {0}".format(surv.nnb)
+            print "  Number not beaming = {0}".format(pulsars_not_beaming)
 
             for surv in surveys:
                 print "\n  Results for survey '{0}'".format(surv.surveyName)
@@ -362,7 +362,7 @@ class Populate(RadialModels, GalacticOps):
         return 10.**logp
 
     def _draw1d(self, dist):
-        """Draw a bin number form a home-made distribution
+        """Draw a bin number from a home-made distribution
             (dist is a list of numbers per bin)
         """
         # sum of distribution
