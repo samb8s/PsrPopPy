@@ -150,8 +150,6 @@ class Evolve(RadialModels, GalacticOps, Beaming):
             # define pulse width as 5% (18 degrees)
             pulsar.width_degree = 18.
 
-            if not pulsar.dead:
-                print pulsar.dead
             # plough on - only if the pulsar isn't dead!
             if not pulsar.dead:
                 # is the pulsar beaming? 
@@ -408,7 +406,7 @@ class Evolve(RadialModels, GalacticOps, Beaming):
                     break
 
                 tempmin = math.fabs(result - temp_const)
-                print tempmin, "= tempmin;", min_value, " = minval"
+                #print tempmin, "= tempmin;", min_value, " = minval"
                 if tempmin <= min_value:
                     min_value = tempmin
                     min_p = m
@@ -421,7 +419,7 @@ class Evolve(RadialModels, GalacticOps, Beaming):
                     #print "step three"
                     pulsar.period = 1.0E6
 
-        print pulsar.period, pdeath
+        #print pulsar.period, pdeath
         if pulsar.period>pdeath and self.pop.deathline:
             pulsar.dead = True
         else:
