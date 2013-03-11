@@ -9,12 +9,12 @@ c
       integer yy,mm,dd,hh,mi,ss,seed,i,org
       character*14 curtime
       real psrran,r
-      call clock(yy,mm,dd,hh,mi,ss)
-      write(curtime,'(2i2.2)') ss,mm
+      call clock(yy,mm,dd,hh,mi,ss,nano)
+      write(curtime,'(i4)') nano
       read(curtime,*) seed
       org=seed
-      do i=1,ss
-      r=psrran(seed)
-      enddo
+c      do i=1,ss
+c      r=psrran(seed)
+c      enddo
       seed=org
       end
