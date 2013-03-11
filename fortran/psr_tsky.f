@@ -9,7 +9,7 @@ c
       logical first
       real l, b, nsky(90, 180),freq
       integer j,i,nl,lun,lpth
-      character*80 path,tskyfile
+      character*120 path,tskyfile
 c
 c     Check for first entry..
 c

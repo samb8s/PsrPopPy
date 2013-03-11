@@ -362,7 +362,7 @@ class Populate(RadialModels, GalacticOps):
         return 10.**logp
 
     def _draw1d(self, dist):
-        """Draw a bin number form a home-made distribution
+        """Draw a bin number from a home-made distribution
             (dist is a list of numbers per bin)
         """
         # sum of distribution

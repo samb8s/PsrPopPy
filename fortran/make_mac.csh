@@ -2,7 +2,7 @@
 
 setenv CFLAGS -m32
 
-set gf = ~/bin/gfortran
+set gf = /usr/local/bin/gfortran
 
 $gf -O2 -fPIC -fno-second-underscore -c -I. *.f
 

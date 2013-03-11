@@ -14,10 +14,15 @@ filepath = os.path.join(__dir__, 'fortran')
 
 ne2001lib = C.CDLL(os.path.join(filepath,'libne2001.so'))
 ne2001lib.dm_.restype = C.c_float
+
 tskylib = C.CDLL(os.path.join(filepath,'libtsky.so'))
 tskylib.psr_tsky_.restype = C.c_float
+
 slalib =  C.CDLL(os.path.join(filepath,'libsla.so'))
+slalib.galtfeq_.restype= C.c_float
+
 vxyzlib = C.CDLL(os.path.join(filepath, 'libvxyz.so'))
+vxyzlib.vxyz_.restype = C.c_float
 
 # Class definition
 class GalacticOps:
@@ -130,7 +135,7 @@ class GalacticOps:
                         C.byref(b),
                         C.byref(ra),
                         C.byref(dec),
-                        C.byref(C.c_int(1)))
+                        C.byref(C.c_int(-1)))
         if l.value>180.:
             l.value -= 360.
         return l.value, b.value
