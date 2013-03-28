@@ -414,10 +414,10 @@ class Evolve(RadialModels, GalacticOps, Beaming):
                     pulsar.period = min_p
                     break
 
-                # end of loop
-                if m == looparray[-1]:
-                    #print "step three"
-                    pulsar.period = 1.0E6
+            # reached end of loop, set default value
+            else:
+                #print "step three"
+                pulsar.period = 1.0E6
 
         #print pulsar.period, pdeath
         if pulsar.period>pdeath and self.pop.deathline:

@@ -368,7 +368,7 @@ class Populate(RadialModels, GalacticOps):
         # sum of distribution
         total = sum(dist)
         #cumulative distn
-        cumulative = [sum(dist[:x+1])/total for x in range(len(dist))]
+        cumulative = [sum(dist[:x+1])/total for x in xrange(len(dist))]
 
         rand_num = random.random()
         for i, c in enumerate(cumulative):
