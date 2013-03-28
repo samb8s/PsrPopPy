@@ -7,52 +7,51 @@ import cPickle
 
 from population import Population
 
-class PopJoin:
+def PopJoin(poplist, outfile):
     """
-    Class for joining together two population objects
+    Function to join together two population objects
     """
 
-    def __init__(self, poplist, outfile):
-        # create "main" population object, using first in list
-        
-        if len(poplist)<2:
-            print "PopJoin requires at least two populations!"
-            sys.exit()
+    # create "main" population object, using first in list
+    
+    if len(poplist)<2:
+        print "PopJoin requires at least two populations!"
+        sys.exit()
 
-        # ok, we have multiple file names. 
-        # create "main" object.
+    # ok, we have multiple file names. 
+    # create "main" object.
+    try:
+        f = open(poplist[0], 'rb')
+    except IOError:
+        print "Could not open file {0}.".format(poplist[0])
+        sys.exit()
+    pop1 = cPickle.load(f)
+    f.close()
+
+    # try to read in the other populations
+    populations=[]
+    for popfile in poplist[1:]:
         try:
-            f = open(poplist[0], 'rb')
+            f = open(popfile, 'rb')
         except IOError:
-            print "Could not open file {0}.".format(poplist[0])
+            print "Could not open file {0}.".format(popfile)
             sys.exit()
-        pop1 = cPickle.load(f)
+        
+        pop = cPickle.load(f)
         f.close()
 
-        # try to read in the other populations
-        populations=[]
-        for popfile in poplist[1:]:
-            try:
-                f = open(popfile, 'rb')
-            except IOError:
-                print "Could not open file {0}.".format(popfile)
-                sys.exit()
-            
-            pop = cPickle.load(f)
-            f.close()
+        populations.append(pop)
 
-            populations.append(pop)
+    # do the joining
+    newpop = pop1.join(populations)
 
-        # do the joining
-        newpop = pop1.join(populations)
+    # print out useful info
+    print newpop
 
-        # print out useful info
-        print newpop
-
-        # write out the new file!
-        f = open(outfile, 'wb')
-        cPickle.dump(newpop, f)
-        f.close()
+    # write out the new file!
+    f = open(outfile, 'wb')
+    cPickle.dump(newpop, f)
+    f.close()
 
 
 
@@ -69,4 +68,4 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    p = PopJoin(args.files, outfile=args.o)
+    PopJoin(args.files, outfile=args.o)

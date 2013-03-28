@@ -22,207 +22,277 @@ tskylib.psr_tsky_.restype = C.c_float
 slalib =  C.CDLL(os.path.join(filepath,'libsla.so'))
 vxyzlib = C.CDLL(os.path.join(filepath, 'libvxyz.so'))
 
-# Class definition
-class GalacticOps:
-    """
-    Class for keeping all the galactic methods together
-    
-    """
+yklib = C.CDLL(os.path.join(filepath,'libykarea.so'))
+yklib.ykr_.restype = C.c_float
+yklib.llfr_.restype = C.c_float
 
-    def __init__(self):
-        pass
-    
-    def vxyz(self, pulsar):
-        """Evolve a pulsar through galactic potential"""
-        x,y,z = pulsar.galCoords
-        vx,vy,vz = pulsar.vx, pulsar.vy, pulsar.vz
-        age_Myr = pulsar.age/1.0E6
+seedlib = C.CDLL(os.path.join(filepath,'libgetseed.so'))
+seedlib.getseed_.restype = C.c_int
 
-        x,y,z = C.c_float(x), C.c_float(y),C.c_float(z)
-        vx,vy,vz = C.c_float(vx), C.c_float(vy),C.c_float(vz)
-        age_Myr = C.c_float(age_Myr)
-        bound = C.c_long(0)
+# BEGIN FUNCTION DEFINITIONS
 
-        # run the evolution code
-        vxyzlib.vxyz_(C.byref(C.c_float(0.005)),
-                      C.byref(x),
-                      C.byref(y),
-                      C.byref(z),
-                      C.byref(age_Myr),
-                      C.byref(vx),
-                      C.byref(vy),
-                      C.byref(vz),
-                      C.byref(x),
-                      C.byref(y),
-                      C.byref(z),
-                      C.byref(vx),
-                      C.byref(vy),
-                      C.byref(vz),
-                      C.byref(bound)
-                      )
+def vxyz( pulsar):
+    """Evolve a pulsar through galactic potential"""
+    x,y,z = pulsar.galCoords
+    vx,vy,vz = pulsar.vx, pulsar.vy, pulsar.vz
+    age_Myr = pulsar.age/1.0E6
 
-        # convert the output C types to python numbers
-        pulsar.galCoords = x.value, y.value, z.value
-        pulsar.vx = vx.value
-        pulsar.vy = vy.value
-        pulsar.vz = vz.value
+    x,y,z = C.c_float(x), C.c_float(y),C.c_float(z)
+    vx,vy,vz = C.c_float(vx), C.c_float(vy),C.c_float(vz)
+    age_Myr = C.c_float(age_Myr)
+    bound = C.c_long(0)
 
+    # run the evolution code
+    vxyzlib.vxyz_(C.byref(C.c_float(0.005)),
+                  C.byref(x),
+                  C.byref(y),
+                  C.byref(z),
+                  C.byref(age_Myr),
+                  C.byref(vx),
+                  C.byref(vy),
+                  C.byref(vz),
+                  C.byref(x),
+                  C.byref(y),
+                  C.byref(z),
+                  C.byref(vx),
+                  C.byref(vy),
+                  C.byref(vz),
+                  C.byref(bound)
+                  )
+
+    # convert the output C types to python numbers
+    pulsar.galCoords = x.value, y.value, z.value
+    pulsar.vx = vx.value
+    pulsar.vy = vy.value
+    pulsar.vz = vz.value
 
 
-    def calc_dtrue(self, (x, y, z)):
-        """Calculate true distance to pulsar from the sun."""
-        rsun = 8.5 # kpc
-        return math.sqrt( x*x + (y-rsun)*(y-rsun) + z*z)
 
-    def calcXY(self, r0):
-        """Calculate the X, Y, Z alactic coords for the pulsar."""
-        # calculate a random theta in a unifrom distribution
-        theta = 2.0 * math.pi * random.random()
+def calc_dtrue( (x, y, z)):
+    """Calculate true distance to pulsar from the sun."""
+    rsun = 8.5 # kpc
+    return math.sqrt( x*x + (y-rsun)*(y-rsun) + z*z)
 
-        # calc x and y
-        x = r0 * math.cos(theta)
-        y = r0 * math.sin(theta)
+def calcXY( r0):
+    """Calculate the X, Y, Z alactic coords for the pulsar."""
+    # calculate a random theta in a unifrom distribution
+    theta = 2.0 * math.pi * random.random()
 
-        return x, y
+    # calc x and y
+    x = r0 * math.cos(theta)
+    y = r0 * math.sin(theta)
 
-    def ne2001_dist_to_dm(self, dist, gl, gb):
-        """Use NE2001 distance model."""
-        dist = C.c_float(dist)
-        gl = C.c_float(gl)
-        gb = C.c_float(gb)
-        return ne2001lib.dm_(C.byref(dist),
-                             C.byref(gl),
+    return x, y
+
+def ne2001_dist_to_dm( dist, gl, gb):
+    """Use NE2001 distance model."""
+    dist = C.c_float(dist)
+    gl = C.c_float(gl)
+    gb = C.c_float(gb)
+    return ne2001lib.dm_(C.byref(dist),
+                         C.byref(gl),
+                         C.byref(gb),
+                         C.byref(C.c_int(4)),
+                         C.byref(C.c_float(0.0)))
+
+def lmt85_dist_to_dm( dist, gl, gb):
+    """ Use Lyne, Manchester & Taylor distance model to compute DM."""
+    dist = C.c_float(dist)
+    gl = C.c_float(gl)
+    gb = C.c_float(gb)
+    return ne2001lib.dm_(C.byref(dist),
+                         C.byref(gl),
+                         C.byref(gb),
+                         C.byref(C.c_int(0)),
+                         C.byref(C.c_float(0.0)))
+
+def lb_to_radec( l, b):
+    """Convert l, b to RA, Dec using SLA fortran (should be faster)."""
+    ra = C.c_float(0.)
+    dec = C.c_float(0.)
+    l = C.c_float(l)
+    b = C.c_float(b)
+    # call with final arg 1 to do conversion in right direction!
+    slalib.galtfeq_(C.byref(l), 
+                    C.byref(b),
+                    C.byref(ra),
+                    C.byref(dec),
+                    C.byref(C.c_int(1)))
+    return ra.value, dec.value
+
+def radec_to_lb( ra, dec):
+    """Convert RA, Dec to l, b using SLA fortran.
+    Be sure to return l in range -180 -> +180"""
+    l = C.c_float(0.)
+    b = C.c_float(0.)
+    ra = C.c_float(ra)
+    dec = C.c_float(dec)
+    # call with arg = -1 to convert in reverse!
+    slalib.galtfeq_(C.byref(l), 
+                    C.byref(b),
+                    C.byref(ra),
+                    C.byref(dec),
+                    C.byref(C.c_int(1)))
+    if l.value>180.:
+        l.value -= 360.
+    return l.value, b.value
+
+def tsky( gl, gb, freq):
+    """ Calculate Galactic sky temperature for a given observing frequency (MHz), 
+        l and b."""
+    gl =  C.c_float(gl)
+    gb = C.c_float(gb)
+    freq = C.c_float(freq)
+    return tskylib.psr_tsky_(C.byref(gl),
                              C.byref(gb),
-                             C.byref(C.c_int(4)),
-                             C.byref(C.c_float(0.0)))
-
-    def lmt85_dist_to_dm(self, dist, gl, gb):
-        """ Use Lyne, Manchester & Taylor distance model to compute DM."""
-        dist = C.c_float(dist)
-        gl = C.c_float(gl)
-        gb = C.c_float(gb)
-        return ne2001lib.dm_(C.byref(dist),
-                             C.byref(gl),
-                             C.byref(gb),
-                             C.byref(C.c_int(0)),
-                             C.byref(C.c_float(0.0)))
-
-    def lb_to_radec(self, l, b):
-        """Convert l, b to RA, Dec using SLA fortran (should be faster)."""
-        ra = C.c_float(0.)
-        dec = C.c_float(0.)
-        l = C.c_float(l)
-        b = C.c_float(b)
-        # call with final arg 1 to do conversion in right direction!
-        slalib.galtfeq_(C.byref(l), 
-                        C.byref(b),
-                        C.byref(ra),
-                        C.byref(dec),
-                        C.byref(C.c_int(1)))
-        return ra.value, dec.value
-
-    def radec_to_lb(self, ra, dec):
-        """Convert RA, Dec to l, b using SLA fortran.
-        Be sure to return l in range -180 -> +180"""
-        l = C.c_float(0.)
-        b = C.c_float(0.)
-        ra = C.c_float(ra)
-        dec = C.c_float(dec)
-        # call with arg = -1 to convert in reverse!
-        slalib.galtfeq_(C.byref(l), 
-                        C.byref(b),
-                        C.byref(ra),
-                        C.byref(dec),
-                        C.byref(C.c_int(1)))
-        if l.value>180.:
-            l.value -= 360.
-        return l.value, b.value
-
-    def tsky(self, gl, gb, freq):
-        """ Calculate Galactic sky temperature for a given observing frequency (MHz), 
-            l and b."""
-        gl =  C.c_float(gl)
-        gb = C.c_float(gb)
-        freq = C.c_float(freq)
-        return tskylib.psr_tsky_(C.byref(gl),
-                                 C.byref(gb),
-                                 C.byref(freq))
+                             C.byref(freq))
 
 
-    def xyz_to_lb(self, (x, y, z)):
-        """ Convert galactic xyz in kpc to l and b in degrees."""
-        rsun = 8.5 # kpc
+def xyz_to_lb( (x, y, z)):
+    """ Convert galactic xyz in kpc to l and b in degrees."""
+    rsun = 8.5 # kpc
 
-        # distance to pulsar
-        d = math.sqrt( x*x + (rsun-y)*(rsun-y) + z*z)
-        # radial distance
-        b = math.asin(z/d)
+    # distance to pulsar
+    d = math.sqrt( x*x + (rsun-y)*(rsun-y) + z*z)
+    # radial distance
+    b = math.asin(z/d)
 
-        # take cosine
-        dcb = d * math.cos(b)
+    # take cosine
+    dcb = d * math.cos(b)
 
-        if y<=rsun:
-            if math.fabs(x/dcb) > 1.0:
-                l = 1.57079632679
-            else:
-                l = math.asin(x/dcb)
+    if y<=rsun:
+        if math.fabs(x/dcb) > 1.0:
+            l = 1.57079632679
         else:
-            if math.fabs(x/dcb) > 1.0:
-                l = 0.0
-            else:
-                l = math.acos(x/dcb)
+            l = math.asin(x/dcb)
+    else:
+        if math.fabs(x/dcb) > 1.0:
+            l = 0.0
+        else:
+            l = math.acos(x/dcb)
 
-            l += 1.57079632679
-            if x < 0.:
-                l -= 6.28318530718
+        l += 1.57079632679
+        if x < 0.:
+            l -= 6.28318530718
 
-        # convert back to degrees
-        l = math.degrees(l)
-        b = math.degrees(b)
+    # convert back to degrees
+    l = math.degrees(l)
+    b = math.degrees(b)
 
-        # convert to -180 < l < 180
-        if l > 180.0:
-            l -= 360.0
+    # convert to -180 < l < 180
+    if l > 180.0:
+        l -= 360.0
 
-        return l, b
+    return l, b
 
-    def lb_to_xyz(self, gl, gb, dist):
-        """ Convert galactic coords to Galactic XYZ."""
-        rsun = 8.5 # kpc
+def lb_to_xyz( gl, gb, dist):
+    """ Convert galactic coords to Galactic XYZ."""
+    rsun = 8.5 # kpc
 
-        l = math.radians(gl)
-        b = math.radians(gb)
+    l = math.radians(gl)
+    b = math.radians(gb)
 
-        x = dist * math.cos(b) * math.sin(l)
-        y = rsun - dist * math.cos(b) * math.cos(l)
-        z = dist * math.sin(b)
+    x = dist * math.cos(b) * math.sin(l)
+    y = rsun - dist * math.cos(b) * math.cos(l)
+    z = dist * math.sin(b)
 
-        return (x, y, z)
+    return (x, y, z)
 
-    def scatter_bhat(self, dm, scatterindex, freq_mhz):
-        """Calculate bhat et al 2004 scattering timescale for freq in MHz."""
-        logtau = -6.46 + 0.154*math.log10(dm) + \
-                    1.07*math.log10(dm)*math.log10(dm) + \
-                    scatterindex*math.log10(freq_mhz/1000.0)
-        
-        # seems like scattering timescale is tooooooo big? Definitely my weffs are too big
-        # return tau with power scattered with a gaussian, width 0.8
-        return math.pow(10.0, random.gauss(logtau, 0.8)) 
+def scatter_bhat( dm, scatterindex, freq_mhz):
+    """Calculate bhat et al 2004 scattering timescale for freq in MHz."""
+    logtau = -6.46 + 0.154*math.log10(dm) + \
+                1.07*math.log10(dm)*math.log10(dm) + \
+                scatterindex*math.log10(freq_mhz/1000.0)
+    
+    # seems like scattering timescale is tooooooo big? Definitely my weffs are too big
+    # return tau with power scattered with a gaussian, width 0.8
+    return math.pow(10.0, random.gauss(logtau, 0.8)) 
 
-    def _glgboffset(self, gl1, gb1, gl2, gb2):
-        """Calculate the angular distance (deg) between two
-        points in galactic coordinates"""
-        # Angular offset in polar coordinates
-        # taken brazenly from
-        #http://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php
+def _glgboffset( gl1, gb1, gl2, gb2):
+    """Calculate the angular distance (deg) between two
+    points in galactic coordinates"""
+    # Angular offset in polar coordinates
+    # taken brazenly from
+    #http://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php
 
-        # requires gb conversion from +90 -> -90 to 0 -> 180
-        gb1 = 90.0 - gb1
-        gb2 = 90.0 - gb2
+    # requires gb conversion from +90 -> -90 to 0 -> 180
+    gb1 = 90.0 - gb1
+    gb2 = 90.0 - gb2
 
-        term1 = math.cos(math.radians(gb1)) * math.cos(math.radians(gb2))
-        term2 = math.sin(math.radians(gb1)) * math.sin(math.radians(gb2)) 
-        term3 = math.cos(math.radians(gl1) - math.radians(gl2))
-        cosalpha = term1 + term2*term3
+    term1 = math.cos(math.radians(gb1)) * math.cos(math.radians(gb2))
+    term2 = math.sin(math.radians(gb1)) * math.sin(math.radians(gb2)) 
+    term3 = math.cos(math.radians(gl1) - math.radians(gl2))
+    cosalpha = term1 + term2*term3
 
-        return math.degrees(math.acos(cosalpha))
+    return math.degrees(math.acos(cosalpha))
+
+def seed():
+    return C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
+
+def slabdist():
+    x = -15.0 + random.random()*30.0
+    y = -15.0 + random.random()*30.0
+    z = -5.0 + random.random() * 10.0 
+
+    return (x, y, z)
+
+def diskdist():
+    x = -15.0 + random.random()*30.0
+    y = -15.0 + random.random()*30.0
+    return (x, y, 0.0)
+
+def lfl06():
+    """lfl06 model, using Y&K"""
+    #print self.seed
+    return yklib.llfr_(C.byref(seed()))
+
+def ykr():
+    """ Y&K Model"""
+    return yklib.ykr_(C.byref(seed()))
+
+def spiralize( r):
+    """ Make spiral arms, as seen in Fuacher-Giguere & Kaspi 2006"""
+
+    # definitions
+    k_list = [4.25,4.25,4.89,4.89]
+    r0_list = [3.48,3.48,4.9,4.9]
+    theta0_list = [1.57,4.71,4.09,0.95]
+    
+    # select a spiral arm ( 1->4)
+    arm = random.choice([0,1,2,3]) 
+    k = k_list[arm]
+    r0 = r0_list[arm]
+    theta0 = theta0_list[arm]
+
+    # pick an angle
+    theta = k * math.log(r/r0) + theta0
+
+    # blurring angle
+    angle = 2*math.pi * random.random() * math.exp(-0.35* r)
+
+    if random.random()<0.5:
+        angle = 0 - angle
+
+    #modify theta
+    theta += angle
+
+    # blur in radial direction a little
+    dr = math.fabs(random.gauss(0.0, 0.5 * r))
+    angle = random.random() * 2.0 * math.pi
+    dx=dr * math.cos(angle)
+    dy = dr * math.sin(angle)
+
+    x = r * math.cos(theta) + dx
+    y = r * math.cos(theta) + dy
+
+    return x, y
+
+def _double_sided_exp( scale, origin=0.0):
+    """Exponential distribution around origin, with scale height scale."""
+    if scale == 0.0:
+        return origin
+
+    rn = random.random()
+    sign = random.choice([-1.0, 1.0])
+
+    return origin + sign * scale * math.log(rn)

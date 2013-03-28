@@ -6,13 +6,13 @@ import sys
 import math
 import random
 
-from galacticops import GalacticOps
+import galacticops as go
 from population import Population
 
 class CoordinateException(Exception):
     pass
 
-class Pointing(GalacticOps):
+class Pointing:
     """Simple class -- pointing has a gl and gb position"""
 
     def __init__(self, coord1, coord2, coordtype):
@@ -28,7 +28,7 @@ class Pointing(GalacticOps):
             dec = coord2
 
             # convert to l and b :)
-            gl,gb = self.radec_to_lb(ra, dec)
+            gl,gb = go.radec_to_lb(ra, dec)
 
             if gl>180.:
                 gl -= 360.
@@ -42,7 +42,7 @@ class Pointing(GalacticOps):
             self.gl = coord1
             self.gb = coord2
 
-class Survey(GalacticOps):
+class Survey:
     """Class to store survey parameters and methods"""
     def __init__(self, surveyName):
         """Read in a survey file and obtain the survey parameters"""
@@ -205,7 +205,7 @@ class Survey(GalacticOps):
             return False
 
         # need to compute ra/dec of pulsar from the l and b (galtfeq)
-        ra, dec = self.lb_to_radec(pulsar.gl, pulsar.gb)
+        ra, dec = go.lb_to_radec(pulsar.gl, pulsar.gb)
 
         # are ra, dec outside region?
         if ra > self.RAmax or ra < self.RAmin:
@@ -241,7 +241,7 @@ class Survey(GalacticOps):
                 continue
 
             #if close-ish calc offset
-            offset_deg = self._glgboffset(point.gl,
+            offset_deg = go._glgboffset(point.gl,
                                           point.gb,
                                           pulsar.gl,
                                           pulsar.gb)
