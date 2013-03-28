@@ -9,7 +9,9 @@ import ctypes as C
 
 # get the FORTRAN libraries
 __dir__ = os.path.dirname(os.path.abspath(__file__))
-filepath = os.path.join(__dir__, 'fortran')
+__libdir__ = os.path.dirname(__dir__)
+filepath = os.path.join(__libdir__, 'fortran')
+
 yklib = C.CDLL(filepath+'/libykarea.so')
 yklib.ykr_.restype = C.c_float
 yklib.llfr_.restype = C.c_float

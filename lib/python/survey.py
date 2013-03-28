@@ -49,7 +49,8 @@ class Survey(GalacticOps):
         try:
             # get path to surveys directory
             __dir__ = os.path.dirname(os.path.abspath(__file__))
-            filepath = os.path.join(__dir__, 'surveys', surveyName)
+            __libdir__ = os.path.dirname(__dir__)
+            filepath = os.path.join(__libdir__, 'surveys', surveyName)
             f = open(filepath, 'r')
         except IOError:
             print 'No such file: ',surveyName

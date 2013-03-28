@@ -4,7 +4,7 @@
 	character*80 path
 	integer lpth
 
-    path='/Users/sbates/Documents/Physics/Pulsars/code/Python/pypop/fortran'
+    path='/Users/sbates/Documents/Physics/Pulsars/code/python/pypop/lib/fortran'
 	lpth=index(path,' ')-1
 
 	end

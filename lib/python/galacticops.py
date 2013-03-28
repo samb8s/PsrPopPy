@@ -8,14 +8,17 @@ import random
 import ctypes as C
 
 
-# get the c libraries
+# get the FORTRAN libraries
 __dir__ = os.path.dirname(os.path.abspath(__file__))
-filepath = os.path.join(__dir__, 'fortran')
+__libdir__ = os.path.dirname(__dir__)
+filepath = os.path.join(__libdir__, 'fortran')
 
 ne2001lib = C.CDLL(os.path.join(filepath,'libne2001.so'))
 ne2001lib.dm_.restype = C.c_float
+
 tskylib = C.CDLL(os.path.join(filepath,'libtsky.so'))
 tskylib.psr_tsky_.restype = C.c_float
+
 slalib =  C.CDLL(os.path.join(filepath,'libsla.so'))
 vxyzlib = C.CDLL(os.path.join(filepath, 'libvxyz.so'))
 
