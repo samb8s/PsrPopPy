@@ -100,6 +100,7 @@ c
          call density(x,y,z,ne1,ne2,nea,negum)
          psr_ne=ne1+ne2+nea+negum
       else if (dmod.eq.4) then
+          write(*,*) "made it into psr_ne.f"
             call density_2001(x,y,z,
      .                ne1,ne2,nea,negc,nelism,necN,nevN,
      .                F1, F2, Fa, Fgc, Flism, FcN, FvN, 

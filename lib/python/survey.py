@@ -284,14 +284,14 @@ class Survey:
 
         # Dunc's code here uses a ^-2.6 to convert frequencies
         # don't think I need to do this - I'm using the frequency in call
-        Ttot = self.tsys + self.tsky(pulsar.gl, pulsar.gb, self.freq)
+        Ttot = self.tsys + go.tsky(pulsar.gl, pulsar.gb, self.freq)
 
         # calc dispersion smearing across single channel
         tdm = self._dmsmear(pulsar)
 
         # calculate bhat et al scattering time (inherited from GalacticOps)
         # in units of ms
-        tscat = self.scatter_bhat(pulsar.dm, pulsar.scindex, self.freq)
+        tscat = go.scatter_bhat(pulsar.dm, pulsar.scindex, self.freq)
 
         # Calculate the effective width
         weff_ms = math.sqrt(pulsar.width_ms()**2 + self.tsamp**2 + tdm**2 + tscat**2)

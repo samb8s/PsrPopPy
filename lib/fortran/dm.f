@@ -34,7 +34,6 @@ c
       data first/.true./
       save
       if (dmod.eq.4) then
-          if (first) write(lout,*) 'NE2001 distance model'
           if (first) write(lout,*) 
 	      first = .false.
          call dmdsm(l*dr,b*dr,-1,dm,dkpc,limit,s1,s2,s3,s4)

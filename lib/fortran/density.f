@@ -28,7 +28,7 @@ C  re-creates close approximations to curves fitting the arm axes.
       save
       common/params/n1h1,h1,A1,F1,n2,h2,A2,F2,na,ha,wa,Aa,Fa,Fg
       common/armcom/arm(4,500,2),kmax(4)
-      character*80 path
+      character*120 path
       integer ldir,lun
       data first/.true./,ks/3/,NN/7/
       data rad/57.2957795/,R0/8.5/
