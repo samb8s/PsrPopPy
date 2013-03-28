@@ -22,7 +22,7 @@ It may also be necessary to do `setenv CFLAGS -m32' before running the compile s
 Usage
 =====
 
-I'd recommend adding the `lib/python' directory to your PYTHONPATH and adding the `bin' directory to your PATH. This should then leave you set up to run the code from wherever you like.
+I'd recommend adding the `lib/python` directory to your PYTHONPATH and adding the `bin` directory to your PATH. This should then leave you set up to run the code from wherever you like.
 
 
 A brief description of the "executables" follows.
