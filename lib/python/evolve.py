@@ -18,8 +18,10 @@ from survey import Survey
 
 from progressbar import ProgressBar
 
+
 class evolveException(Exception):
     pass
+
 
 def write(pop, outf="evolve.model"):
     """Writes the population object to a binary file using cPickle."""
