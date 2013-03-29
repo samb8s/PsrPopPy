@@ -606,7 +606,7 @@ c	warm:	arm width factors that multiply nominal arm width
 c	harm:	arm scale height factors
 c	farm:	factors that multiply n_e^2 when calculating SM
 
-        character fullname*120
+        character fullname*200
 
 	integer narmsmax
 	parameter (narmsmax=5)
@@ -727,7 +727,7 @@ c see get_parameters for definitions of narm, warm, harm.
 	real th3a, th3b, fac3min, test3
 	real th2a, th2b, fac2min, test2
 
-        character fullname*120
+        character fullname*200
 	
 c function:
 	real sech2
@@ -1074,7 +1074,7 @@ c     parameter (xgc=-0.010, ygc=0., zgc=-0.020)
 c     parameter (rgc=0.145)
 c     parameter (hgc=0.026)
 
-      character fullname*120
+      character fullname*200
  
       real rr, zz 
       real arg
@@ -1217,7 +1217,7 @@ c and Bhat et al. 1999
 	real x,y,z,FLISM
         integer wLISM
 
-	character fullname*120
+	character fullname*200
 
 	real
      .    aldr,bldr,cldr,xldr,yldr,zldr,thetaldr,neldr0,Fldr,
@@ -1805,7 +1805,7 @@ c                 1 => uniform and truncated at 1/e
 	real slc, clc, sbc, cbc
 	real rgalc
 	
-	character fullname*120
+	character fullname*200
 
 	real arg
 
@@ -1944,7 +1944,7 @@ c                 1 => uniform and truncated at 1/e
 	real rsun
 	parameter (rsun=8.5)
 	
-	character fullname*120
+	character fullname*200
 
 	logical first
 	data first/.true./
@@ -2339,7 +2339,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       implicit none
 
-      character path*120, filename*(*), fullname*(*)
+      character path*200, filename*(*), fullname*(*)
       integer length,lpth
       call getpath(path,lpth) 
       path=path(1:lpth)//'/lookuptables'

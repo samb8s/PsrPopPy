@@ -11,22 +11,22 @@ import ctypes as C
 # get the FORTRAN libraries
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 __libdir__ = os.path.dirname(__dir__)
-filepath = os.path.join(__libdir__, 'fortran')
+fortranpath = os.path.join(__libdir__, 'fortran')
 
-ne2001lib = C.CDLL(os.path.join(filepath,'libne2001.so'))
+ne2001lib = C.CDLL(os.path.join(fortranpath,'libne2001.so'))
 ne2001lib.dm_.restype = C.c_float
 
-tskylib = C.CDLL(os.path.join(filepath,'libtsky.so'))
+tskylib = C.CDLL(os.path.join(fortranpath,'libtsky.so'))
 tskylib.psr_tsky_.restype = C.c_float
 
-slalib =  C.CDLL(os.path.join(filepath,'libsla.so'))
-vxyzlib = C.CDLL(os.path.join(filepath, 'libvxyz.so'))
+slalib =  C.CDLL(os.path.join(fortranpath,'libsla.so'))
+vxyzlib = C.CDLL(os.path.join(fortranpath, 'libvxyz.so'))
 
-yklib = C.CDLL(os.path.join(filepath,'libykarea.so'))
+yklib = C.CDLL(os.path.join(fortranpath,'libykarea.so'))
 yklib.ykr_.restype = C.c_float
 yklib.llfr_.restype = C.c_float
 
-seedlib = C.CDLL(os.path.join(filepath,'libgetseed.so'))
+seedlib = C.CDLL(os.path.join(fortranpath,'libgetseed.so'))
 seedlib.getseed_.restype = C.c_int
 
 # BEGIN FUNCTION DEFINITIONS
@@ -143,9 +143,14 @@ def tsky( gl, gb, freq):
     gl =  C.c_float(gl)
     gb = C.c_float(gb)
     freq = C.c_float(freq)
+    inpath = C.c_char_p(fortranpath)
+    linpath = C.c_int(len(fortranpath))
     return tskylib.psr_tsky_(C.byref(gl),
                              C.byref(gb),
                              C.byref(freq))
+                             #C.byref(inpath),
+                             #C.byref(linpath)
+                            #)
 
 
 def xyz_to_lb( (x, y, z)):
