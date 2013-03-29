@@ -89,22 +89,30 @@ def ne2001_dist_to_dm( dist, gl, gb):
     dist = C.c_float(dist)
     gl = C.c_float(gl)
     gb = C.c_float(gb)
+    inpath = C.create_string_buffer(fortranpath)
+    linpath = C.c_int(len(fortranpath))
     return ne2001lib.dm_(C.byref(dist),
                          C.byref(gl),
                          C.byref(gb),
                          C.byref(C.c_int(4)),
-                         C.byref(C.c_float(0.0)))
+                         C.byref(C.c_float(0.0)),
+                         C.byref(inpath),
+                         C.byref(linpath))
 
 def lmt85_dist_to_dm( dist, gl, gb):
     """ Use Lyne, Manchester & Taylor distance model to compute DM."""
     dist = C.c_float(dist)
     gl = C.c_float(gl)
     gb = C.c_float(gb)
+    inpath = C.create_string_buffer(fortranpath)
+    linpath = C.c_int(len(fortranpath))
     return ne2001lib.dm_(C.byref(dist),
                          C.byref(gl),
                          C.byref(gb),
                          C.byref(C.c_int(0)),
-                         C.byref(C.c_float(0.0)))
+                         C.byref(C.c_float(0.0)),
+                         C.byref(inpath),
+                         C.byref(linpath))
 
 def lb_to_radec( l, b):
     """Convert l, b to RA, Dec using SLA fortran (should be faster)."""
@@ -143,14 +151,14 @@ def tsky( gl, gb, freq):
     gl =  C.c_float(gl)
     gb = C.c_float(gb)
     freq = C.c_float(freq)
-    inpath = C.c_char_p(fortranpath)
+    inpath = C.create_string_buffer(fortranpath)
     linpath = C.c_int(len(fortranpath))
     return tskylib.psr_tsky_(C.byref(gl),
                              C.byref(gb),
-                             C.byref(freq))
-                             #C.byref(inpath),
-                             #C.byref(linpath)
-                            #)
+                             C.byref(freq),
+                             C.byref(inpath),
+                             C.byref(linpath)
+                            )
 
 
 def xyz_to_lb( (x, y, z)):
