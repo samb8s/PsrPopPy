@@ -1,5 +1,5 @@
 c==============================================================================
-      real function psr_ne(x, y, z, dmod)
+      real function psr_ne(x, y, z, dmod, ip, lip)
 c==============================================================================
 c
 c     General function to compute the local electron
@@ -35,6 +35,8 @@ c
       real negum,a
       real lgn, bgn, dgn, rgn
       logical first
+      character ip*(*)
+      integer lip
       data first /.true./
       data lgn/260.0/,bgn/0.0/,dgn/0.5/,rgn/0.115/
       real xgn, ygn, zgn, alpha, psr_dist, r, sech2
@@ -97,7 +99,7 @@ c
      &  0.2*exp(-1.0*abs(z/0.15))*exp(-1.0*((R-4.0)**2/4.0)) +
      &  (0.28*alpha)
       else if (dmod.eq.3) then
-         call density(x,y,z,ne1,ne2,nea,negum)
+         call density(x,y,z,ne1,ne2,nea,negum,ip,lip)
          psr_ne=ne1+ne2+nea+negum
       else if (dmod.eq.4) then
           write(*,*) "made it into psr_ne.f"

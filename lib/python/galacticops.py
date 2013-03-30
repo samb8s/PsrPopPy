@@ -104,8 +104,12 @@ def lmt85_dist_to_dm( dist, gl, gb):
     dist = C.c_float(dist)
     gl = C.c_float(gl)
     gb = C.c_float(gb)
+    # passing path to fortran dir and the length of 
+    # this path --- removes need to edit getpath.f 
+    # during installation
     inpath = C.create_string_buffer(fortranpath)
     linpath = C.c_int(len(fortranpath))
+
     return ne2001lib.dm_(C.byref(dist),
                          C.byref(gl),
                          C.byref(gb),

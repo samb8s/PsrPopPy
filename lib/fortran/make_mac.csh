@@ -4,7 +4,7 @@ setenv CFLAGS -m32
 
 set gf = /usr/local/bin/gfortran
 
-$gf -O2 -fPIC -fno-second-underscore -c -I. *.f
+$gf -O2 -fPIC -fno-second-underscore -c -I. -std=legacy *.f
 
 $gf -dynamiclib -o libne2001.so -fno-second-underscore ne2001.o dm.o psr_ne.o dist.o calc_xyz.o density.o glun.o
 $gf -dynamiclib -o libtsky.so -fno-second-underscore psr_tsky.o glun.o

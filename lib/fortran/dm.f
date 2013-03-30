@@ -60,7 +60,7 @@ c
 c
 c        local electron density
 c
-         locne = psr_ne(x, y, z, dmod)           
+         locne = psr_ne(x, y, z, dmod, ip, lip)
 c
 c        integrated dm
 c
