@@ -6,12 +6,14 @@ c Nov 1999 - May 2002: development versions
 c 1992-1993: TC93 version
 
       subroutine dmdsm(
-     .   l,b,ndir,dmpsr,dist,limit,sm,smtau,smtheta,smiso)
+     .   l,b,ndir,dmpsr,dist,limit,sm,smtau,smtheta,smiso,ip,lip)
 
       implicit none
       real l,b,dmpsr,dist,sm,smtau,smtheta,smiso
       integer ndir
       character*1 limit
+      character ip*(*)
+      integer lip
 
 c  Computes pulsar distance and scattering measure
 c  from model of Galactic electron distribution.
@@ -159,7 +161,7 @@ c through read-in of parameter file:
      .        ne1,ne2,nea,negc,nelism,necN,nevN,
      .        F1val, F2val, Faval, Fgc, Flism, FcN, FvN,
      .        whicharm, wlism, wldr, wlhb, wlsb, wloopI,
-     .        hitclump, hitvoid, wvoid)
+     .        hitclump, hitvoid, wvoid, ip, lip)
 c       write(6,*) 'ne1,ne2,negc,nelism,necN,nevN = ',
 c    .              ne1,ne2,negc,nelism,necN,nevN
 	first=.false.
@@ -241,7 +243,7 @@ c  routine will work for n_e models with large n_e near the Sun.
      .        ne1,ne2,nea,negc,nelism,necN,nevN,
      .        F1val, F2val, Faval, Fgc, Flism, FcN, FvN,
      .        whicharm, wlism, wldr, wlhb, wlsb, wloopI,
-     .        hitclump, hitvoid, wvoid)
+     .        hitclump, hitvoid, wvoid,ip,lip)
 	  endif
         
 	  if(ndir.ge.3) then 
@@ -249,7 +251,7 @@ c  routine will work for n_e models with large n_e near the Sun.
      .        ne1,ne2,nea,negc,nelism,necN,nevN,
      .        F1val, F2val, Faval, Fgc, Flism, FcN, FvN,
      .        whicharm, wlism, wldr, wlhb, wlsb, wloopI,
-     .        hitclump, hitvoid, wvoid)
+     .        hitclump, hitvoid, wvoid,ip,lip)
 	  endif
 
 
@@ -502,7 +504,7 @@ c returns densities, F parameters and weights of the various components
      .                ne1,ne2,nea,negc,nelism,necN,nevN,
      .                F1, F2, Fa, Fgc, Flism, FcN, FvN, 
      .                whicharm, wlism, wLDR, wLHB, wLSB, wLOOPI,
-     .                hitclump, hitvoid, wvoid)
+     .                hitclump, hitvoid, wvoid, ip,lip)
 
 c----------------------------------------------------------------------------
 c  Returns seven components of the free electron density of the 
@@ -544,6 +546,8 @@ c----------------------------------------------------------------------------
         real F1, F2, Fa, Fgc, Flism, FcN, FvN 
         integer whicharm,wlism,wLDR,wLHB,wLSB,wLOOPI,hitclump,hitvoid
         integer wvoid
+        character ip*(*)
+        integer lip
 
 	integer wg1, wg2, wga, wggc, wglism, wgcN, wgvN
 	common /modelflags/ wg1, wg2, wga, wggc, wglism, wgcN, wgvN
@@ -563,17 +567,17 @@ c	neclumpN
 c	nevoidN
 
 	if(first) then			! get parameters first time through
-	   call get_parameters
+	   call get_parameters(ip,lip)
 	   first=.false.
 	endif
 
 	ne1 = ne_outer(x,y,z, F1)
 	ne2 = ne_inner(x,y,z, F2)
-	nea = ne_arms_log_mod(x,y,z,whicharm,Fa)
-        negc = ne_gc(x,y,z, Fgc)
-        nelism = ne_lism(x,y,z,Flism,wlism,wldr,wlhb,wlsb,wloopI)
-        call neclumpN(x,y,z,necN,FcN,hitclump)
-        call nevoidN(x,y,z,nevN,FvN,hitvoid,wvoid)
+	nea = ne_arms_log_mod(x,y,z,whicharm,Fa,ip,lip)
+        negc = ne_gc(x,y,z, Fgc,ip,lip)
+        nelism = ne_lism(x,y,z,Flism,wlism,wldr,wlhb,wlsb,wloopI,ip,lip)
+        call neclumpN(x,y,z,necN,FcN,hitclump, ip,lip)
+        call nevoidN(x,y,z,nevN,FvN,hitvoid,wvoid, ip, lip)
 
 c       write(21, "(3(f8.2,1x),5(f8.4,1x),i2)") 
 c    .       x,y,z,ne1,ne2,nea,nelism,negc,
@@ -582,7 +586,7 @@ c    .       whicharm
 	return
 	end
 
-	SUBROUTINE GET_PARAMETERS
+	SUBROUTINE GET_PARAMETERS(ip, lip)
 c-----------------------------------------------------------------------
 	implicit none
 	real rsun
@@ -592,6 +596,8 @@ c-----------------------------------------------------------------------
 c control flags for turning components on and off:
 
 	integer wg1, wg2, wga, wggc, wglism, wgcN, wgvN
+      character ip*(*)
+      integer lip
 	common /modelflags/ wg1, wg2, wga, wggc, wglism, wgcN, wgvN
 
 c parameters of large-scale components (inner+outer+arm components):
@@ -606,7 +612,7 @@ c	warm:	arm width factors that multiply nominal arm width
 c	harm:	arm scale height factors
 c	farm:	factors that multiply n_e^2 when calculating SM
 
-        character fullname*120
+        character fullname*200
 
 	integer narmsmax
 	parameter (narmsmax=5)
@@ -618,7 +624,7 @@ c	farm:	factors that multiply n_e^2 when calculating SM
 	real negc0, Fgc0
         common /gcparms/ negc0, Fgc0
         
-        call mkfile('gal01.inp',fullname)
+        call mkfile('gal01.inp',fullname,ip,lip)
         open(11,file=fullname,status='old')
 c	   open(11,file='gal01.inp',status='old')
 	   read(11,*)
@@ -644,7 +650,7 @@ c    .           farm(1), farm(2), farm(3), farm(4), farm(5)
 	end
 
 
-	REAL FUNCTION NE_ARMS_LOG_MOD(x,y,z, whicharm, Farms)
+	REAL FUNCTION NE_ARMS_LOG_MOD(x,y,z, whicharm, Farms, ip, lip)
 c-----------------------------------------------------------------------
 c  Spiral arms are defined as logarithmic spirals using the 
 c    parameterization in Wainscoat et al. 1992, ApJS, 83, 111-146.
@@ -727,7 +733,9 @@ c see get_parameters for definitions of narm, warm, harm.
 	real th3a, th3b, fac3min, test3
 	real th2a, th2b, fac2min, test2
 
-        character fullname*120
+        character fullname*200
+        character ip*(*)
+        integer lip
 	
 c function:
 	real sech2
@@ -737,7 +745,7 @@ c function:
 	if(first) then			! Reconstruct spiral arm axes
 
 c read arm parameters:
-        call mkfile('ne_arms_log_mod.inp',fullname)
+        call mkfile('ne_arms_log_mod.inp',fullname,ip,lip)
         open(11,file=fullname,status='old')
 c        open(11, file='ne_arms_log_mod.inp', status='old')
 c       write(6,*) 'ne_arms_log_mod.inp:'
@@ -1033,7 +1041,7 @@ c (referred to as 'Galactic center component' in circa TC93 density.f)
 	end
 
 
-      REAL FUNCTION NE_GC(x, y, z, F_gc)
+      REAL FUNCTION NE_GC(x, y, z, F_gc, ip, lip)
 c-----------------------------------------------------------------------
 c     Determines the contribution of the Galactic center to the free 
 c     electron density of the interstellar medium at Galactic location 
@@ -1074,7 +1082,9 @@ c     parameter (xgc=-0.010, ygc=0., zgc=-0.020)
 c     parameter (rgc=0.145)
 c     parameter (hgc=0.026)
 
-      character fullname*120
+      character fullname*200
+      character ip*(*)
+      integer lip
  
       real rr, zz 
       real arg
@@ -1094,7 +1104,7 @@ c     parameter (hgc=0.026)
       F_gc = 0.
 
       if(first) then
-        call mkfile('ne_gc.inp',fullname)
+        call mkfile('ne_gc.inp',fullname,ip,lip)
         open(11,file=fullname,status='old')
 c        open(11, file='ne_gc.inp', status='old')
           read(11,*)
@@ -1212,12 +1222,14 @@ c are based largely on work by Toscano et al. 1999
 c and Bhat et al. 1999
 
 	real function ne_LISM(x,y,z,FLISM,wLISM,
-     .                       wldr, wlhb,wlsb,wloopI)		
+     .                    wldr, wlhb,wlsb,wloopI, ip, lip)
 	implicit none
 	real x,y,z,FLISM
         integer wLISM
 
-	character fullname*120
+	character fullname*200
+        character ip*(*)
+        integer lip
 
 	real
      .    aldr,bldr,cldr,xldr,yldr,zldr,thetaldr,neldr0,Fldr,
@@ -1248,7 +1260,7 @@ c other variables:
 	integer wLDR, wLSB, wLHB, wLOOPI
 
 	if(first) then					! read parameters for LISM
-        call mkfile('nelism.inp',fullname)
+        call mkfile('nelism.inp',fullname,ip,lip)
         open(11,file=fullname,status='old')
 c	  open(11,file='nelism.inp',status='unknown')
 	  read(11,*)
@@ -1751,7 +1763,7 @@ c           write(99,*) x,y,z,r, neLOOPI, ' inside shell'
 	return
 	end
 	
-	subroutine neclumpN(x,y,z,necN,FcN,hitclump)
+	subroutine neclumpN(x,y,z,necN,FcN,hitclump, ip, lip)
 c returns electron density necN and fluctuation parameter FcN 
 c at position designated by l,b,d,x,y,z c for a set of  
 c clumps with parameters read in from file  neclumpN.dat
@@ -1778,6 +1790,8 @@ c	character*1 type(nclumpsmax)
         real xc(nclumpsmax), yc(nclumpsmax), zc(nclumpsmax)
         real nec(nclumpsmax), rc(nclumpsmax), Fc(nclumpsmax)
         integer edge(nclumpsmax)
+        character ip*(*)
+        integer lip
 	integer nclumps
 	integer hitclumpflag
 	common /clumps/ nclumps, hitclumpflag(nclumpsmax)
@@ -1805,7 +1819,7 @@ c                 1 => uniform and truncated at 1/e
 	real slc, clc, sbc, cbc
 	real rgalc
 	
-	character fullname*120
+	character fullname*200
 
 	real arg
 
@@ -1830,7 +1844,7 @@ c losname = useful name
 	  j=1
 c	  write(6,*) 'reading neclumpN.NE2001.dat'
 
-        call mkfile('neclumpN.NE2001.dat',fullname)
+        call mkfile('neclumpN.NE2001.dat',fullname,ip,lip)
         open(luclump,file=fullname,status='old')
 c	  open(luclump, file='neclumpN.NE2001.dat', status='old')
 	  read(luclump,*)				! label line
@@ -1885,7 +1899,7 @@ c    	    necN = necN + nec(j) * exp(-arg)
 
 
 
-	subroutine nevoidN(x,y,z,nevN,FvN,hitvoid,wvoid)
+	subroutine nevoidN(x,y,z,nevN,FvN,hitvoid,wvoid,ip,lip)
 c returns electron density nevN and fluctuation parameter FvN 
 c at position designated by l,b,d,x,y,z c for a set of  
 c voids with parameters read in from file  nevoidN.dat
@@ -1906,6 +1920,9 @@ c	wvoid = 0,1:	 void weight
 
 	integer nvoidsmax
 	parameter (nvoidsmax=2000)
+
+      character ip*(*)
+      integer lip
 
 c	character*12 losname(nvoidsmax)
 	real lv(nvoidsmax), bv(nvoidsmax), dv(nvoidsmax)
@@ -1944,7 +1961,7 @@ c                 1 => uniform and truncated at 1/e
 	real rsun
 	parameter (rsun=8.5)
 	
-	character fullname*120
+	character fullname*200
 
 	logical first
 	data first/.true./
@@ -1967,7 +1984,7 @@ c first time through, calculate xc, yc, zc
 	if(first) then 		!read void parameters
 	  j=1
 c	  write(6,*) 'reading nevoidN.dat.clean'
-        call mkfile('nevoidN.NE2001.dat',fullname)
+        call mkfile('nevoidN.NE2001.dat',fullname,ip,lip)
         open(luvoid,file=fullname,status='old')
 c	  open(luvoid, file='nevoidN.NE2001.dat', status='old')
 	  read(luvoid,*)				! label line
@@ -2335,14 +2352,17 @@ c
       end
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine mkfile(filename,fullname)
+      subroutine mkfile(filename,fullname,ip,lip)
 
       implicit none
 
-      character path*120, filename*(*), fullname*(*)
+      character ip*(*)
+      integer lip
+      character path*200, filename*(*), fullname*(*)
       integer length,lpth
-      call getpath(path,lpth) 
-      path=path(1:lpth)//'/lookuptables'
+c      call getpath(path,lpth) 
+c      path=path(1:lpth)//'/lookuptables'
+      path = ip(1:lip)//'/lookuptables'
       call makefilename(path,filename,fullname,length)
 
       end

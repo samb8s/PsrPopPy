@@ -1,4 +1,4 @@
-      subroutine density(x,y,z,ne1,ne2,nea,negum)
+      subroutine density(x,y,z,ne1,ne2,nea,negum,ip,lip)
 
 c  Returns four components of the free electron density of the 
 c  interstellar medium at Galactic location (x,y,z).  Add them together 
@@ -28,8 +28,10 @@ C  re-creates close approximations to curves fitting the arm axes.
       save
       common/params/n1h1,h1,A1,F1,n2,h2,A2,F2,na,ha,wa,Aa,Fa,Fg
       common/armcom/arm(4,500,2),kmax(4)
-      character*80 path
+      character*120 path
       integer ldir,lun
+      character ip*(*)
+      integer lip
       data first/.true./,ks/3/,NN/7/
       data rad/57.2957795/,R0/8.5/
       data th1/164.,200.,240.,280.,290.,315.,330.,
@@ -47,7 +49,7 @@ C  re-creates close approximations to curves fitting the arm axes.
 
         Fg=0.                           ! Fluctuation parameter for Gum
 	if(first) then			! Reconstruct spiral arm axes
-	call getpath(path,ldir)
+c	call getpath(path,ldir)
         call glun(lun)
 	do 20 j=1,4
 	dth=5.0/r1(1,j)
@@ -61,7 +63,7 @@ C  re-creates close approximations to curves fitting the arm axes.
 	arm(j,k,2)= -(R0/7.46)*r*cos(th/rad)
 10	continue
 20	kmax(j)=k
-        open(lun,file=path(1:ldir)//'/lookuptables/gal.dat')
+        open(lun,file=ip(1:lip)//'/lookuptables/gal.dat')
 	read(lun,1020) n1h1,h1,A1,F1,n2,h2,A2,F2,na,ha,wa,Aa,Fa
 1020	format(6x,f8.0)
 	close(lun)

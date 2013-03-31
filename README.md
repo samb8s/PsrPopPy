@@ -13,20 +13,27 @@ The other main requirement is [matplotlib](matplotlib.sourceforge.net), which is
 Compiling
 ---------
 
-Inside the fortran directory, edit getpath.f and set the path variable to point to the current (ie. the fortran) directory. Still in the fortran directory, edit make_mac.csh or make_linux.csh (as appropriate) -- change the variable `gf' to point to your local gfortran compiler, then run the script. Fingers crossed, it should all work.
+Inside the lib/fortran directory, edit `make_mac.csh` or `make_linux.csh` (as appropriate) -- change the variable `gf' to point to your local gfortran compiler, then run the script. Fingers crossed, it should all work.
 
-Note mac users should be sure to use a suitable version of gfotran - available from http://gcc.gnu.org/wiki/GFortranBinaries or http://hpc.sourceforge.net/
-It may also be necessary to do `setenv CFLAGS -m32' before running the compile script on a mac
+Note mac users should be sure to use a suitable version of gfotran - available from http://gcc.gnu.org/wiki/GFortranBinaries
+It may also be necessary to do `setenv CFLAGS -m32' before running the compile script on a mac.
+
+
+Usage
+=====
+
+I'd recommend adding the `lib/python` directory to your PYTHONPATH and adding the `bin` directory to your PATH. This should then leave you set up to run the code from wherever you like.
+
 
 A brief description of the "executables" follows.
 
-populate.py
------------
+populate
+--------
 
 Create a population mode using user-defined parameters.
 
-dosurvey.py 
------------
+dosurvey 
+--------
 
 Run a population model through a survey. Pre-defined surveys are given, but a user may also create their own.
 
@@ -35,7 +42,7 @@ view.py
 
 Program for making quick histograms of population model
 
-visualize.py
-------------
+wxView.py
+---------
 
-More detailed population model viewer. Make histograms, scatter plots, etc. This is a little slow, I think due to the large number of points being plotted. Thi s might want some work.
+More detailed population model viewer. Make histograms, scatter plots, etc. All based off the wx backend for matplotlib.
