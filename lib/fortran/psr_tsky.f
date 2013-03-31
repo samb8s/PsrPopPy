@@ -1,5 +1,5 @@
 c---------------------------------------
-      real function psr_tsky(l, b, freq)
+      real function psr_tsky(l, b, freq, inpath, linpath)
 c---------------------------------------
 c
 c     Returns tsky for l,b.
@@ -9,19 +9,24 @@ c
       logical first
       real l, b, nsky(90, 180),freq
       integer j,i,nl,lun,lpth
-      character*80 path,tskyfile
+      character*120 path,tskyfile
+      character inpath*(*)
+      integer linpath
 c
 c     Check for first entry..
 c
       data first / .true. /
       save first,nsky
+
+c      write(*,*) linpath
+c      write(*,*) inpath(1:linpath)
       if (first) then
 c
 c       Read in catalogue
 c
         call glun(lun)
-        call getpath(path,lpth)
-        tskyfile=path(1:lpth)//'/lookuptables/tsky.ascii'
+c        tskyfile=path(1:lpth)//'/lookuptables/tsky.ascii'
+        tskyfile = inpath(1:linpath)//'/lookuptables/tsky.ascii'
         open(unit=lun, status='old', file=tskyfile, err=999)
         read(unit=lun, fmt=1000, end=998) ((nsky(i,j),j = 1, 180)
      &  ,i = 1, 90)

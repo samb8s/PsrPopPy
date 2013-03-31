@@ -6,13 +6,13 @@ import sys
 import math
 import random
 
-from galacticops import GalacticOps
+import galacticops as go
 from population import Population
 
 class CoordinateException(Exception):
     pass
 
-class Pointing(GalacticOps):
+class Pointing:
     """Simple class -- pointing has a gl and gb position"""
 
     def __init__(self, coord1, coord2, coordtype):
@@ -28,7 +28,7 @@ class Pointing(GalacticOps):
             dec = coord2
 
             # convert to l and b :)
-            gl,gb = self.radec_to_lb(ra, dec)
+            gl,gb = go.radec_to_lb(ra, dec)
 
             if gl>180.:
                 gl -= 360.
@@ -42,14 +42,15 @@ class Pointing(GalacticOps):
             self.gl = coord1
             self.gb = coord2
 
-class Survey(GalacticOps):
+class Survey:
     """Class to store survey parameters and methods"""
     def __init__(self, surveyName):
         """Read in a survey file and obtain the survey parameters"""
         try:
             # get path to surveys directory
             __dir__ = os.path.dirname(os.path.abspath(__file__))
-            filepath = os.path.join(__dir__, 'surveys', surveyName)
+            __libdir__ = os.path.dirname(__dir__)
+            filepath = os.path.join(__libdir__, 'surveys', surveyName)
             f = open(filepath, 'r')
         except IOError:
             print 'No such file: ',surveyName
@@ -204,7 +205,7 @@ class Survey(GalacticOps):
             return False
 
         # need to compute ra/dec of pulsar from the l and b (galtfeq)
-        ra, dec = self.lb_to_radec(pulsar.gl, pulsar.gb)
+        ra, dec = go.lb_to_radec(pulsar.gl, pulsar.gb)
 
         # are ra, dec outside region?
         if ra > self.RAmax or ra < self.RAmin:
@@ -240,7 +241,7 @@ class Survey(GalacticOps):
                 continue
 
             #if close-ish calc offset
-            offset_deg = self._glgboffset(point.gl,
+            offset_deg = go._glgboffset(point.gl,
                                           point.gb,
                                           pulsar.gl,
                                           pulsar.gb)
@@ -283,14 +284,14 @@ class Survey(GalacticOps):
 
         # Dunc's code here uses a ^-2.6 to convert frequencies
         # don't think I need to do this - I'm using the frequency in call
-        Ttot = self.tsys + self.tsky(pulsar.gl, pulsar.gb, self.freq)
+        Ttot = self.tsys + go.tsky(pulsar.gl, pulsar.gb, self.freq)
 
         # calc dispersion smearing across single channel
         tdm = self._dmsmear(pulsar)
 
         # calculate bhat et al scattering time (inherited from GalacticOps)
         # in units of ms
-        tscat = self.scatter_bhat(pulsar.dm, pulsar.scindex, self.freq)
+        tscat = go.scatter_bhat(pulsar.dm, pulsar.scindex, self.freq)
 
         # Calculate the effective width
         weff_ms = math.sqrt(pulsar.width_ms()**2 + self.tsamp**2 + tdm**2 + tscat**2)

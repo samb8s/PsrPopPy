@@ -1,5 +1,5 @@
 c==============================================================================
-      real function dm(dkpc,l,b,dmod,sm)
+      real function dm(dkpc,l,b,dmod,sm,ip,lip)
 c==============================================================================
 c
 c     Routine to integrate numerically from the sun to a pulsar given its
@@ -22,6 +22,13 @@ c     functions
 c
       real psr_ne
 c
+c     Added ip and lip (inpath and length of inpath) to remove getpath
+c     dependence!
+c
+      character ip*(*)
+      integer lip
+
+c
 c     define parameters & initial values
 c
       parameter(dstep=0.05)        ! integrating step in kpc
@@ -34,10 +41,9 @@ c
       data first/.true./
       save
       if (dmod.eq.4) then
-          if (first) write(lout,*) 'NE2001 distance model'
           if (first) write(lout,*) 
 	      first = .false.
-         call dmdsm(l*dr,b*dr,-1,dm,dkpc,limit,s1,s2,s3,s4)
+         call dmdsm(l*dr,b*dr,-1,dm,dkpc,limit,s1,s2,s3,s4,ip,lip)
          sm = s2 ! return scattering measure
          return
       endif
@@ -54,7 +60,7 @@ c
 c
 c        local electron density
 c
-         locne = psr_ne(x, y, z, dmod)           
+         locne = psr_ne(x, y, z, dmod, ip, lip)
 c
 c        integrated dm
 c

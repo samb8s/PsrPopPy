@@ -8,7 +8,7 @@ import random
 import cPickle
 
 import matplotlib.pyplot as plt
-from matplotlib.widgets import SpanSelector, Button, RadioButtons, CheckButtons
+from matplotlib.widgets import Button, RadioButtons, CheckButtons
 
 import numpy as np
 
