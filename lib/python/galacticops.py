@@ -26,9 +26,6 @@ yklib = C.CDLL(os.path.join(fortranpath,'libykarea.so'))
 yklib.ykr_.restype = C.c_float
 yklib.llfr_.restype = C.c_float
 
-seedlib = C.CDLL(os.path.join(fortranpath,'libgetseed.so'))
-seedlib.getseed_.restype = C.c_int
-
 # BEGIN FUNCTION DEFINITIONS
 
 def vxyz( pulsar):
