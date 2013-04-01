@@ -16,9 +16,6 @@ fortranpath = os.path.join(__libdir__, 'fortran')
 ne2001lib = C.CDLL(os.path.join(fortranpath,'libne2001.so'))
 ne2001lib.dm_.restype = C.c_float
 
-tskylib = C.CDLL(os.path.join(fortranpath,'libtsky.so'))
-tskylib.psr_tsky_.restype = C.c_float
-
 slalib =  C.CDLL(os.path.join(fortranpath,'libsla.so'))
 vxyzlib = C.CDLL(os.path.join(fortranpath, 'libvxyz.so'))
 
@@ -146,25 +143,6 @@ def radec_to_lb( ra, dec):
         l.value -= 360.
     return l.value, b.value
 
-def tsky( gl, gb, freq):
-    """ Calculate Galactic sky temperature for a given observing frequency (MHz), 
-        l and b."""
-    # make sure gl is between 0 and 360
-    if gl < 0.:
-        gl = 360.+gl
-    gl =  C.c_float(gl)
-    gb = C.c_float(gb)
-    freq = C.c_float(freq)
-    inpath = C.create_string_buffer(fortranpath)
-    linpath = C.c_int(len(fortranpath))
-    return tskylib.psr_tsky_(C.byref(gl),
-                             C.byref(gb),
-                             C.byref(freq),
-                             C.byref(inpath),
-                             C.byref(linpath)
-                            )
-
-
 def xyz_to_lb( (x, y, z)):
     """ Convert galactic xyz in kpc to l and b in degrees."""
     rsun = 8.5 # kpc
@@ -245,7 +223,6 @@ def _glgboffset( gl1, gb1, gl2, gb2):
 
 def seed():
     return C.c_int(random.randint(1,9999))
-    #return C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
 
 def slabdist():
     x = -15.0 + random.random()*30.0
@@ -314,3 +291,22 @@ def _double_sided_exp( scale, origin=0.0):
     sign = random.choice([-1.0, 1.0])
 
     return origin + sign * scale * math.log(rn)
+
+def readtskyfile():
+    """Read in tsky.ascii into a list from which temps can be retrieved"""
+
+    tskypath = os.path.join(fortranpath, 'lookuptables/tsky.ascii')
+    tskylist = []
+    with open(tskypath) as f:
+        for line in f:
+            str_idx = 0
+            while str_idx < len(line):
+                # each temperature occupies space of 5 chars
+                temp_string = line[str_idx:str_idx+5]
+                try:
+                    tskylist.append(float(temp_string))
+                except:
+                    pass
+                str_idx += 5
+
+    return tskylist
