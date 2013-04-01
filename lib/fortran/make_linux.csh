@@ -9,5 +9,6 @@ $gf -shared -o libtsky.so -fno-second-underscore psr_tsky.o glun.o
 $gf -shared -o libykarea.so -fno-second-underscore ykarea.o psrran.o
 $gf -shared -o libgetseed.so -fno-second-underscore getseed.o psrran.o clock.o
 $gf -shared -o libsla.so -fno-second-underscore galtfeq.o sla.o
+$gf -shared -o libvxyz.so -fno-second-underscore vxyz.o rkqc.o rk4.o
 
 rm *.o
