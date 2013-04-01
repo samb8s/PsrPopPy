@@ -247,7 +247,8 @@ def _glgboffset( gl1, gb1, gl2, gb2):
     return math.degrees(math.acos(cosalpha))
 
 def seed():
-    return C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
+    return C.c_int(random.randint(1,9999))
+    #return C.c_int(seedlib.getseed_(C.byref(C.c_int(-1))))
 
 def slabdist():
     x = -15.0 + random.random()*30.0
