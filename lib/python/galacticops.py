@@ -152,6 +152,9 @@ def radec_to_lb( ra, dec):
 def tsky( gl, gb, freq):
     """ Calculate Galactic sky temperature for a given observing frequency (MHz), 
         l and b."""
+    # make sure gl is between 0 and 360
+    if gl < 0.:
+        gl = 360.+gl
     gl =  C.c_float(gl)
     gb = C.c_float(gb)
     freq = C.c_float(freq)
