@@ -1,5 +1,5 @@
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      subroutine clock(yy,mm,dd,hh,mi,ss)
+      subroutine clock(yy,mm,dd,hh,mi,ss,nano)
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c     Returns the present time from the ship's clock

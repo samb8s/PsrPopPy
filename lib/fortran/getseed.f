@@ -6,7 +6,7 @@ c     gets a starting seed for the random number generator based on
 c     the ship's clock
 c
       implicit none
-      integer yy,mm,dd,hh,mi,ss,seed,i,org
+      integer yy,mm,dd,hh,mi,ss,seed,i,org,nano
       character*14 curtime
       real psrran,r
       call clock(yy,mm,dd,hh,mi,ss,nano)
