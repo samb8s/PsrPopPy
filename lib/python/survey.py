@@ -62,7 +62,7 @@ class Survey:
         self.pointingslist = None
 
         # Parse the file line by line
-        for line in f.readlines():
+        for line in f:
             # ignore any lines starting '#'
             if line.strip()[0] == '#':
                 continue
@@ -86,14 +86,14 @@ class Survey:
                 self.pointingslist = []
                 if a[1].count('galactic'):
                     # already galactic coordinates
-                    for line in pointfptr.readlines():
+                    for line in pointfptr:
                         a = line.split()
                         p = Pointing(float(a[0]), float(a[1]), 'gal')
                         self.pointingslist.append(p)
 
                 elif a[1].count('equatorial'):
                     # need to be converted from ra dec to gl gb
-                    for line in pointfptr.readlines():
+                    for line in pointfptr:
                         a = line.split()
                         p = Pointing(float(a[0]), float(a[1]), 'eq')
                         self.pointingslist.append(p)
@@ -171,6 +171,9 @@ class Survey:
                 print "Parameter '",a[1].strip(),"' not recognized!"
 
         f.close()
+
+        # get tsky array from file
+        self.tskylist = go.readtskyfile()
     
     def __str__(self):
         """Method to define how to print the class"""
@@ -269,7 +272,7 @@ class Survey:
 
         # Dunc's code here uses a ^-2.6 to convert frequencies
         # don't think I need to do this - I'm using the frequency in call
-        Ttot = self.tsys + go.tsky(pulsar.gl, pulsar.gb, self.freq)
+        Ttot = self.tsys + self.tskypy(pulsar)
 
         # calc dispersion smearing across single channel
         tdm = self._dmsmear(pulsar)
@@ -322,3 +325,26 @@ class Survey:
     def _dmsmear(self, psr):
         """Calculate the smearing across a channel due to the pulsar DM"""
         return 8.3E6 * psr.dm * self.bw_chan / math.pow(self.freq, 3.0)
+
+    def tskypy(self, psr):
+        """ Calculate tsky from Haslam table, scale to survey frequency"""
+        # ensure l is in range 0 -> 360
+        b = psr.gb
+        if psr.gl < 0.:
+            l = 360 + psr.gl
+        else:
+            l = psr.gl
+
+        # convert from l and b to list indices
+        j = b + 90.5
+        if j > 179:
+            j = 179
+
+        nl = l - 0.5
+        if l < 0.5:
+            nl = 359
+        i = float(nl) / 4.
+        
+        tsky_haslam = self.tskylist[180*int(i) + int(j)]
+        # scale temperature before returning
+        return tsky_haslam * (self.freq/408.0)**(-2.6)
