@@ -1,0 +1,2 @@
+GF = /usr/local/bin/gfortran
+LINK.f = $(GF) -shared -fno-second-underscore
