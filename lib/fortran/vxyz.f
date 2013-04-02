@@ -276,13 +276,13 @@ C disk/halo
 
 C NUCLEUS
 
-      rbz = (z*z+b_nuc*b_nuc+r*r)**-1.5
+      rbz = (z*z+b_nuc*b_nuc+r*r)**(-1.5)
       dpdz=dpdz+mnuc*z*rbz
       dpdr=dpdr+mnuc*r*rbz
 
 C bulge
 
-      rbz = (z*z+b_bulge*b_bulge+r*r)**-1.5
+      rbz = (z*z+b_bulge*b_bulge+r*r)**(-1.5)
       dpdz=(dpdz+mbulge*z*rbz)*gmsun
       dpdr=(dpdr+mbulge*r*rbz)*gmsun
       

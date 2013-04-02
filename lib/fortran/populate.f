@@ -563,7 +563,7 @@ c       Get initial positions of pulsars
 c
  888    if (isotropic) then
            bdeg(i)=asin(psrran(seed))*180.0/pi
-           if (psrran(seed).lt.0.5) bdeg(i)=bdeg(i)*-1.0
+           if (psrran(seed).lt.0.5) bdeg(i)=bdeg(i)*(-1.0)
            ldeg(i)=360.0*psrran(seed)
            call calc_xyz(ldeg(i),bdeg(i),1.0,x(i),y(i),z(i))
         else if (fixed) then
