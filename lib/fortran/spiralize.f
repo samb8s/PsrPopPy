@@ -22,7 +22,7 @@ c
 c     apply blurring scheme 
 c
       angle=twopi*psrran(seed)*exp(-0.35*r)
-      if (psrran(seed).lt.0.5) angle=angle*-1.0
+      if (psrran(seed).lt.0.5) angle=angle*(-1.0)
       theta=theta+angle
 c
 c     finally, blur around centroid with normal distribution

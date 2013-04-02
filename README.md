@@ -13,10 +13,11 @@ The other main requirement is [matplotlib](matplotlib.sourceforge.net), which is
 Compiling
 ---------
 
-Inside the lib/fortran directory, edit `make_mac.csh` or `make_linux.csh` (as appropriate) -- change the variable `gf' to point to your local gfortran compiler, then run the script. Fingers crossed, it should all work.
+I've just incorporated a real makefile for the first time - be sure to edit `makefile.linux` or `makefile.darwin` as appropriate to point to the correct location of your gfortran compiler. After that, it should be as simple as typing `make`.
 
-Note mac users should be sure to use a suitable version of gfotran - available from http://gcc.gnu.org/wiki/GFortranBinaries
-It may also be necessary to do `setenv CFLAGS -m32' before running the compile script on a mac.
+If this fails, try using the scripts. Inside the lib/fortran directory, edit `make_mac.csh` or `make_linux.csh` (as appropriate) -- change the variable `gf' to point to your local gfortran compiler, then run the script. Fingers crossed, it should all work.
+
+Note mac users should be sure to use a suitable version of gfortran - available from http://gcc.gnu.org/wiki/GFortranBinaries
 
 
 Usage

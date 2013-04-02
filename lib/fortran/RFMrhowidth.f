@@ -26,7 +26,7 @@ c     need freq in GHz
 
       if (period.gt.percut) then
          fghz = freq/1000.
-         height_km = 100. + (fghz/300.)**-.666
+         height_km = 100. + (fghz/300.)**(-.666)
 c        Need to convert height to metres -> tho in radians
          rho = 3. * sqrt(pi * height_km * 1000./ (2. * 3.e8 * period))
          rho = rho * 180./pi ! convert to degrees
