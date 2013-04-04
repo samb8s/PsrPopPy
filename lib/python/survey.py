@@ -228,30 +228,19 @@ class Survey:
         position further down the list!!!"""
         # initialise offset_deg to be a big old number
         # FWHM is in arcmin so always multiply by 60
-        offset_deg = 10.0 * self.fwhm
+        offset_deg = 5.
 
         # loop over pointings
         for point in self.pointingslist:
             # do a really basic check first
-            gld = math.fabs(point.gl - pulsar.gl)
 
-            if gld*60.0 > self.fwhm/2.0:
-                continue
-
-            gbd = math.fabs(point.gb - pulsar.gb) 
-
-            if gbd*60.0 > self.fwhm/2.0:
-                continue
-
-            #if close-ish calc offset
-            offset_deg = go._glgboffset(point.gl,
-                                          point.gb,
-                                          pulsar.gl,
-                                          pulsar.gb)
+            glterm = (pulsar.gl - point.gl)**2
+            gbterm = (pulsar.gb - point.gb)**2
+            offset_new = math.sqrt(glterm + gbterm)
 
             # if the beam is close enough, break out of the loop
-            if offset_deg*60.0 < self.fwhm/2.0:
-                break
+            if offset_new < offset_deg:
+                offset_deg = offset_new
                 
         return offset_deg
 
@@ -272,10 +261,6 @@ class Survey:
                 # convert offset from degree to arcmin
                 offset = self.inPointing(pulsar) * 60.0
 
-                if offset >= self.fwhm/2.0:
-                    # ie. if inPointing returns false
-                    # not in pointings
-                    return -2
             else:
                 # calculate offset as a random offset within FWHM/2
                 offset = self.fwhm * math.sqrt(random.random()) / 2.0
