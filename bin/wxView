@@ -175,7 +175,7 @@ class VisualizeFrame(wx.Frame):
         self.modelCheckList = wx.CheckListBox(self.panel, -1,
                                             choices=modelList,
                                             style=wx.ALIGN_RIGHT)
-        self.modelCheckList.SetChecked(range(len(modelList)))
+        self.modelCheckList.SetChecked(xrange(len(modelList)))
 
         # Create the navigation toolbar, tied to the canvas
         #
