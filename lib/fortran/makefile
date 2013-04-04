@@ -12,7 +12,7 @@ libykarea.so : library
 	$(LINK.f) -o libykarea.so ykarea.o psrran.o
 
 libsla.so : library
-	$(LINK.f) -o libska.so galtfeq.o sla.o
+	$(LINK.f) -o libsla.so galtfeq.o sla.o
 
 libvxyz.so : library
 	$(LINK.f) -o libvxyz.so rkqc.o rk4.o

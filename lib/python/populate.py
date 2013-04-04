@@ -209,7 +209,7 @@ def generate(ngen,
 
         p.spindex = random.gauss(pop.simean, pop.sisigma)
 
-        # get galactic position (method in radialmodels)
+        # get galactic position 
         # first, Galactic distribution models
         if pop.radialDistType == 'isotropic': 
             # calculate gl and gb randomly
