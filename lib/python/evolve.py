@@ -107,7 +107,7 @@ def generate(ngen,
         surv.ntf=0 # number too faint
 
     # this is the nitty-gritty loop for generating the pulsars
-    while pop.ndet < ngen:
+    while pop.size() < ngen:
         pulsar = Pulsar()
 
         # initial age for pulsar
@@ -132,6 +132,7 @@ def generate(ngen,
 
         #apply relevant spin down model
         pulsar.dead = False # pulsar should start alive! 
+
         if pop.spinModel == 'fk06':
             spindown_fk06(pulsar)
 
@@ -141,13 +142,11 @@ def generate(ngen,
 
         elif pop.spinModel == 'cs06':
             # contopoulos and spitkovsky
-            spindown_cs06(pulsar)
+            spindown_cs06(pulsar, pop)
 
         # define pulse width as 5% (18 degrees)
         pulsar.width_degree = 18.
 
-        if not pulsar.dead:
-            print pulsar.dead
         # plough on - only if the pulsar isn't dead!
         if not pulsar.dead:
             # is the pulsar beaming? 
@@ -180,18 +179,9 @@ def generate(ngen,
                                                   pulsar.gl, 
                                                   pulsar.gb)
 
-            # if no surveys, just generate ngen pulsars
-            if surveyList is None:
-                pop.population.append(pulsar)
-                pop.ndet += 1
-
-                if not nostdout:
-                    prog.increment_amount()
-                    print prog, '\r',
-                    sys.stdout.flush()
             # if surveys are given, check if pulsar detected or not
             # in ANY of the surveys
-            else:
+            if surveyList is not None:
                 detect_int = 0 # just a flag if pulsar is detected
                 for surv in surveys:
                     SNR = surv.SNRcalc(pulsar, pop)
@@ -219,17 +209,32 @@ def generate(ngen,
                         surv.ntf += 1
                         continue 
             
-                # add the pulsar to the population
-                pop.population.append(pulsar)
-
                 # if detected, increment ndet (for whole population)
                 # and redraw the progress bar
                 if detect_int:
                     pop.ndet += 1
-                    if not nostdout:
-                        prog.increment_amount()
-                        print prog, '\r',
-                        sys.stdout.flush()
+
+        # add pulsar to population
+        pop.population.append(pulsar)
+
+        # update the counter
+        if not nostdout:
+            prog.increment_amount()
+            print prog, '\r',
+            sys.stdout.flush()
+
+    if not nostdout:
+        print "\n\n"
+        print "  Total pulsars = {0}".format(len(pop.population))
+        print "  Total detected = {0}".format(pop.ndet)
+
+        for surv in surveys:
+            print "\n  Results for survey '{0}'".format(surv.surveyName)
+            print "    Number detected = {0}".format(surv.ndet)
+            print "    Number too faint = {0}".format(surv.ntf)
+            print "    Number smeared = {0}".format(surv.nsmear)
+            print "    Number outside survey area = {0}".format(surv.nout)
+
     return pop
 
 def luminosity_fk06( pulsar):
@@ -354,7 +359,7 @@ def _pdot_fk06(pulsar, kprime):
     period_s = pulsar.period / 1000.
     return kprime * pulsar.sinchi_init**2 * period_s**(index_term)
 
-def spindown_cs06(pulsar):
+def spindown_cs06(pulsar, pop):
     """
     Equations 9 and 10 in Ridley & Lorimer - 
     due to Contopoulos & Spitkovsky 2006
@@ -399,13 +404,14 @@ def spindown_cs06(pulsar):
                                           args = (const_of_integration, 
                                                   pulsar.braking_index)
                                          )[0]
+            #print result
             if result > 1.0E14:
                 #print "step two"
                 pulsar.period = 1.0E6
                 break
 
             tempmin = math.fabs(result - temp_const)
-            print tempmin, "= tempmin;", min_value, " = minval"
+            #print tempmin, "= tempmin;", min_value, " = minval"
             if tempmin <= min_value:
                 min_value = tempmin
                 min_p = m
@@ -414,9 +420,9 @@ def spindown_cs06(pulsar):
                 break
 
             # end of loop
-            if m == looparray[-1]:
-                #print "step three"
-                pulsar.period = 1.0E6
+        else:
+            #print "step three"
+            pulsar.period = 1.0E6
 
     #print pulsar.period, pdeath
     if pulsar.period>pdeath and pop.deathline:
