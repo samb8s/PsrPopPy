@@ -111,7 +111,9 @@ class Population:
     def write_asc(self, outf):
         """Write population to an ascii file"""
         with open(outf, 'w') as f:
-            f.write("Period_ms DM Width_ms GL GB S1400 L1400 SPINDEX SNR DTRUE X Y Z\n")
+            titlestr = "Period_ms DM Width_ms GL GB S1400"
+            titlestr = " ".join([titlestr, "L1400 SPINDEX SNR DTRUE X Y Z\n"])
+            f.write(titlestr)
             for psr in self.population:
             
                 s = "{0}".format(self.period)

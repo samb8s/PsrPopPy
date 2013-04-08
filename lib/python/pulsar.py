@@ -60,6 +60,9 @@ class Pulsar:
 
         self.snr=snr
 
+        # need to add pulsar dead/alive for evolution code
+        self.dead = False
+
     # methods to calculate derived properties
     def s_1400(self):
         """Calculate the flux of the pulsar"""

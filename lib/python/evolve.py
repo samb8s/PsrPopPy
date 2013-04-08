@@ -44,6 +44,7 @@ def generate(ngen,
              electronModel='ne2001',
              braking_index=0,
              zscale=0.33,
+             duty=5.,
              deathline=True,
              nostdout=False):
 
@@ -85,6 +86,8 @@ def generate(ngen,
         print "\t\tGalactic z scale height = {0} kpc".format(
                                                     pop.zscale)
 
+        print "\t\tWidth {0}% ".format(duty)
+
         # set up progress bar for fun :)
         prog = ProgressBar(min_value = 0,
                            max_value=ngen,
@@ -107,7 +110,7 @@ def generate(ngen,
         surv.ntf=0 # number too faint
 
     # this is the nitty-gritty loop for generating the pulsars
-    while pop.ndet < ngen:
+    while pop.size() < ngen:
         pulsar = Pulsar()
 
         # initial age for pulsar
@@ -132,6 +135,7 @@ def generate(ngen,
 
         #apply relevant spin down model
         pulsar.dead = False # pulsar should start alive! 
+
         if pop.spinModel == 'fk06':
             spindown_fk06(pulsar)
 
@@ -141,13 +145,11 @@ def generate(ngen,
 
         elif pop.spinModel == 'cs06':
             # contopoulos and spitkovsky
-            spindown_cs06(pulsar)
+            spindown_cs06(pulsar, pop)
 
-        # define pulse width as 5% (18 degrees)
-        pulsar.width_degree = 18.
+        # define pulse width (default = 5% = 18 degrees)
+        pulsar.width_degree = 360. * duty /100.
 
-        if not pulsar.dead:
-            print pulsar.dead
         # plough on - only if the pulsar isn't dead!
         if not pulsar.dead:
             # is the pulsar beaming? 
@@ -180,18 +182,9 @@ def generate(ngen,
                                                   pulsar.gl, 
                                                   pulsar.gb)
 
-            # if no surveys, just generate ngen pulsars
-            if surveyList is None:
-                pop.population.append(pulsar)
-                pop.ndet += 1
-
-                if not nostdout:
-                    prog.increment_amount()
-                    print prog, '\r',
-                    sys.stdout.flush()
             # if surveys are given, check if pulsar detected or not
             # in ANY of the surveys
-            else:
+            if surveyList is not None:
                 detect_int = 0 # just a flag if pulsar is detected
                 for surv in surveys:
                     SNR = surv.SNRcalc(pulsar, pop)
@@ -219,17 +212,53 @@ def generate(ngen,
                         surv.ntf += 1
                         continue 
             
-                # add the pulsar to the population
-                pop.population.append(pulsar)
-
                 # if detected, increment ndet (for whole population)
                 # and redraw the progress bar
                 if detect_int:
                     pop.ndet += 1
+                    # update the counter
                     if not nostdout:
                         prog.increment_amount()
                         print prog, '\r',
                         sys.stdout.flush()
+
+            else:
+                # no survey list, just add the pulsar to population,
+                # and increment number of pulsars
+                pop.ndet +=1
+                # update the counter
+                if not nostdout:
+                    prog.increment_amount()
+                    print prog, '\r',
+                    sys.stdout.flush()
+
+        else:
+            # pulsar is dead. If no survey list, 
+            # just increment number of pulsars
+            if surveyList is None:
+                pop.ndet += 1
+                # update the counter
+                if not nostdout:
+                    prog.increment_amount()
+                    print prog, '\r',
+                    sys.stdout.flush()
+
+
+        # add pulsar to population
+        pop.population.append(pulsar)
+
+    if not nostdout:
+        print "\n\n"
+        print "  Total pulsars = {0}".format(len(pop.population))
+        print "  Total detected = {0}".format(pop.ndet)
+
+        for surv in surveys:
+            print "\n  Results for survey '{0}'".format(surv.surveyName)
+            print "    Number detected = {0}".format(surv.ndet)
+            print "    Number too faint = {0}".format(surv.ntf)
+            print "    Number smeared = {0}".format(surv.nsmear)
+            print "    Number outside survey area = {0}".format(surv.nout)
+
     return pop
 
 def luminosity_fk06( pulsar):
@@ -354,7 +383,7 @@ def _pdot_fk06(pulsar, kprime):
     period_s = pulsar.period / 1000.
     return kprime * pulsar.sinchi_init**2 * period_s**(index_term)
 
-def spindown_cs06(pulsar):
+def spindown_cs06(pulsar, pop):
     """
     Equations 9 and 10 in Ridley & Lorimer - 
     due to Contopoulos & Spitkovsky 2006
@@ -367,6 +396,7 @@ def spindown_cs06(pulsar):
 
     # this method needs integrals.
     #converting the qsimp (fortran) to using scipy.integrate package
+    # tested and they should give same output
     lower_limit = pulsar.p0*1000.
     upper_limit = 1.0E5
     const_of_integration = pulsar.coschi**2.0 / pdeath
@@ -376,7 +406,7 @@ def spindown_cs06(pulsar):
 
     index = pulsar.braking_index -3.0
     temp_const = 3.3E-40*pulsar.bfield_init**2 * (pulsar.p0*1000.)**index \
-                        * pulsar.age * 3.15569e7
+                        * pulsar.age * 365.25 * 24. * 3.6E9 #3.15569e7
 
     # do the integral
     result = scipy.integrate.quad(_cs06_poft,
@@ -386,26 +416,28 @@ def spindown_cs06(pulsar):
                                           pulsar.braking_index)
                                   )[0]
     
+    #print result, temp_const, 1.0E14
     if result < temp_const or result>1.0E14:
-        #print result, temp_const
-        #print "step one"
         pulsar.period = 1.0E6
     else:
         looparray = np.arange(lower_limit, upper_limit+1)
+        count = 0
         for m in looparray:
+            count += 1
             result = scipy.integrate.quad(_cs06_poft,
                                           lower_limit, 
                                           pdeath,
                                           args = (const_of_integration, 
                                                   pulsar.braking_index)
                                          )[0]
+            #print result
             if result > 1.0E14:
                 #print "step two"
                 pulsar.period = 1.0E6
                 break
 
             tempmin = math.fabs(result - temp_const)
-            print tempmin, "= tempmin;", min_value, " = minval"
+
             if tempmin <= min_value:
                 min_value = tempmin
                 min_p = m
@@ -414,11 +446,12 @@ def spindown_cs06(pulsar):
                 break
 
             # end of loop
-            if m == looparray[-1]:
-                #print "step three"
-                pulsar.period = 1.0E6
+        else:
+            #print "step three"
+            pulsar.period = 1.0E6
 
-    #print pulsar.period, pdeath
+    # see whether the pulsar should be dead
+    # (are we using deathline? Is pulsar above it?)
     if pulsar.period>pdeath and pop.deathline:
         pulsar.dead = True
     else:
@@ -470,6 +503,10 @@ if __name__ == '__main__':
                         choices=['fk06', 'cs06'],
                         help = 'spin-down model to employ')
 
+    # pulse width
+    parser.add_argument('-w', type=float, required=False, default=5.,
+                     help='pulse width % (def=5%)')
+
     # output file name
     parser.add_argument('-o', type=str, metavar='outfile', required=False,
                         default='evolve.model',
@@ -490,6 +527,7 @@ if __name__ == '__main__':
     pop = generate(args.n,
                     surveyList=args.surveys,
                     spinModel=args.spinmodel[0],
-                    nostdout=args.nostdout)
+                    nostdout=args.nostdout,
+                    duty=args.w)
 
     write(pop, outf=args.o)

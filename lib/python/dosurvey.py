@@ -93,6 +93,10 @@ def run(pop, surveyList, nostdout=False):
         ndet = 0
         # loop over the pulsars in the population list
         for psr in pop.population:
+            # pulsar could be dead (evolve!) - continue if so
+            if pulsar.dead:
+                continue
+
             # is the pulsar over the detection threshold?
             snr = s.SNRcalc(psr, pop)
             if snr > s.SNRlimit:
