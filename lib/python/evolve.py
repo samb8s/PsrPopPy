@@ -31,22 +31,23 @@ def write(pop, outf="evolve.model"):
 
 def generate(ngen,
              surveyList=None,
-             age_max=1.0e9,
+             age_max=1.0E9,
              pDistPars=[.3, .15],
              bFieldPars=[12.65, 0.55],
-             birthvPars=[0.0, 180.],
+             birthVPars=[0.0, 180.],
              siDistPars= [-1.6,0.35],
              alignModel='orthogonal',
+             alignTime=None,
              spinModel = 'fk06',
              beamModel = 'tm98',
-             spatialModel = 'spiralarms',
              birthVModel = 'gaussian',
              electronModel='ne2001',
              braking_index=0,
              zscale=0.33,
              duty=5.,
-             deathline=True,
-             nostdout=False):
+             nodeathline=False,
+             nostdout=False,
+             nospiralarms=False):
 
 
     pop = Population()
@@ -55,17 +56,18 @@ def generate(ngen,
     pop.pmean, pop.psigma = pDistPars
     pop.bmean, pop.bsigma = bFieldPars
     pop.simean, pop.sisigma = siDistPars
-    pop.birthvmean, pop.birthvsigma = birthvPars
+    pop.birthvmean, pop.birthvsigma = birthVPars
     
     pop.alignModel = alignModel
+    pop.alignTime= alignTime
     pop.spinModel = spinModel
     pop.beamModel = beamModel
-    pop.spatialModel = spatialModel
     pop.birthVModel = birthVModel
     pop.electronModel = electronModel
 
     pop.braking_index = braking_index
-    pop.deathline = deathline
+    pop.nodeathline = nodeathline
+    pop.nospiralarms = nospiralarms
 
     pop.zscale = zscale
 
@@ -110,7 +112,7 @@ def generate(ngen,
         surv.ntf=0 # number too faint
 
     # this is the nitty-gritty loop for generating the pulsars
-    while pop.size() < ngen:
+    while pop.ndet < ngen:
         pulsar = Pulsar()
 
         # initial age for pulsar
@@ -125,7 +127,7 @@ def generate(ngen,
         pulsar.bfield_init = 10**random.gauss(pop.bmean, pop.bsigma)
 
         # aligment angle
-        alignpulsar(pulsar, pop.alignModel)
+        alignpulsar(pulsar, pop)
 
         # braking index
         if pop.braking_index == 0:
@@ -140,7 +142,7 @@ def generate(ngen,
             spindown_fk06(pulsar)
 
             # apply deathline if relevant
-            if pop.deathline:
+            if not pop.nodeathline:
                 bhattacharya_deathperiod_92(pulsar)
 
         elif pop.spinModel == 'cs06':
@@ -232,6 +234,9 @@ def generate(ngen,
                     print prog, '\r',
                     sys.stdout.flush()
 
+            # pulsar isn't dead, add to population!
+            pop.population.append(pulsar)
+
         else:
             # pulsar is dead. If no survey list, 
             # just increment number of pulsars
@@ -243,9 +248,6 @@ def generate(ngen,
                     print prog, '\r',
                     sys.stdout.flush()
 
-
-        # add pulsar to population
-        pop.population.append(pulsar)
 
     if not nostdout:
         print "\n\n"
@@ -261,11 +263,9 @@ def generate(ngen,
 
     return pop
 
-def luminosity_fk06( pulsar):
+def luminosity_fk06( pulsar,alpha=-1.5,beta=0.5):
     """ Equation 14 from  Ridley & Lorimer """
     # variables to use in the equation
-    alpha = -1.5
-    beta = 0.5
     delta_l = random.gauss(0.0, 0.8)
 
     # the equation
@@ -294,35 +294,65 @@ def birthVelocity( pulsar, pop):
 
 
 def galacticDistribute(pulsar, pop):
-    """ select a galactic position """
-    if pop.spatialModel == 'spiralarms':
+    """ select a galactic position - spiral arms on or off?"""
+    if not pop.nospiralarms:
+        # using spiral arms
         r0 = go.ykr()
         x, y = go.spiralize(r0)
-        z = go._double_sided_exp(pop.zscale)
+    else:
+        # distribute randomly in x-y plane
+        x = -20. + random.random()*40.
+        y = -20. + random.random()*40.
 
-        pulsar.galCoords = (x, y, z)
-        pulsar.r0 = math.sqrt(x**2 + y**2)
+    # calculate z and r0
+    z = go._double_sided_exp(pop.zscale)
+    pulsar.galCoords = (x, y, z)
+    pulsar.r0 = math.sqrt(x**2 + y**2)
+        
 
-def alignpulsar(pulsar, aM):
+def alignpulsar(pulsar, pop):
     """
     Pick an alignment angle for pulsar, depending on model chosen
+
     """
-    if aM == 'orthogonal':
+
+    # need to be careful to use chi in degrees, but 
+    # consistently remember to take the sins/cosines of radians
+    if pop.alignModel == 'orthogonal':
         pulsar.chi = 90.0
         pulsar.sinchi_init = 1.0
         pulsar.sinchi = pulsar.sinchi_init
         pulsar.coschi = 0.
 
-    elif aM == 'random':
+    elif pop.alignModel == 'random':
         chi = math.acos(random.random()) # in radians
         
         pulsar.chi = math.degrees(chi) # -> degrees
-        pulsar.sinchi_init = math.sin(chi)
+        pulsar.sinchi_init = math.sin(math.radians(chi))
         pulsar.sinchi = pulsar.sinchi_init
-        pulsar.coschi = math.cos(chi)
+        pulsar.coschi = math.cos(math.radians(chi))
     
+    elif pop.alignModel == 'rand45':
+        pulsar.coschi = random.random() * (1.0 - math.sqrt(0.5)) \
+                            + math.sqrt(0.5)
+        pulsar.chi = math.degrees(math.acos(pulsar.coschi))
+        pulsar.sinchi_init = math.sin(math.radians(pulsar.chi))
+        pulsar.sinchi = pulsar.sinchi_init
+
+    elif pop.alignModel == 'wj08':
+        # check an alignment timescale has been provided
+        if pop.alignTime is None:
+            raise evolveException('Align timescale needed for WJ08 model')
+
+        # weltevrede & johnston alignment model
+        pulsar.coschi = random.random()
+        chi = math.degrees(math.acos(pulsar.coschi))
+        pulsar.sinchi_init = math.sin(math.radians(chi))
+        pulsar.sinchi = pulsar.sinchi_init * math.exp(-pulsar.age/pop.alignTime)
+        pulsar.chi= math.degrees(math.asin(pulsar.sinchi))
+
     else:
-        raise evolveException('Invalid alignment model selected')
+        raise evolveException('Invalid alignment model: {0}'.format(aM))
 
     # more models to add here, but it'll do for now
 
@@ -333,12 +363,17 @@ def pulsar_beaming(pulsar, bM):
 
     # Tauris & Manchester beaming model (default)
     if bM == 'tm98':
-        fraction = beammodels.tm98_fraction(pulsar.period/1000.)
+        fraction = beammodels.tm98_fraction(pulsar)
     ## more models to add here!
     elif bM == 'none':
         fraction = 1.0
     elif bM == 'const':
         fraction = 0.2
+    elif bM == 'wj08':
+        fraction = beammodels.wj08_fraction(pulsar)
+    else:
+        raise evolveException('Invalid beaming model: {0}'.format(bM))
+
 
     if random.random()<fraction:
         pulsar.beaming = True
@@ -452,7 +487,7 @@ def spindown_cs06(pulsar, pop):
 
     # see whether the pulsar should be dead
     # (are we using deathline? Is pulsar above it?)
-    if pulsar.period>pdeath and pop.deathline:
+    if pulsar.period>pdeath and not pop.nodeathline:
         pulsar.dead = True
     else:
         pulsar.dead = False
@@ -495,25 +530,99 @@ if __name__ == '__main__':
                          help='surveys to use to check if pulsars are detected'
                          )
 
+    # maximum initial age of pulsars
     parser.add_argument('-tmax', type=float, required=False,
+                         default=1.0E9,
                          help = 'maximum initial age of pulsars')
 
+    # period distribution
+    parser.add_argument('-p', nargs=2, type=float,
+                         required=False, default=[0.3, 0.15],
+                         help='mean and std dev of period distribution, secs \
+                                 (def = 0.3, 0.15)')
+    
+    # B field distribution
+    parser.add_argument('-b', nargs=2, type=float,
+                         required=False, default=[12.65, 0.55],
+                         help='mean and std dev of log normal B field distn \
+                         (Gauss, def = 12.65, 0.55)')
+
+    # velocity distn model
+    parser.add_argument('-vmodel', type=str,required=False,
+                        nargs=1,default=['gaussian'],
+                        choices=['gaussian', 'exp'],
+                        help='velocity model to use')
+    
+    # velocity disttribution values
+    parser.add_argument('-v', nargs=2, type=float,
+                        required=False, default=[0.0, 180.],
+                        help='velocity distn values\
+                        (def = 0, 180 km/s)')
+
+    # spectral index distribution
+    parser.add_argument('-si', nargs=2, type=float,
+                         required=False, default=[-1.6, 0.35],
+                         help='mean and std dev of spectral index distribution \
+                                 (def = -1.6, 0.35)')
+
+    # spindown model
     parser.add_argument('-spinmodel', type=str, required=False,
                         nargs=1, default=['fk06'],
                         choices=['fk06', 'cs06'],
                         help = 'spin-down model to employ')
 
+    # alignment model
+    parser.add_argument('-alignmodel', type=str, required=False,
+                        nargs=1, default=['orthogonal'],
+                        choices=['orthogonal', 'random', 'rand45', 'wj08'],
+                        help = 'pulsar alignment model to use')
+
+    # alignment timescale
+    parser.add_argument('-aligntime', type=float, required=False,
+                        default=None,
+                        help = 'alignment timescale')
+
+    # beaming model
+    parser.add_argument('-beammodel', type=str, required=False,
+                        nargs=1,default=['tm98'],
+                        choices=['tm98', 'none', 'const', 'wj08'],
+                        help='beaming model to use (def=tm98)')
+
     # pulse width
     parser.add_argument('-w', type=float, required=False, default=5.,
-                     help='pulse width % (def=5%)')
+                     help='pulse width, percent (def=5.0)')
 
+    # galactic-Z distn
+    parser.add_argument('-z', type=float, required=False, default=0.33,
+                         help='exponential z-scale to use (def=0.33kpc)')
+
+    # braking index
+    parser.add_argument('-bi', type=float, required=False,default=0,
+                        help='braking index value to use (def=0 = model)')
+
+    # electron/dm model
+    parser.add_argument('-dm', type=str, nargs=1, required=False,
+                        default=['ne2001'],
+                        help='Galactic electron distribution model to use',
+                        choices=['ne2001', 'lmt85'])
+ 
     # output file name
     parser.add_argument('-o', type=str, metavar='outfile', required=False,
                         default='evolve.model',
-                        help='Output filename for population model')
+                        help='Output filename for population model \
+                               (def=evolve.model)')
 
+    # turn off printing to stdout 
     parser.add_argument('--nostdout', nargs='?', const=True, default=False,
-                         help='flag to switch off std output (def=False)')
+                         help='switch off std output')
+
+    # Flag for NOT using deathline
+    parser.add_argument('--nodeathline', nargs='?', const=True, default=False,
+                        help='turn OFF the deathline ')
+
+    # flag to turn off spiral arms
+    parser.add_argument('--nospiralarms', nargs='?', const=True, default=False,
+                        help='turn off spiral arms galactic distn')
 
     args = parser.parse_args()
 
@@ -526,8 +635,22 @@ if __name__ == '__main__':
     # run the code!
     pop = generate(args.n,
                     surveyList=args.surveys,
+                    age_max = args.tmax,
+                    pDistPars = args.p,
+                    bFieldPars = args.b,
+                    birthVModel = args.vmodel[0],
+                    birthVPars = args.v,
+                    alignModel= args.alignmodel[0],
+                    alignTime = args.aligntime,
                     spinModel=args.spinmodel[0],
+                    beamModel=args.beammodel[0],
+                    siDistPars=args.si,
+                    zscale=args.z,
                     nostdout=args.nostdout,
-                    duty=args.w)
+                    duty=args.w,
+                    braking_index = args.bi,
+                    electronModel = args.dm[0],
+                    nodeathline = args.nodeathline,
+                    nospiralarms = args.nospiralarms)
 
     write(pop, outf=args.o)

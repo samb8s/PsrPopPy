@@ -478,16 +478,16 @@ if __name__ == '__main__':
 
     # galactic-Z distn
     parser.add_argument('-w', type=float, required=False, default=0,
-                         help='pulse width % (def=0=rankin model)')
+                         help='pulse width, percent (def=5.0) ')
 
     # spectral index distribution
     parser.add_argument('-si', nargs=2, type=float,
                          required=False, default=[-1.6, 0.35],
-                         help='mean and std dev of spectral index distribution \
+                         help='mean and std dev of spectral index distribution\
                                  (def = -1.6, 0.35)')
     # scattering index
     parser.add_argument('-sc', type=float, required=False, default=-3.86,
-                        help='modify the frequency-dependance of Bhat et al \
+                        help='modify the frequency-dependance of Bhat et al\
                                 scattering formula (def = -3.86)')
 
     # period distribution parameters
@@ -507,16 +507,19 @@ if __name__ == '__main__':
     parser.add_argument('-l', nargs='+', required=False,
                         default=[-1.1, 0.9],
                         help='luminosity distribution mean and std dev \
-                                (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)')
+                             (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)')
 
     # radial distribution type
-    parser.add_argument('-rdist', type=str, nargs=1, required=False, default=['lfl06'],
+    parser.add_argument('-rdist', type=str, nargs=1, required=False,
+                        default=['lfl06'],
                         help='type of distrbution to use for Galactic radius',
-                        choices=['lfl06', 'yk04', 'isotropic', 'slab', 'disk', 'gauss'])
+                        choices=['lfl06', 'yk04', 'isotropic', 'slab',
+                                   'disk', 'gauss'])
+
     parser.add_argument('-r', nargs='+', required = False,
                         default = 7.5, type=float,
                         help = 'radial distribution parameters \
-                                (required for "-rdist gauss"')
+                                (required for "-rdist gauss")')
 
 
     # electron/dm model
