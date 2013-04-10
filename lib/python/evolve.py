@@ -11,6 +11,7 @@ import numpy as np
 
 import galacticops as go
 import beaming as beammodels
+import populate
 
 from population import Population 
 from pulsar import Pulsar
@@ -19,7 +20,7 @@ from survey import Survey
 from progressbar import ProgressBar
 
 
-class evolveException(Exception):
+class EvolveException(Exception):
     pass
 
 
@@ -37,6 +38,8 @@ def generate(ngen,
              birthVPars=[0.0, 180.],
              siDistPars= [-1.6,0.35],
              alignModel='orthogonal',
+             lumDistType='fk06',
+             lumDistPars=[-1.5, 0.5],
              alignTime=None,
              spinModel = 'fk06',
              beamModel = 'tm98',
@@ -55,6 +58,15 @@ def generate(ngen,
     # set the parameters in the population object
     pop.pmean, pop.psigma = pDistPars
     pop.bmean, pop.bsigma = bFieldPars
+    if lumDistType=='pow':
+        try:
+            pop.lummin, pop.lummax, pop.lumpow = \
+                lumDistPars[0], lumDistPars[1], lumDistPars[2]
+        except ValueError:
+            raise EvolveException('Not enough lum distn parameters')
+    else:
+        pop.lumPar1, pop.lumPar2 = lumDistPars
+
     pop.simean, pop.sisigma = siDistPars
     pop.birthvmean, pop.birthvsigma = birthVPars
     
@@ -169,7 +181,19 @@ def generate(ngen,
             go.vxyz(pulsar)
 
             # luminosity
-            luminosity_fk06(pulsar)
+            if lumDistType == 'fk06':
+                luminosity_fk06(pulsar, alpha=pop.lumPar1, beta=pop.lumPar2)
+
+            elif lumDistType == 'lnorm':
+                pulsar.lum_1400 = populate._drawlnorm(pop.lumPar1, pop.lumPar2)
+
+            elif lumDistType == 'pow':
+                pulsar.lum_1400 = populate._powerlaw(pop.lummin,
+                                                     pop.lummax,
+                                                     pop.lumpow)
+            else:
+                # something's wrong!
+                raise EvolveException('Invalid luminosity distn selected')
 
             # spectral index
             pulsar.spindex = random.gauss(pop.simean, pop.sisigma)
@@ -294,7 +318,7 @@ def birthVelocity( pulsar, pop):
         pulsar.vy = go._double_sided_exp(sigma, origin = mean)
         pulsar.vz = go._double_sided_exp(sigma, origin = mean)
     else:
-        raise evolveException('Invalid velocity model selected')
+        raise EvolveException('Invalid velocity model selected')
 
 
 def galacticDistribute(pulsar, pop):
@@ -346,7 +370,7 @@ def alignpulsar(pulsar, pop):
     elif pop.alignModel == 'wj08':
         # check an alignment timescale has been provided
         if pop.alignTime is None:
-            raise evolveException('Align timescale needed for WJ08 model')
+            raise EvolveException('Align timescale needed for WJ08 model')
 
         # weltevrede & johnston alignment model
         pulsar.coschi = random.random()
@@ -356,7 +380,7 @@ def alignpulsar(pulsar, pop):
         pulsar.chi= math.degrees(math.asin(pulsar.sinchi))
 
     else:
-        raise evolveException('Invalid alignment model: {0}'.format(aM))
+        raise EvolveException('Invalid alignment model: {0}'.format(aM))
 
     # more models to add here, but it'll do for now
 
@@ -376,7 +400,7 @@ def pulsar_beaming(pulsar, bM):
     elif bM == 'wj08':
         fraction = beammodels.wj08_fraction(pulsar)
     else:
-        raise evolveException('Invalid beaming model: {0}'.format(bM))
+        raise EvolveException('Invalid beaming model: {0}'.format(bM))
 
 
     if random.random()<fraction:
@@ -544,6 +568,16 @@ if __name__ == '__main__':
                          required=False, default=[0.3, 0.15],
                          help='mean and std dev of period distribution, secs \
                                  (def = 0.3, 0.15)')
+
+    # luminosity distribution parameters
+    parser.add_argument('-ldist', nargs=1, required=False, default=['fk06'],
+                        help='distribution to use for luminosities',
+                        choices=['fk06','lnorm', 'pow'])
+
+    parser.add_argument('-l', nargs='+', required=False, type=float,
+                        default=[-1.5, 0.5],
+                        help='luminosity distribution parameters \
+                             (def = [-1.5, 0.5], Faucher-Giguere&Kaspi, 2006)')
     
     # B field distribution
     parser.add_argument('-b', nargs=2, type=float,
@@ -640,6 +674,8 @@ if __name__ == '__main__':
     pop = generate(args.n,
                     surveyList=args.surveys,
                     age_max = args.tmax,
+                    lumDistType= args.ldist[0],
+                    lumDistPars=args.l,
                     pDistPars = args.p,
                     bFieldPars = args.b,
                     birthVModel = args.vmodel[0],

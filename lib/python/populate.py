@@ -15,6 +15,9 @@ from survey import Survey
 
 from progressbar import ProgressBar
 
+class PopulateException(Exception):
+    pass
+
 def write(pop, outf="populate.model"):
     """Writes the population object to a binary file using cPickle."""
     output = open(outf,'wb')
@@ -94,8 +97,11 @@ def generate(ngen,
         pop.lummean, pop.lumsigma = \
                 lumDistPars[0], lumDistPars[1]
     else:
-        pop.lummin, pop.lummax, pop.lumpow = \
+        try:
+            pop.lummin, pop.lummax, pop.lumpow = \
                 lumDistPars[0], lumDistPars[1], lumDistPars[2]
+        except ValueError:
+            raise PopulateException('Not enough lum distn parameters')
 
     pop.zscale = zscale
 
@@ -559,9 +565,11 @@ if __name__ == '__main__':
     pop = generate(args.n,
                  surveyList=args.surveys,
                  pDistType=args.pdist[0],
+                 lumDistType = args.ldist[0],
                  radialDistType=args.rdist[0],
                  radialDistPars=args.r,
                  pDistPars=args.p,
+                 lumDistPars=args.l,
                  siDistPars=args.si,
                  zscale=args.z,
                  duty=args.w,
