@@ -156,6 +156,10 @@ def generate(ngen,
         if not pulsar.dead:
             # is the pulsar beaming? 
             pulsar_beaming(pulsar, pop.beamModel)
+            # if not, then skip onto next pulsar
+            if not pulsar.beaming:
+                continue
+
             # position of the pulsar       
             galacticDistribute(pulsar, pop)
             # birthvelocity
