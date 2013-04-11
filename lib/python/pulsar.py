@@ -60,6 +60,10 @@ class Pulsar:
 
         self.snr=snr
 
+        # add this little flag which can be 
+        # switched if the pulsar is detected in any survey
+        self.detected = False
+
         # need to add pulsar dead/alive for evolution code
         self.dead = False
 

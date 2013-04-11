@@ -211,6 +211,8 @@ def generate(ngen,
                 pulsar.dm = go.lmt85_dist_to_dm(pulsar.dtrue,
                                                   pulsar.gl, 
                                                   pulsar.gb)
+            else:
+                raise EvolveException('Invalid electron dist model selected')
 
             # if surveys are given, check if pulsar detected or not
             # in ANY of the surveys

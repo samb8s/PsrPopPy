@@ -45,17 +45,24 @@ def write(surveyPops,
     for surv, survpop, detected in surveyPops:
         # create an output file, if required
         if not nores:
-            s = ''.join([surv,'.results'])
+            if surv is not None:
+                s = ''.join([surv,'.results'])
 
-            # write the survpop to the file
-            with open(s,'wb') as output:
-                cPickle.dump(survpop, output)
+                # write the survpop to the file
+                with open(s,'wb') as output:
+                    cPickle.dump(survpop, output)
+            else:
+                # surv == None means we want to write
+                # a file with all detected pulsars
+                s = 'allsurveys.results'
+                with open(s,'wb') as output:
+                    cPickle.dump(survpop, output)
 
         # Write ascii file if required
-        if asc:
+        if asc and surv is not None:
             surv.pop.write_asc(surv+ '.det')
 
-        if summary:
+        if summary and surv is not None:
             # Write a summary file for the survey (if true)
             filename = ''.join([surv,'.summary'])
             s = 'Detected {0}'.format(detected.ndet)
@@ -67,7 +74,10 @@ def write(surveyPops,
             with open(filename, 'w') as output:
                 output.write(s)
     
-def run(pop, surveyList, nostdout=False):
+def run(pop,
+        surveyList,
+        nostdout=False,
+        allsurveyfile=False):
     """ Run the surveys and detect the pulsars."""
 
     # print the population
@@ -103,6 +113,7 @@ def run(pop, surveyList, nostdout=False):
                 ndet += 1
                 psr.snr = snr
                 survpop.population.append(psr)
+                psr.detected = True
 
             elif snr == -1.0:
                 nsmear += 1
@@ -121,6 +132,11 @@ def run(pop, surveyList, nostdout=False):
 
         d = Detections(ndet=ndet, ntf=ntf, nsmear=nsmear, nout=nout)
         surveyPops.append([surv,survpop,d])
+
+    if allsurveyfile:
+        allsurvpop = Population()
+        allsurvpop.population = [psr for psr in pop.population if psr.detected]
+        surveyPops.append([None, allsurvpop, None])
 
     return surveyPops
 
@@ -148,6 +164,9 @@ if __name__ == '__main__':
     parser.add_argument('--nostdout', nargs='?', const=True, default=False,
                          help='flag to switch off std output (def=False)')
 
+    parser.add_argument('--allsurveys', nargs='?', const=True, default=False,
+                        help = 'write additional allsurv.results file (def=False)')
+
     args = parser.parse_args()
 
     # Load a model population
@@ -156,7 +175,8 @@ if __name__ == '__main__':
     # run the population through the surveys
     surveyPopulations = run(population,
                             args.surveys,
-                            nostdout=args.nostdout)
+                            nostdout=args.nostdout,
+                            allsurveyfile=args.allsurveys)
 
     # write the output files
     write(surveyPopulations,
