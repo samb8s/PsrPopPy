@@ -37,7 +37,7 @@ def loadModel(popfile='populate.model', popmodel=None):
 
 def write(surveyPops,
           extension='.results', 
-          nores=True, 
+          nores=False, 
           asc=False, 
           summary=False):
     """Write a survey results population to a binary file."""
