@@ -5,6 +5,7 @@ import sys
 
 import math
 import random
+from scipy.special import j1
 
 import galacticops as go
 from population import Population
@@ -268,7 +269,8 @@ class Survey:
             return -2
 
         #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
-        degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
+        #degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
+        degfac = 4.0*(j1(offset)/offset)**2
 
         # Dunc's code here uses a ^-2.6 to convert frequencies
         # don't think I need to do this - I'm using the frequency in call
