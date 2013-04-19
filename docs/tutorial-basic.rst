@@ -73,7 +73,7 @@ basic histograms of various parameters, use the ``view.py`` script::
   python view.py -f <model> -p <parameter>
 
 Here ``<parameter>`` could be ``period``, ``dm``, or several other options,
-as outlined in :ref:`_view_docs`. Assuming the `Matplotlib <http://matplotlib.org/>`_ 
+as outlined in :ref:`_view_doc`. Assuming the `Matplotlib <http://matplotlib.org/>`_ 
 package is installed, this will generate a histogram which can then be
 saved or printed as necessary.
 
@@ -81,20 +81,8 @@ To create a histogram of the logarithm of the selected parameter, use::
   
   python view.py -f <model> -p <parameter> --logx
 
-For more detailed information, sometimes it may be useful to plot two parameters
-against one another. For this, use ``visualize.py``::
-  
-  python visualize.py -f <model> 
-
-This will open a window with some radio buttons on the left-hand-side. Select a
-parameter for the x-axis, one for the y-axis, and select whether you want to 
-plot the logarithms of these parameters (see screenshot below).
-  
-.. image:: _static/visualize_screenshot2.png
-
 If you have the wxPython plugin working (seems on newer macs this is a non-trivial
-piece of software to install!) then I recommend using ``wxView.py`` in place of
-``visualize.py``. This code is a bit more robust, faster, and more pleasing to the eye
-(see another screenshot below).
+piece of software to install --- using macports is recommended) then use ``wxView.py``
+to create scatter plots of various parameters (see screenshot below).
 
 .. image:: _static/wxView.png

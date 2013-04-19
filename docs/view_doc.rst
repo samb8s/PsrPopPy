@@ -1,3 +1,5 @@
+.. _view_doc:
+
 view.py
 =======
 .. program:: view.py

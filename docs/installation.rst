@@ -34,9 +34,13 @@ Two scripts are provided for just this purpose (though I hope to find
 someone willing to contribute configure scripts). From the base 
 directory::
 
-  > cd fortran
+  > cd lib/fortran
 
-then edit either ``make_mac.csh`` or ``make_linux.csh``, depending upon 
+To use ``make``, edit ``makefile.<OSTYPE>`` and ensure that the gf variable
+points to the location of your gfortran compiler. Then simply type ``make``.
+All being well, four .so files will be generated.
+
+Failing this, edit either ``make_mac.csh`` or ``make_linux.csh``, depending upon 
 your system, so that the ``gf`` variable points to your local gfortran/f77
 compiler. Running the script::
 

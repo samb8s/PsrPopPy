@@ -138,7 +138,7 @@ def radec_to_lb( ra, dec):
                     C.byref(b),
                     C.byref(ra),
                     C.byref(dec),
-                    C.byref(C.c_int(1)))
+                    C.byref(C.c_int(-1)))
     if l.value>180.:
         l.value -= 360.
     return l.value, b.value
