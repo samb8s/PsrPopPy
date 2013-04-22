@@ -67,7 +67,7 @@ def write(surveyPops,
             with open(filename, 'w') as output:
                 output.write(s)
     
-def run(pop, surveyList, nostdout=False):
+def run(pop, surveyList, nostdout=False, pattern='gaussian'):
     """ Run the surveys and detect the pulsars."""
 
     # print the population
@@ -78,7 +78,7 @@ def run(pop, surveyList, nostdout=False):
     # loop over the surveys we want to run on the pop file
     surveyPops = []
     for surv in surveyList:
-        s = Survey(surv)
+        s = Survey(surv,pattern)
         if not nostdout:
             print "\nRunning survey {0}".format(surv)
 

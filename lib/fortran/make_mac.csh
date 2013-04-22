@@ -2,7 +2,7 @@
 
 setenv CFLAGS -m32
 
-set gf = /usr/local/bin/gfortran
+set gf = /usr/bin/i686-apple-darwin10-gfortran-4.2.1 
 
 $gf -O2 -fPIC -fno-second-underscore -c -I. -std=legacy *.f
 

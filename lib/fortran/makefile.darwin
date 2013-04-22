@@ -1,3 +1,3 @@
 export CFLAGS:= -m 32
-GF = /usr/local/bin/gfortran
+GF = /usr/bin/i686-apple-darwin10-gfortran-4.2.1 
 LINK.f = $(GF) -dynamiclib -fno-second-underscore

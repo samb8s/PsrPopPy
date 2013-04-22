@@ -45,7 +45,7 @@ class Pointing:
 
 class Survey:
     """Class to store survey parameters and methods"""
-    def __init__(self, surveyName):
+    def __init__(self, surveyName,pattern):
         """Read in a survey file and obtain the survey parameters"""
         try:
             # get path to surveys directory
@@ -61,6 +61,8 @@ class Survey:
         # initialise the pointings list to None
         # only change this is there is a list of pointings to be used
         self.pointingslist = None
+        self.gainpat       = pattern
+#        self.gainpat       = 'gaussian' 
 
         # Parse the file line by line
         for line in f:
@@ -74,14 +76,17 @@ class Survey:
             # rather than a range of l,b or ra,dec
             if a[1].count('pointing list'):
                 pointfname = a[0].strip()
-                pointfpath = os.path.join(__dir__, 'surveys', pointfname)
+                pointfpath = os.path.join(os.path.dirname(__dir__), 'surveys', pointfname)
 
                 # try to open the pointing list
-                try:
+                if os.path.isfile(pointfpath):
                     pointfptr = open(pointfpath, 'r')
-                except:
-                    s = 'File {0} does not exist!!!'.format(pointfpath)
-                    raise CoordinateException(s)
+                else:
+                    try:
+                        pointfptr = open(pointfname, 'r')
+                    except:
+                        s = 'File {0} does not exist!!!'.format(pointfpath)
+                        raise CoordinateException(s)
 
                 # read in the pointing list
                 self.pointingslist = []
@@ -108,7 +113,7 @@ class Survey:
             elif a[1].count('survey degradation'):
                 # beta
                 self.beta = float(a[0].strip())
-            elif a[1].count('gain'):
+            elif a[1].count('antenna gain'):
                 # gain
                 self.gain = float(a[0].strip())
             elif a[1].count('integration time'):
@@ -167,7 +172,9 @@ class Survey:
             elif a[1].count('signal-to-noise'):
                 # SNR limit
                 self.SNRlimit = float(a[0].strip())
-
+            elif a[1].count('gain pattern'):
+                # Gain pattern (can specify airy, default = gaussian)
+                self.gainpat = a[0].strip()
             else:
                 print "Parameter '",a[1].strip(),"' not recognized!"
 
@@ -175,6 +182,18 @@ class Survey:
 
         # get tsky array from file
         self.tskylist = go.readtskyfile()
+
+        print "Using gain pattern: "+self.gainpat
+
+        # define normalized airy disk gain pattern (if flag indicated?)
+        if self.gainpat == 'airy':
+            # To get proper units, freq needs units Hz and fwhm units rad.
+            # Conversion MHz -> Hz and arcmin -> rad
+            conv     = 1.e6*math.pi/(60.*180.)
+            eff_diam = 3.0e8/(self.freq*self.fwhm*conv)
+            print self.fwhm
+            print "Effective diameter used: "+str(eff_diam)
+            self.offsets, self.airy_norm = self.airy(eff_diam,self.freq)
     
     def __str__(self):
         """Method to define how to print the class"""
@@ -268,9 +287,20 @@ class Survey:
         else:
             return -2
 
-        #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
-        #degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
-        degfac = 4.0*(j1(offset)/offset)**2
+        # Get degfac depending on self.gainpat
+        if self.gainpat == 'airy':
+            absdiff = [abs(offset - self.offsets[y]) for y in range(len(self.offsets))]
+            # index for discrete offset closest to THE offset...
+            ind     = absdiff.index(min(absdiff))
+            if ind == 0 or ind == len(absdiff)-1:
+                degfac = self.airy_norm[ind]
+            else:
+                slope   = (self.airy_norm[ind + 1] - self.airy_norm[ind - 1]) \
+                          /(self.offsets[ind + 1] - self.offsets[ind - 1])
+                degfac  = slope * (offset - self.offsets[ind]) + self.airy_norm[ind] 
+        else:
+            #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
+            degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
 
         # Dunc's code here uses a ^-2.6 to convert frequencies
         # don't think I need to do this - I'm using the frequency in call
@@ -350,3 +380,17 @@ class Survey:
         tsky_haslam = self.tskylist[180*int(i) + int(j)]
         # scale temperature before returning
         return tsky_haslam * (self.freq/408.0)**(-2.6)
+
+    def airy(self, effective_diameter, center_frequency):
+        arr_len = 100                     # I've chosen this number rather arbitrarily 
+        a       = effective_diameter/2.    # Effective radius of telescope
+        lamda   = 3.0e8/center_frequency   # Obs. wavelength
+        conv    = math.pi/(60*180.)        # Conversion arcmins -> radians
+
+        ka        = 2*math.pi*a/lamda
+        offsets   = [(i-arr_len/2.+.01)*(20./arr_len) for i in range(arr_len)]
+        # (All offsets are shifted by 0.01 to avoid a zero in the list since beam_norm
+        # will be undefined for k=0.)
+        kasin     = [ka*math.sin(j*conv) for j in offsets]
+        beam_norm = [(j1(k)/k)**2 for k in kasin]
+        return(offsets,beam_norm)
