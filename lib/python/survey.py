@@ -2,6 +2,7 @@
 
 import os
 import sys
+import numpy as np
 
 import math
 import random
@@ -183,18 +184,6 @@ class Survey:
         # get tsky array from file
         self.tskylist = go.readtskyfile()
 
-        print "Using gain pattern: "+self.gainpat
-
-        # define normalized airy disk gain pattern (if flag indicated?)
-        if self.gainpat == 'airy':
-            # To get proper units, freq needs units Hz and fwhm units rad.
-            # Conversion MHz -> Hz and arcmin -> rad
-            conv     = 1.e6*math.pi/(60.*180.)
-            eff_diam = 3.0e8/(self.freq*self.fwhm*conv)
-            print self.fwhm
-            print "Effective diameter used: "+str(eff_diam)
-            self.offsets, self.airy_norm = self.airy(eff_diam,self.freq)
-    
     def __str__(self):
         """Method to define how to print the class"""
         s = "Survey class for {0}:".format(self.surveyName)
@@ -289,15 +278,12 @@ class Survey:
 
         # Get degfac depending on self.gainpat
         if self.gainpat == 'airy':
-            absdiff = [abs(offset - self.offsets[y]) for y in range(len(self.offsets))]
-            # index for discrete offset closest to THE offset...
-            ind     = absdiff.index(min(absdiff))
-            if ind == 0 or ind == len(absdiff)-1:
-                degfac = self.airy_norm[ind]
-            else:
-                slope   = (self.airy_norm[ind + 1] - self.airy_norm[ind - 1]) \
-                          /(self.offsets[ind + 1] - self.offsets[ind - 1])
-                degfac  = slope * (offset - self.offsets[ind]) + self.airy_norm[ind] 
+            conv    = math.pi/(60*180.)         # Conversion arcmins -> radians
+            eff_diam = 3.0e8/(self.freq*self.fwhm*conv*1.0e6)  # Also MHz -> Hz
+            a       = eff_diam/2.               # Effective radius of telescope
+            lamda   = 3.0e8/(self.freq*1.0e6)   # Obs. wavelength
+            kasin   = (2*math.pi*a/lamda)*np.sin(offset*conv)
+            degfac = 4*(j1(kasin)/kasin)**2
         else:
             #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
             degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
@@ -380,17 +366,3 @@ class Survey:
         tsky_haslam = self.tskylist[180*int(i) + int(j)]
         # scale temperature before returning
         return tsky_haslam * (self.freq/408.0)**(-2.6)
-
-    def airy(self, effective_diameter, center_frequency):
-        arr_len = 100                     # I've chosen this number rather arbitrarily 
-        a       = effective_diameter/2.    # Effective radius of telescope
-        lamda   = 3.0e8/center_frequency   # Obs. wavelength
-        conv    = math.pi/(60*180.)        # Conversion arcmins -> radians
-
-        ka        = 2*math.pi*a/lamda
-        offsets   = [(i-arr_len/2.+.01)*(20./arr_len) for i in range(arr_len)]
-        # (All offsets are shifted by 0.01 to avoid a zero in the list since beam_norm
-        # will be undefined for k=0.)
-        kasin     = [ka*math.sin(j*conv) for j in offsets]
-        beam_norm = [(j1(k)/k)**2 for k in kasin]
-        return(offsets,beam_norm)
