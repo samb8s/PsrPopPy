@@ -58,12 +58,21 @@ def generate(ngen,
     # set the parameters in the population object
     pop.pmean, pop.psigma = pDistPars
     pop.bmean, pop.bsigma = bFieldPars
+
     if lumDistType=='pow':
         try:
             pop.lummin, pop.lummax, pop.lumpow = \
                 lumDistPars[0], lumDistPars[1], lumDistPars[2]
         except ValueError:
             raise EvolveException('Not enough lum distn parameters for "pow"')
+
+    elif lumDistType=='fk06':
+        pop.lumPar1, pop.lumPar2 = lumDistPars[0], lumDistPars[1]
+        if len(lumDistPars)==3:
+            pop.lumPar3 = lumDistPars[2]
+        else:
+            pop.lumPar3 = 0.18
+    
     else:
         pop.lumPar1, pop.lumPar2 = lumDistPars
 
@@ -182,7 +191,10 @@ def generate(ngen,
 
             # luminosity
             if lumDistType == 'fk06':
-                luminosity_fk06(pulsar, alpha=pop.lumPar1, beta=pop.lumPar2)
+                luminosity_fk06(pulsar,
+                                alpha=pop.lumPar1,
+                                beta=pop.lumPar2,
+                                gamma=pop.lumPar3)
 
             elif lumDistType == 'lnorm':
                 pulsar.lum_1400 = populate._drawlnorm(pop.lumPar1, pop.lumPar2)
@@ -293,13 +305,13 @@ def generate(ngen,
 
     return pop
 
-def luminosity_fk06( pulsar,alpha=-1.5,beta=0.5):
+def luminosity_fk06( pulsar,alpha=-1.5,beta=0.5, gamma=0.18):
     """ Equation 14 from  Ridley & Lorimer """
     # variables to use in the equation
     delta_l = random.gauss(0.0, 0.8)
 
     # the equation
-    logL = math.log10(0.18) + alpha*math.log10(pulsar.period/1000.) + \
+    logL = math.log10(gamma) + alpha*math.log10(pulsar.period/1000.) + \
             beta*math.log10(pulsar.pdot * 1.0e15) + delta_l
 
     # set L
