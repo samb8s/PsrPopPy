@@ -420,13 +420,13 @@ def _beaming(psr):
     return random.random() < beamfrac
 
 def _genRhoWidth(psr):
-    """Calculate the opening angle of pulsar, and the beamwidth."""
+    """Calculate the opening angle of pulsar, and the beamwidth.
+        Based on model outlined in Smits et al. 2009"""
     # cut off period for model
     perCut = 30.0
-    drho = 0.3
 
     # calclate rho
-    randfactor = random.uniform(-.5, .5) * drho
+    randfactor = random.uniform(-.15, .15)
     if psr.period > perCut:
         rho = _rhoLaw(psr.period)
     else:
@@ -453,8 +453,9 @@ def _genRhoWidth(psr):
     return rho, width
 
 def _genAlpha():
-    """Pick an inclination angle from 0-> 90 degrees."""
-    angle = math.degrees(math.asin(random.uniform(-1,1)))
+    """Pick an inclination angle from 0-> 90 degrees.
+        Based on model outlined in Smits et al. 2009"""
+    angle = math.degrees(math.acos(random.uniform(0,1)))
     return math.fabs(angle)
 
 def _rhoLaw(p_ms):
