@@ -23,33 +23,33 @@ def readPickledPopulation(popfile):
 
     return pop
 
-def histogram(prop, logx=False, logy=False, nbins=50):
+def histogram(pop, prop, logx=False, logy=False, nbins=50):
     """Create list and make histogram for the selected parameter"""
 
     if prop == 'period' :
-        proplist = [p.period for p in self.pop.population]
+        proplist = [p.period for p in pop.population]
     elif prop == 'dm':
-        proplist = [p.dm for p in self.pop.population]
+        proplist = [p.dm for p in pop.population]
     elif prop == 'gl':
-        proplist = [p.gl for p in self.pop.population]
+        proplist = [p.gl for p in pop.population]
     elif prop == 'gb':
-        proplist = [p.gb for p in self.pop.population]
+        proplist = [p.gb for p in pop.population]
     elif prop == 'lum' :
-        proplist = [p.lum_1400 for p in self.pop.population]
+        proplist = [p.lum_1400 for p in pop.population]
     elif prop == 'alpha':
-        proplist = [p.alpha for p in self.pop.population]
+        proplist = [p.alpha for p in pop.population]
     elif prop == 'r0':
-         proplist = [math.fabs(p.r0) for p in self.pop.population]
+         proplist = [math.fabs(p.r0) for p in pop.population]
     elif prop == 'rho':
-        proplist = [p.rho for p in self.pop.population]
+        proplist = [p.rho for p in pop.population]
     elif prop == 'width':
-        proplist = [p.width_degree for p in self.pop.population]
+        proplist = [p.width_degree for p in pop.population]
     elif prop == 'spindex':
-        proplist = [p.spindex for p in self.pop.population]
+        proplist = [p.spindex for p in pop.population]
     elif prop == 'scindex':
-        proplist = [p.scindex for p in self.pop.population]
+        proplist = [p.scindex for p in pop.population]
     elif prop == 'dist':
-        proplist = [p.dtrue for p in self.pop.population]
+        proplist = [p.dtrue for p in pop.population]
     else:
         print "Property '{0}' not recognised".format(prop)
         sys.exit()
@@ -105,4 +105,4 @@ if __name__ == '__main__':
     pop = readPickledPopulation(args.f)
 
     # plot the histogram
-    histogram(args.p, logx=args.logx, nbins = args.b)
+    histogram(pop, args.p, logx=args.logx, nbins = args.b)
