@@ -48,19 +48,21 @@ def write(surveyPops,
             if surv is not None:
                 s = ''.join([surv,'.results'])
 
+                survpop.write(s)
                 # write the survpop to the file
-                with open(s,'wb') as output:
-                    cPickle.dump(survpop, output)
+                #with open(s,'wb') as output:
+                #    cPickle.dump(survpop, output, 2)
             else:
-                # surv == None means we want to write
+                # surv == None; we want to write
                 # a file with all detected pulsars
                 s = 'allsurveys.results'
-                with open(s,'wb') as output:
-                    cPickle.dump(survpop, output)
+                survpop.write(s)
+                #with open(s,'wb') as output:
+                #    cPickle.dump(survpop, output)
 
         # Write ascii file if required
         if asc and surv is not None:
-            surv.pop.write_asc(surv+ '.det')
+            survpop.write_asc(surv+ '.det')
 
         if summary and surv is not None:
             # Write a summary file for the survey (if true)

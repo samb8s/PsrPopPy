@@ -18,12 +18,6 @@ from progressbar import ProgressBar
 class PopulateException(Exception):
     pass
 
-def write(pop, outf="populate.model"):
-    """Writes the population object to a binary file using cPickle."""
-    output = open(outf,'wb')
-    cPickle.dump(pop, output)
-    output.close()
-
 def generate(ngen,
              surveyList=None,
              pDistType='lnorm',
@@ -581,4 +575,4 @@ if __name__ == '__main__':
                  nostdout=args.nostdout
                  )
 
-    write(pop, outf=args.o)
+    pop.write(outf=args.o)

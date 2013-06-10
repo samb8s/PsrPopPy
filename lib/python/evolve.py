@@ -24,12 +24,6 @@ class EvolveException(Exception):
     pass
 
 
-def write(pop, outf="evolve.model"):
-    """Writes the population object to a binary file using cPickle."""
-    output = open(outf,'wb')
-    cPickle.dump(pop, output)
-    output.close()
-
 def generate(ngen,
              surveyList=None,
              age_max=1.0E9,
@@ -707,4 +701,4 @@ if __name__ == '__main__':
                     nodeathline = args.nodeathline,
                     nospiralarms = args.nospiralarms)
 
-    write(pop, outf=args.o)
+    pop.write(pop, outf=args.o)

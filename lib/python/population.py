@@ -30,6 +30,7 @@ class Population:
 
         """Initialise the population object."""
 
+        # list to store pulsar objects
         self.population = []
 
         # distribution types
@@ -105,7 +106,7 @@ class Population:
     def write(self, outf):
         """Write the population object to a file"""
         output = open(outf, 'wb')
-        cPickle.dump(self, output)
+        cPickle.dump(self, output, 2)
         output.close()
 
     def write_asc(self, outf):
@@ -116,7 +117,7 @@ class Population:
             f.write(titlestr)
             for psr in self.population:
             
-                s = "{0}".format(self.period)
+                s = "{0}".format(psr.period)
                 s = "\t".join([s, "{0}".format(psr.dm)])
                 s = "\t".join([s, "{0}".format(psr.width_ms())])
                 s = "\t".join([s, "{0}".format(psr.gl)])
