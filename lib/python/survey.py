@@ -15,9 +15,10 @@ class CoordinateException(Exception):
     pass
 
 class Pointing:
-    """Simple class -- pointing has a gl and gb position"""
+    """Simple class -- pointing has a gl and gb position (***NEWLY ADDED GAIN/TOBS***)"""
+    """This class works with pointing list files, which have GL/GB/GAIN/TOBS columns. """
 
-    def __init__(self, coord1, coord2, coordtype):
+    def __init__(self, coord1, coord2, coordtype, gain, tobs):
         """Set the coordinates of the pointing.
             Convert to gl and gb if in RA and Dec"""
 
@@ -43,6 +44,8 @@ class Pointing:
 
             self.gl = coord1
             self.gb = coord2
+            self.tobs = tobs 
+            self.gain = gain
 
 class Survey:
     """Class to store survey parameters and methods"""
@@ -95,14 +98,21 @@ class Survey:
                     # already galactic coordinates
                     for line in pointfptr:
                         a = line.split()
-                        p = Pointing(float(a[0]), float(a[1]), 'gal')
+                        # Expected form of pointing list files is hard-coded.
+                        if len(a) != 4:
+                            s = 'File {0} should have columns: gl/gb/gain/tobs!'.format(pointfpath)
+                            raise CoordinateException(s)
+                        p = Pointing(float(a[0]), float(a[1]), 'gal', float(a[2]), float(a[3]))
                         self.pointingslist.append(p)
 
                 elif a[1].count('equatorial'):
                     # need to be converted from ra dec to gl gb
                     for line in pointfptr:
                         a = line.split()
-                        p = Pointing(float(a[0]), float(a[1]), 'eq')
+                        if len(a) != 4:
+                            s = 'File {0} should have columns: gl/gb/gain/tobs!'.format(pointfpath)
+                            raise CoordinateException(s)
+                        p = Pointing(float(a[0]), float(a[1]), 'eq', float(a[2]), float(a[3]))
                         self.pointingslist.append(p)
 
                 else:
@@ -250,6 +260,8 @@ class Survey:
             # if the beam is close enough, break out of the loop
             if offset_new < offset_deg:
                 offset_deg = offset_new
+                self.gain  = point.gain
+                self.tobs  = point.tobs
                 
         return offset_deg
 
