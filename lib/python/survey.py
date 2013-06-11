@@ -80,7 +80,7 @@ class Survey:
             # rather than a range of l,b or ra,dec
             if a[1].count('pointing list'):
                 pointfname = a[0].strip()
-                pointfpath = os.path.join(os.path.dirname(__dir__), 'surveys', pointfname)
+                pointfpath = os.path.join(__libdir__, 'surveys', pointfname)
 
                 # try to open the pointing list
                 if os.path.isfile(pointfpath):
