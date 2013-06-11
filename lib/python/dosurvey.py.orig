@@ -76,11 +76,14 @@ def write(surveyPops,
             with open(filename, 'w') as output:
                 output.write(s)
     
+<<<<<<< HEAD
 def run(pop,
-        surveyList, 
-        nostdout=False, 
-        allsurveyfile=False,
-        pattern='gaussian'):
+        surveyList,
+        nostdout=False,
+        allsurveyfile=False):
+=======
+def run(pop, surveyList, nostdout=False, pattern='gaussian'):
+>>>>>>> d81a2892bd3b03bb950ed46c7f946dd00f502f9d
     """ Run the surveys and detect the pulsars."""
 
     # print the population

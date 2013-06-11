@@ -33,7 +33,8 @@ def generate(ngen,
              scindex=-3.86,
              gpsArgs=[None, None],
              doubleSpec=[None, None],
-             nostdout=False):
+             nostdout=False,
+             pattern='gaussian'):
 
     """
     Generate a population of pulsars.
@@ -70,6 +71,9 @@ def generate(ngen,
     
     if electronModel not in ['ne2001', 'lmt85']:
         print "Unsupported electron model: {0}".format(electronModel)
+
+    if pattern not in ['gaussian','airy']:
+        print "Unsupported gain pattern: {0}".format(pattern)
 
     if duty<0.:
         print "Unsupported value of duty cycle: {0}".format(duty)
@@ -118,6 +122,8 @@ def generate(ngen,
 
         print "\t\tWidth {0}% -- (0 == model)".format(duty)
     
+        print "\t\tGain pattern = {0}".format(pattern)
+
         if pop.gpsFrac:
             print "\n\t\tGPS Fraction = {0}, a = {1}".format(
                                                     pop.gpsFrac,
@@ -136,7 +142,7 @@ def generate(ngen,
 
     # create survey objects here and put them in a list
     if surveyList is not None:
-        surveys = [Survey(s) for s in surveyList]
+        surveys = [Survey(s,pattern) for s in surveyList]
     else:
         # make an empty list here - makes some code just a little
         # simpler - can still loop over an empty list (ie zero times)
@@ -148,6 +154,8 @@ def generate(ngen,
         surv.nout=0 # number outside survey region
         surv.nsmear=0 # number smeared out
         surv.ntf=0 # number too faint
+
+        #surv.gainpat=pattern      
 
     while pop.ndet < ngen:
         # Declare new pulsar object

@@ -21,3 +21,4 @@
   5.   ! maximum abs(Galactic latitude) (deg)
   1.0  ! fractional survey coverage (0-1)
   9.0  ! minimum signal-to-noise ratio
+#  airy ! gain pattern

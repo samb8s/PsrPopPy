@@ -2,9 +2,11 @@
 
 import os
 import sys
+import numpy as np
 
 import math
 import random
+from scipy.special import j1
 
 import galacticops as go
 from population import Population
@@ -13,9 +15,10 @@ class CoordinateException(Exception):
     pass
 
 class Pointing:
-    """Simple class -- pointing has a gl and gb position"""
+    """Simple class -- pointing has a gl and gb position (***NEWLY ADDED GAIN/TOBS***)"""
+    """This class works with pointing list files, which have GL/GB/GAIN/TOBS columns. """
 
-    def __init__(self, coord1, coord2, coordtype):
+    def __init__(self, coord1, coord2, coordtype, gain, tobs):
         """Set the coordinates of the pointing.
             Convert to gl and gb if in RA and Dec"""
 
@@ -41,10 +44,12 @@ class Pointing:
 
             self.gl = coord1
             self.gb = coord2
+            self.tobs = tobs 
+            self.gain = gain
 
 class Survey:
     """Class to store survey parameters and methods"""
-    def __init__(self, surveyName):
+    def __init__(self, surveyName,pattern):
         """Read in a survey file and obtain the survey parameters"""
         try:
             # get path to surveys directory
@@ -60,6 +65,8 @@ class Survey:
         # initialise the pointings list to None
         # only change this is there is a list of pointings to be used
         self.pointingslist = None
+        self.gainpat       = pattern
+#        self.gainpat       = 'gaussian' 
 
         # Parse the file line by line
         for line in f:
@@ -73,14 +80,17 @@ class Survey:
             # rather than a range of l,b or ra,dec
             if a[1].count('pointing list'):
                 pointfname = a[0].strip()
-                pointfpath = os.path.join(__dir__, 'surveys', pointfname)
+                pointfpath = os.path.join(__libdir__, 'surveys', pointfname)
 
                 # try to open the pointing list
-                try:
+                if os.path.isfile(pointfpath):
                     pointfptr = open(pointfpath, 'r')
-                except:
-                    s = 'File {0} does not exist!!!'.format(pointfpath)
-                    raise CoordinateException(s)
+                else:
+                    try:
+                        pointfptr = open(pointfname, 'r')
+                    except:
+                        s = 'File {0} does not exist!!!'.format(pointfpath)
+                        raise CoordinateException(s)
 
                 # read in the pointing list
                 self.pointingslist = []
@@ -88,14 +98,21 @@ class Survey:
                     # already galactic coordinates
                     for line in pointfptr:
                         a = line.split()
-                        p = Pointing(float(a[0]), float(a[1]), 'gal')
+                        # Expected form of pointing list files is hard-coded.
+                        if len(a) != 4:
+                            s = 'File {0} should have columns: gl/gb/gain/tobs!'.format(pointfpath)
+                            raise CoordinateException(s)
+                        p = Pointing(float(a[0]), float(a[1]), 'gal', float(a[2]), float(a[3]))
                         self.pointingslist.append(p)
 
                 elif a[1].count('equatorial'):
                     # need to be converted from ra dec to gl gb
                     for line in pointfptr:
                         a = line.split()
-                        p = Pointing(float(a[0]), float(a[1]), 'eq')
+                        if len(a) != 4:
+                            s = 'File {0} should have columns: gl/gb/gain/tobs!'.format(pointfpath)
+                            raise CoordinateException(s)
+                        p = Pointing(float(a[0]), float(a[1]), 'eq', float(a[2]), float(a[3]))
                         self.pointingslist.append(p)
 
                 else:
@@ -107,7 +124,7 @@ class Survey:
             elif a[1].count('survey degradation'):
                 # beta
                 self.beta = float(a[0].strip())
-            elif a[1].count('gain'):
+            elif a[1].count('antenna gain'):
                 # gain
                 self.gain = float(a[0].strip())
             elif a[1].count('integration time'):
@@ -166,7 +183,9 @@ class Survey:
             elif a[1].count('signal-to-noise'):
                 # SNR limit
                 self.SNRlimit = float(a[0].strip())
-
+            elif a[1].count('gain pattern'):
+                # Gain pattern (can specify airy, default = gaussian)
+                self.gainpat = a[0].strip()
             else:
                 print "Parameter '",a[1].strip(),"' not recognized!"
 
@@ -174,7 +193,7 @@ class Survey:
 
         # get tsky array from file
         self.tskylist = go.readtskyfile()
-    
+
     def __str__(self):
         """Method to define how to print the class"""
         s = "Survey class for {0}:".format(self.surveyName)
@@ -241,6 +260,8 @@ class Survey:
             # if the beam is close enough, break out of the loop
             if offset_new < offset_deg:
                 offset_deg = offset_new
+                self.gain  = point.gain
+                self.tobs  = point.tobs
                 
         return offset_deg
 
@@ -267,8 +288,17 @@ class Survey:
         else:
             return -2
 
-        #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
-        degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
+        # Get degfac depending on self.gainpat
+        if self.gainpat == 'airy':
+            conv    = math.pi/(60*180.)         # Conversion arcmins -> radians
+            eff_diam = 3.0e8/(self.freq*self.fwhm*conv*1.0e6)  # Also MHz -> Hz
+            a       = eff_diam/2.               # Effective radius of telescope
+            lamda   = 3.0e8/(self.freq*1.0e6)   # Obs. wavelength
+            kasin   = (2*math.pi*a/lamda)*np.sin(offset*conv)
+            degfac = 4*(j1(kasin)/kasin)**2
+        else:
+            #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
+            degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
 
         # Dunc's code here uses a ^-2.6 to convert frequencies
         # don't think I need to do this - I'm using the frequency in call
