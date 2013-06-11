@@ -1,3 +1,4 @@
 Suggested future features:
   - RRATs? 
   - Binary parameters & effect on SNR (cf. Bagchi paper)
+  - Scintillation effects?
