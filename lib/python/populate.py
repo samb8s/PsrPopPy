@@ -504,7 +504,7 @@ if __name__ == '__main__':
                         help='type of distribution to use for pulse periods',
                         choices=['lnorm', 'norm', 'cc97', 'lorimer12'])
 
-    parser.add_argument('-p', nargs=2, required=False,
+    parser.add_argument('-p', nargs=2, required=False, type=float,
                          default=[2.7, -0.34],
                          help='period distribution mean and std dev \
                                  (def= [2.7, -0.34], Lorimer et al. 2006)')
@@ -513,7 +513,7 @@ if __name__ == '__main__':
     parser.add_argument('-ldist', nargs=1, required=False, default=['lnorm'],
                         help='distribution to use for luminosities',
                         choices=['lnorm', 'pow'])
-    parser.add_argument('-l', nargs='+', required=False,
+    parser.add_argument('-l', nargs='+', required=False, type=float,
                         default=[-1.1, 0.9],
                         help='luminosity distribution mean and std dev \
                              (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)')

@@ -2,3 +2,5 @@ Suggested future features:
   - RRATs? 
   - Binary parameters & effect on SNR (cf. Bagchi paper)
   - Scintillation effects?
+  - work out which pulsars are discovered in a given survey or merely
+    detected, based on preceeding surveys
