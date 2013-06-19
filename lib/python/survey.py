@@ -49,7 +49,7 @@ class Pointing:
 
 class Survey:
     """Class to store survey parameters and methods"""
-    def __init__(self, surveyName,pattern):
+    def __init__(self, surveyName, pattern='gaussian'):
         """Read in a survey file and obtain the survey parameters"""
         try:
             # get path to surveys directory
@@ -297,11 +297,9 @@ class Survey:
             kasin   = (2*math.pi*a/lamda)*np.sin(offset*conv)
             degfac = 4*(j1(kasin)/kasin)**2
         else:
-            #### NOTE! HERE I WANT TO CHECK UNITS OF FWHM (ARCMIN???)
             degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
 
-        # Dunc's code here uses a ^-2.6 to convert frequencies
-        # don't think I need to do this - I'm using the frequency in call
+        # calculate total temperature
         Ttot = self.tsys + self.tskypy(pulsar)
 
         # calc dispersion smearing across single channel

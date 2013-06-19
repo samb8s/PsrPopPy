@@ -164,7 +164,10 @@ def generate(ngen,
             # contopoulos and spitkovsky
             spindown_cs06(pulsar, pop)
 
-        # define pulse width (default = 5% = 18 degrees)
+        # define pulse width (default = 6% = 18 degrees)
+        width = (float(duty)/100.) * pulsar.period**0.9
+        width = math.log10(width)
+        width = populate._drawlnorm(width, 0.3)
         pulsar.width_degree = 360. * duty /100.
 
         # plough on - only if the pulsar isn't dead!
@@ -701,4 +704,4 @@ if __name__ == '__main__':
                     nodeathline = args.nodeathline,
                     nospiralarms = args.nospiralarms)
 
-    pop.write(pop, outf=args.o)
+    pop.write(outf=args.o)
