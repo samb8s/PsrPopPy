@@ -642,8 +642,8 @@ if __name__ == '__main__':
                      help='pulse width, percent (def=5.0)')
 
     # galactic-Z distn
-    parser.add_argument('-z', type=float, required=False, default=0.33,
-                         help='exponential z-scale to use (def=0.33kpc)')
+    parser.add_argument('-z', type=float, required=False, default=0.05,
+                         help='exponential z-scale to use (def=0.05kpc)')
 
     # braking index
     parser.add_argument('-bi', type=float, required=False,default=0,
