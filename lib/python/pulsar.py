@@ -10,6 +10,7 @@ class Pulsar:
     """ Class to store an individual pulsar"""
     def __init__(self,
                  period=None,
+                 pdot = None,
                  dm=None,
                  gl=None,
                  gb=None,
@@ -30,6 +31,7 @@ class Pulsar:
                  brokenSI=None):
         """___init___ function for the Pulsar class"""
         self.period = period
+        self.pdot = pdot
         self.dm = dm
         
         # convert to -180->+180 range
