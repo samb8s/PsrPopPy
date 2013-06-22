@@ -77,7 +77,7 @@ class Pulsar:
                    'Luminosity is not defined')
         elif self.dtrue is None:
             raise PulsarException(
-                    'Distance not defined')
+                   'Distance not defined')
 
         return self.lum_1400 / self.dtrue / self.dtrue
 

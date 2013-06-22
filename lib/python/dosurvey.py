@@ -15,10 +15,12 @@ class Detections:
     """Just a simple object to store survey detection summary"""
     def __init__(self,
                  ndet=None,
+                 ndisc=None,
                  nsmear=None,
                  nout=None,
                  ntf=None):
         self.ndet = ndet
+        self.ndisc = ndisc
         self.nsmear=nsmear
         self.nout = nout
         self.nfaint = ntf
@@ -92,6 +94,7 @@ def run(pop,
     surveyPops = []
     for surv in surveyList:
         s = Survey(surv,pattern)
+        s.discoveries = 0
         if not nostdout:
             print "\nRunning survey {0}".format(surv)
 
@@ -116,7 +119,14 @@ def run(pop,
                 ndet += 1
                 psr.snr = snr
                 survpop.population.append(psr)
-                psr.detected = True
+                
+                # check if the pulsar has been detected in other 
+                # surveys
+                if not psr.detected:
+                    # if not, set to detected and increment
+                    # number of discoveries by the survey
+                    psr.detected = True
+                    s.discoveries += 1
 
             elif snr == -1.0:
                 nsmear += 1
@@ -128,6 +138,7 @@ def run(pop,
         # report the results
         if not nostdout:
             print "Number detected by survey {0} = {1}".format(surv,ndet)
+            print "Of which are discoveries = {0}".format(s.discoveries)
             print "Number too faint = {0}".format(ntf)
             print "Number smeared = {0}".format(nsmear)
             print "Number out = {0}".format(nout)

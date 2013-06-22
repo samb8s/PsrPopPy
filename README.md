@@ -29,19 +29,24 @@ A brief description of the "executables" follows.
 populate
 --------
 
-Create a population mode using user-defined parameters.
+Create a population mode using user-defined parameters using the snapshot method
+
+evolve
+------
+
+Create a populate model using the Ridley & Lorimer evolution method
 
 dosurvey 
 --------
 
 Run a population model through a survey. Pre-defined surveys are given, but a user may also create their own.
 
-view.py
--------
+viewHist
+--------
 
-Program for making quick histograms of population model
+Program for making quick histograms of population models
 
-wxView.py
----------
+wxView
+------
 
 More detailed population model viewer. Make histograms, scatter plots, etc. All based off the wx backend for matplotlib.

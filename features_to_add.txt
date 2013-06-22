@@ -4,3 +4,4 @@ Suggested future features:
   - Scintillation effects?
   - work out which pulsars are discovered in a given survey or merely
     detected, based on preceeding surveys
+  - update viewhist to work a little more like wxview, choose parameter to plot
