@@ -4,6 +4,7 @@ import sys
 import os
 import argparse
 import random
+import math
 
 import cPickle
 import numpy as np
@@ -96,15 +97,24 @@ class VisualizeFrame(wx.Frame):
             style=wx.ALIGN_RIGHT)
         self.Bind(wx.EVT_CHECKBOX, self.on_logx, self.logx)
 
+        """
         self.logy = wx.CheckBox(self.panel, -1, 
             "log Y",
             style=wx.ALIGN_RIGHT)
         self.Bind(wx.EVT_CHECKBOX, self.on_logy, self.logy)
+        """
 
         self.grid = wx.CheckBox(self.panel, -1, 
             "grid",
             style=wx.ALIGN_RIGHT)
         self.Bind(wx.EVT_CHECKBOX, self.on_grid, self.grid)
+
+        self.nbins_label = wx.StaticText(self.panel, -1,
+                "Bins:",
+                style=wx.ALIGN_RIGHT)
+        self.nbins_box = wx.SpinCtrl(self.panel, value='30', 
+                                        min=1, max=1000)
+        
         
         modelList = [d.name for d in self.dataObjList]
 
@@ -136,27 +146,16 @@ class VisualizeFrame(wx.Frame):
                             majorDimension=1,
                             style = wx.RA_SPECIFY_COLS)
 
-        self.radioBoxY = wx.RadioBox(
-                            self.panel, 2, 'Y Axis',
-                            choices = sorted(self.dataObjList[0].labelDict.keys()),
-                            majorDimension=1,
-                            style = wx.RA_SPECIFY_COLS)
-
         # Initialise x,y selected radio buttons to Period and DM.
         self.xIndex='Period'
-        self.yIndex='DM'
         self.radioBoxX.SetStringSelection(self.xIndex)
-        self.radioBoxY.SetStringSelection(self.yIndex)
 
         # event for radio box with ID 1
         wx.EVT_RADIOBOX(self.panel, 1, self.onXRadioClick)
-        # event for radiobox with ID 2
-        wx.EVT_RADIOBOX(self.panel, 2, self.onYRadioClick)
 
 
         # top horizontal panel - canvas and radio boxes
         self.hpltbox.Add(self.radioBoxX)
-        self.hpltbox.Add(self.radioBoxY)
         self.hpltbox.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
         self.hpltbox.Add(self.modelCheckList, 0, wx.GROW, border=3)
 
@@ -169,8 +168,10 @@ class VisualizeFrame(wx.Frame):
         # bottom horizontal panel - check buttons and plot button
         flags = wx.ALIGN_LEFT | wx.ALL | wx.ALIGN_CENTER_VERTICAL
         self.htoolbox.Add(self.drawbutton, 0, border=3, flag=flags)
+        self.htoolbox.Add(self.nbins_label, 0, border=3, flag=flags)
+        self.htoolbox.Add(self.nbins_box, 0, border=3, flag=flags)
         self.htoolbox.Add(self.logx, 0, border=3, flag=flags)
-        self.htoolbox.Add(self.logy, 0, border=3, flag=flags)
+        #self.htoolbox.Add(self.logy, 0, border=3, flag=flags)
         self.htoolbox.AddSpacer(20)
         self.htoolbox.Add(self.grid, 0, border=3, flag=flags)
 
@@ -179,63 +180,71 @@ class VisualizeFrame(wx.Frame):
         self.panel.SetSizer(self.vbox)
         self.vbox.Fit(self)
 
-    def onRadioClick(self, event):
-        radioBox = event.GetEventObject()
-        print event.GetId()
-        print radioBox
-
     def onXRadioClick(self, event):
         # get x index of selected button
         radioBox = event.GetEventObject()
         self.xIndex=radioBox.GetStringSelection()
 
-    def onYRadioClick(self, event):
-        # gets yIndex of selected button
-        radioBox = event.GetEventObject()
-        self.yIndex=radioBox.GetStringSelection()
-
     def draw_figure(self):
         self.axes.clear()
         for dataObjIndex in self.modelCheckList.GetChecked():
-            try:
-                self.axes.plot(self.dataObjList[dataObjIndex].dataDict[self.xIndex],
-                                 self.dataObjList[dataObjIndex].dataDict[self.yIndex],
-                                 self.colour_list[dataObjIndex], 
-                                 label=self.dataObjList[dataObjIndex].name)
-            except IndexError:
-                self.axes.plot(self.dataObjList[dataObjIndex].dataDict[self.xIndex],
-                               self.dataObjList[dataObjIndex].dataDict[self.yIndex],
-                               label=self.dataObjList[dataObjIndex].name)
-            #self.axes.legend(loc='upper center', bbox_to_anchor=(0.5,-0.05),
-            #                   ncol=len(self.modelCheckList.GetChecked()),
-            #                   )
-
-        if len(self.modelCheckList.GetChecked())>0:
             self.axes.set_xlabel(self.dataObjList[0].labelDict[self.xIndex], 
                                     fontsize=10)
-            self.axes.set_ylabel(self.dataObjList[0].labelDict[self.yIndex],
+            if self.logx.IsChecked():
+                try:
+                    plot_list = [math.log10(xval) for xval in
+                            self.dataObjList[dataObjIndex].dataDict[self.xIndex]]
+                    self.axes.set_xlabel("log "+self.dataObjList[0].labelDict[self.xIndex], 
                                     fontsize=10)
+                except ValueError:
+                    plot_list = \
+                    list(self.dataObjList[dataObjIndex].dataDict[self.xIndex])
+            else:
+                plot_list = \
+                    list(self.dataObjList[dataObjIndex].dataDict[self.xIndex])
+
+            try:
+                self.axes.hist(plot_list,
+                                self.nbins,
+                                fill=self.colour_list[dataObjIndex],
+                                alpha=0.35,
+                                normed=True)
+            except IndexError:
+                self.axes.hist(plot_list,
+                                self.nbins,
+                                alpha=0.35,
+                                normed=True)
+
+        if len(self.modelCheckList.GetChecked())>0:
+
+            #self.axes.set_xlabel(self.dataObjList[0].labelDict[self.xIndex], 
+            #                        fontsize=10)
+            self.axes.set_ylabel("Normalised Frequency",
+                                 fontsize=10)
 
             for label in self.axes.get_xticklabels():
                 label.set_fontsize(7)
             for label in self.axes.get_yticklabels():
                 label.set_fontsize(7)
 
-        if self.logx.IsChecked():
-            self.axes.set_xscale('log')
-            for label in self.axes.get_xticklabels():
-                label.set_fontsize(7)
+        #if self.logx.IsChecked():
+        #    self.axes.set_xscale('log')
+        #    for label in self.axes.get_xticklabels():
+        #        label.set_fontsize(7)
 
+        """
         if self.logy.IsChecked():
             self.axes.set_yscale('log')
             for label in self.axes.get_yticklabels():
                 label.set_fontsize(7)
+        """
 
         self.axes.grid(self.grid.IsChecked())
         self.canvas.draw()
 
     def on_draw_button(self, event):
         # redraw the canvas
+        self.nbins = self.nbins_box.GetValue()
         self.draw_figure()
 
     def on_logx(self, event):
