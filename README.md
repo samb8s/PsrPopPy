@@ -50,3 +50,8 @@ wxView
 ------
 
 More detailed population model viewer. Make histograms, scatter plots, etc. All based off the wx backend for matplotlib.
+
+wxHist
+------
+
+Make more intricate histograms, including histograms of multiple population models.
