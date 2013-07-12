@@ -168,7 +168,7 @@ def generate(ngen,
         width = (float(duty)/100.) * pulsar.period**0.9
         width = math.log10(width)
         width = populate._drawlnorm(width, 0.3)
-        pulsar.width_degree = 360. * duty /100.
+        pulsar.width_degree = 360. * width / pulsar.period
 
         # plough on - only if the pulsar isn't dead!
         if not pulsar.dead:
@@ -610,9 +610,9 @@ if __name__ == '__main__':
 
     # spectral index distribution
     parser.add_argument('-si', nargs=2, type=float,
-                         required=False, default=[-1.6, 0.35],
+                         required=False, default=[-1.4, 0.96],
                          help='mean and std dev of spectral index distribution \
-                                 (def = -1.6, 0.35)')
+                                 (def = -1.4, 0.96)')
 
     # spindown model
     parser.add_argument('-spinmodel', type=str, required=False,
