@@ -17,5 +17,8 @@ libsla.so : library
 libvxyz.so : library
 	$(LINK.f) -o libvxyz.so vxyz.o rkqc.o rk4.o
 
+libgamma.so : library
+	$(LINK.f) -o libgamma.so gamma.o
+
 clean : 
 	rm -f *.o *.so *~
