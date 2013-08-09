@@ -3,6 +3,8 @@
 import math
 import random
 
+from orbit import Orbit
+
 class PulsarException(Exception):
     pass
 

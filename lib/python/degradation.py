@@ -16,61 +16,91 @@ gammalib.gamma3_.restype = C.c_double
 
 
 # BEGIN FUNCTION DEFINITIONS
-def gamma1(pulsar):
+def gamma1(pulsar, survey, harmonic):
 
     gamma = C.c_double(0.)
-    pulsar.pulsar_mass_msolar
+
+    harm = float(harmonic)
+    tobs = survey.tobs
+    m1 = pulsar.pulsar_mass_msolar
+    m2 = pulsar.companion_mass_msolar
+    period_s = pulsar.period / 1000.
+    long_peri = pulsar.long_peri_degrees
+    inc_deg = pulsar.inclination_degrees
+    ecc = pulsar.ecc
+    orb_p = pulsar.orbital_period_days
+
 
     gammalib.gamma1_(
-                     C.byref(C.c_double(4.)),
-                     C.byref(C.c_double(1000.)), 
-                     C.byref(C.c_double(1.4)), 
-                     C.byref(C.c_double(0.3)), 
-                     C.byref(C.c_double(0.08)), 
-                     C.byref(C.c_double(30.)), 
-                     C.byref(C.c_double(60.)), 
-                     C.byref(C.c_double(0.1)), 
-                     C.byref(C.c_double(0.1)), 
+                     C.byref(C.c_double(harm)),
+                     C.byref(C.c_double(tobs)), 
+                     C.byref(C.c_double(m1)), 
+                     C.byref(C.c_double(m2)), 
+                     C.byref(C.c_double(period_s)), 
+                     C.byref(C.c_double(long_peri)), 
+                     C.byref(C.c_double(inc_deg)), 
+                     C.byref(C.c_double(ecc)), 
+                     C.byref(C.c_double(orb_p)), 
                      C.byref(gamma)
                      )
 
     return gamma.value
 
-def gamma2(pulsar):
+def gamma2(pulsar, survey, harmonic):
 
     gamma = C.c_double(0.)
-    pulsar.pulsar_mass_msolar
+
+    harm = float(harmonic)
+    tobs = survey.tobs
+    m1 = pulsar.pulsar_mass_msolar
+    m2 = pulsar.companion_mass_msolar
+    period_s = pulsar.period / 1000.
+    long_peri = pulsar.long_peri_degrees
+    inc_deg = pulsar.inclination_degrees
+    ecc = pulsar.ecc
+    orb_p = pulsar.orbital_period_days
+
 
     gammalib.gamma2_(
-                     C.byref(C.c_double(4.)),
-                     C.byref(C.c_double(1000.)), 
-                     C.byref(C.c_double(1.4)), 
-                     C.byref(C.c_double(0.3)), 
-                     C.byref(C.c_double(0.08)), 
-                     C.byref(C.c_double(30.)), 
-                     C.byref(C.c_double(60.)), 
-                     C.byref(C.c_double(0.1)), 
-                     C.byref(C.c_double(0.1)), 
+                     C.byref(C.c_double(harm)),
+                     C.byref(C.c_double(tobs)), 
+                     C.byref(C.c_double(m1)), 
+                     C.byref(C.c_double(m2)), 
+                     C.byref(C.c_double(period_s)), 
+                     C.byref(C.c_double(long_peri)), 
+                     C.byref(C.c_double(inc_deg)), 
+                     C.byref(C.c_double(ecc)), 
+                     C.byref(C.c_double(orb_p)), 
                      C.byref(gamma)
                      )
 
     return gamma.value
 
-def gamma3(pulsar):
+def gamma3(pulsar, survey, harmonic):
 
     gamma = C.c_double(0.)
-    pulsar.pulsar_mass_msolar
+
+    harm = float(harmonic)
+    tobs = survey.tobs
+    m1 = pulsar.pulsar_mass_msolar
+    m2 = pulsar.companion_mass_msolar
+    period_s = pulsar.period / 1000.
+    long_peri = pulsar.long_peri_degrees
+    inc_deg = pulsar.inclination_degrees
+    ecc = pulsar.ecc
+    orb_p = pulsar.orbital_period_days
+
 
     gammalib.gamma3_(
-                     C.byref(C.c_double(4.)),
-                     C.byref(C.c_double(1000.)), 
-                     C.byref(C.c_double(1.4)), 
-                     C.byref(C.c_double(0.3)), 
-                     C.byref(C.c_double(0.08)), 
-                     C.byref(C.c_double(30.)), 
-                     C.byref(C.c_double(60.)), 
-                     C.byref(C.c_double(0.1)), 
-                     C.byref(C.c_double(0.1)), 
+                     C.byref(C.c_double(harm)),
+                     C.byref(C.c_double(tobs)), 
+                     C.byref(C.c_double(m1)), 
+                     C.byref(C.c_double(m2)), 
+                     C.byref(C.c_double(period_s)), 
+                     C.byref(C.c_double(long_peri)), 
+                     C.byref(C.c_double(inc_deg)), 
+                     C.byref(C.c_double(ecc)), 
+                     C.byref(C.c_double(orb_p)), 
                      C.byref(gamma)
                      )
 
