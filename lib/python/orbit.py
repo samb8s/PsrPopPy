@@ -9,7 +9,7 @@ class OrbitException(Exception):
 class Orbit(object):
     """ Class to store an individual pulsar"""
     def __init__(self,
-                 orbital_period_seconds=None,
+                 orbital_period_days=None,
                  pulsar_mass_msolar = None,
                  companion_mass_msolar=None,
                  long_peri_degrees=None,
@@ -17,30 +17,15 @@ class Orbit(object):
                  eccentricity=None):
         """___init___ function for the Orbit class"""
 
-        self.orbital_period_seconds = orbital_period_seconds
+        ### NEED TO KNOW WHAT THE INPUTS FROM PARAMS.IN ARE
+        # WHAT IS m compared to m1input, m2input???
+        # ALSO SOME WEIRD STUFF GOING ON IN GAMMA2/3 
+        # WHY is m being set explicitly when it's passed into the code?
+
+        self.orbital_period_days = orbital_period_days
 
         self.pulsar_mass_msolar = pulsar_mass_msolar
         self.companion_mass_msolar = companion_mass_msolar
         self.long_peri_degrees = long_peri_degrees
         self.inclination_degrees = inclination_degrees
         self.ecc = eccentricity
-
-        # get/set properties
-        self.__orbital_period_days = None
-        self.__omega_orbit = None
-
-    @property
-    def orbital_period_days(self):
-        return self.__orbital_period_days
-
-    @orbital_period_days.setter
-    def orbital_period_days(self, orbital_period_days):
-        return self.orbital_period_seconds / 86400.
-
-    @property
-    def omega_orbit(self):
-        return self.__omega_orbit
-
-    @omega_orbit.setter
-    def omega_orbit(self, omega_orbit):
-        return math.pi * 2.0 / self.orbital_period_seconds

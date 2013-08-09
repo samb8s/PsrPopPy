@@ -6,7 +6,7 @@ import random
 class PulsarException(Exception):
     pass
 
-class Pulsar:
+class Pulsar(Orbit):
     """ Class to store an individual pulsar"""
     def __init__(self,
                  period=None,
