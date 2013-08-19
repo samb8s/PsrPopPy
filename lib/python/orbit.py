@@ -17,11 +17,6 @@ class Orbit(object):
                  eccentricity=None):
         """___init___ function for the Orbit class"""
 
-        ### NEED TO KNOW WHAT THE INPUTS FROM PARAMS.IN ARE
-        # WHAT IS m compared to m1input, m2input???
-        # ALSO SOME WEIRD STUFF GOING ON IN GAMMA2/3 
-        # WHY is m being set explicitly when it's passed into the code?
-
         self.orbital_period_days = orbital_period_days
 
         self.pulsar_mass_msolar = pulsar_mass_msolar
