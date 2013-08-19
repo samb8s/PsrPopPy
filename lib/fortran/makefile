@@ -1,6 +1,6 @@
 include makefile.$(OSTYPE)
 
-all: libne2001.so libykarea.so libsla.so libvxyz.so
+all: libne2001.so libykarea.so libsla.so libvxyz.so libgamma.so
 
 library : *.f
 	$(GF) -O2 -fPIC -fno-second-underscore -c -I. -std=legacy *.f
