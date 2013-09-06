@@ -5,6 +5,7 @@ import argparse
 import math
 import random
 
+import inspect
 import cPickle
 
 import galacticops as go
@@ -335,6 +336,11 @@ def generate(ngen,
             print "    Number too faint = {0}".format(surv.ntf)
             print "    Number smeared = {0}".format(surv.nsmear)
             print "    Number outside survey area = {0}".format(surv.nout)
+
+
+    # store the list of arguments inside the model. Could be useful.
+    argspec = inspect.getargspec(generate)
+    pop.arguments = [(arg, locals()[arg]) for arg in argspec.args]
 
     return pop
 

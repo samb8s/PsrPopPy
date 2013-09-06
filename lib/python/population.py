@@ -63,6 +63,7 @@ class Population:
 
         # non-"properties"
         self.ndet = 0
+        self.arguments = None
 
     def __str__(self):
         """Define how we print the population to screen."""

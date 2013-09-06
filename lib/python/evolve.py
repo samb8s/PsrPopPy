@@ -5,6 +5,7 @@ import argparse
 import math
 import random
 
+import inspect
 import cPickle
 import scipy.integrate
 import numpy as np
@@ -299,6 +300,11 @@ def generate(ngen,
             print "    Number too faint = {0}".format(surv.ntf)
             print "    Number smeared = {0}".format(surv.nsmear)
             print "    Number outside survey area = {0}".format(surv.nout)
+
+
+    # save list of arguments into the pop
+    argspec = inspect.getargspec(generate)
+    pop.arguments = [(arg, locals()[arg]) for arg in argspec.args]
 
     return pop
 
