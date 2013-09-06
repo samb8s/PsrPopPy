@@ -338,9 +338,10 @@ def generate(ngen,
             print "    Number outside survey area = {0}".format(surv.nout)
 
 
-    # store the list of arguments inside the model. Could be useful.
+    # store the dict of arguments inside the model. Could be useful.
     argspec = inspect.getargspec(generate)
-    pop.arguments = [(arg, locals()[arg]) for arg in argspec.args]
+    key_values = [(arg, locals()[arg]) for arg in argspec.args]
+    pop.arguments = {key: value for (key,value) in key_values}
 
     return pop
 

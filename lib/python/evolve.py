@@ -304,7 +304,8 @@ def generate(ngen,
 
     # save list of arguments into the pop
     argspec = inspect.getargspec(generate)
-    pop.arguments = [(arg, locals()[arg]) for arg in argspec.args]
+    key_values = [(arg, locals()[arg]) for arg in argspec.args]
+    pop.arguments = {key: value for (key,value) in key_values}
 
     return pop
 
