@@ -68,6 +68,10 @@ class Survey:
         self.gainpat       = pattern
 #        self.gainpat       = 'gaussian' 
 
+        # adding AA parameter, so can scale s/n if the survey is
+        # an aperture array
+        self.AA = False
+
         # Parse the file line by line
         for line in f:
             # ignore any lines starting '#'
@@ -186,6 +190,9 @@ class Survey:
             elif a[1].count('gain pattern'):
                 # Gain pattern (can specify airy, default = gaussian)
                 self.gainpat = a[0].strip()
+            elif a[1].count('Aperture Array'):
+                # turn on AA
+                self.AA = True
             else:
                 print "Parameter '",a[1].strip(),"' not recognized!"
 
@@ -321,8 +328,23 @@ class Survey:
             #print weff_ms, tscat, pulsar.dm, pulsar.gl, pulsar.gb, pulsar.dtrue
             return -1
         else:
-            return self._SNfac(pulsar, pop.ref_freq, degfac, Ttot) \
+            sig_to_noise = self._SNfac(pulsar, pop.ref_freq, degfac, Ttot) \
                                   * math.sqrt((1.0 -delt)/delt)
+
+            if self.AA:
+                sig_to_noise *= self._AA_factor(pulsar)
+                
+            return sig_to_noise
+
+    def _AA_factor(self, pulsar):
+        """ Aperture array factor """
+
+        # need to compute ra/dec of pulsar from the l and b (galtfeq)
+        ra, dec = go.lb_to_radec(pulsar.gl, pulsar.gb)
+
+        offset_from_zenith = dec - (self.DECmax + self.DECmin)/2.0
+
+        return math.cos(math.radians(offset_from_zenith))
 
     def _SNfac(self, psr, ref_freq, degfac, Ttot):
         """The S/N factor from system parameters"""
