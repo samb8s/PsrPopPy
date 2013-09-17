@@ -1,0 +1,23 @@
+###############################################################################
+# model of the Parkes multibeam survey - main parameters
+###############################################################################
+  1.0  ! survey degradation factor
+  5.6  ! antenna gain (K/Jy)
+  600 ! integration time (s)
+  0.1 ! sampling time (ms)
+  20.  ! system temperature (K)
+  1050 ! centre frequency (MHz)
+  300  ! bandwidth (MHz)
+  0.009  ! channel bandwidth (MHz)
+  2    ! number of polarizations
+  65.5  ! full-width half maximum (arcmin)
+  0.   ! minimum RA (deg)
+  360. ! maximum RA (deg)
+ -90.  ! minimum DEC (deg)
+  30.  ! maximum DEC (deg)
+ -180  ! minimum Galactic longitude (deg)
+  180.  ! maximum Galactic longitude (deg)
+  0.   ! minimum abs(Galactic latitude) (deg)
+  90.   ! maximum abs(Galactic latitude) (deg)
+  1.0  ! fractional survey coverage (0-1)
+  9.0  ! signal-to-noise ratio

@@ -279,6 +279,10 @@ def generate(ngen,
         if surveyList is None:
             pop.population.append(p)
             pop.ndet += 1
+            if not nostdout:
+                prog.increment_amount()
+                print prog, '\r',
+                sys.stdout.flush()
         # if surveys are given, check if pulsar detected or not
         # in ANY of the surveys
         else:
@@ -492,9 +496,9 @@ if __name__ == '__main__':
     parser.add_argument('-z', type=float, required=False, default=0.33,
                          help='exponential z-scale to use (def=0.33kpc)')
 
-    # galactic-Z distn
+    # pulse width model
     parser.add_argument('-w', type=float, required=False, default=0,
-                         help='pulse width, percent (def=5.0) ')
+                         help='pulse width, percent (def=0 = model) ')
 
     # spectral index distribution
     parser.add_argument('-si', nargs=2, type=float,
