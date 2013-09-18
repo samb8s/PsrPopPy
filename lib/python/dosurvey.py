@@ -70,7 +70,7 @@ def write(surveyPops,
             # Write a summary file for the survey (if true)
             filename = ''.join([surv,'.summary'])
             s = 'Detected {0}'.format(detected.ndet)
-            s = '\n'.join([s, 'Ndiscovered {0}'.format(surv.discoveries)])
+            s = '\n'.join([s, 'Ndiscovered {0}'.format(detected.ndisc)])
             s = '\n'.join([s, 'Nsmear {0}'.format(detected.nsmear)])
             s = '\n'.join([s, 'Nfaint {0}'.format(detected.nfaint)])
             s = '\n'.join([s, 'Nout {0}'.format(detected.nout)])
@@ -145,7 +145,11 @@ def run(pop,
             print "Number out = {0}".format(nout)
             print "\n"
 
-        d = Detections(ndet=ndet, ntf=ntf, nsmear=nsmear, nout=nout)
+        d = Detections(ndet=ndet, 
+                       ntf=ntf, 
+                       nsmear=nsmear, 
+                       nout=nout,
+                       ndisc=s.discoveries)
         surveyPops.append([surv,survpop,d])
 
     if allsurveyfile:
