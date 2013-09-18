@@ -69,8 +69,12 @@ class Population:
         """Define how we print the population to screen."""
         s = "Population model:"
 
-        for key, value in self.arguments.iteritems():
-            s = '\n\t'.join([s, "{0} = {1}".format(key, value)])
+        try:
+            for key, value in self.arguments.iteritems():
+                s = '\n\t'.join([s, "{0} = {1}".format(key, value)])
+        except AttributeError:
+            # handle old-fashioned models without self.arguments
+            s = ""
 
         return s
 
