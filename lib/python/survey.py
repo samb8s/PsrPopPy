@@ -66,7 +66,6 @@ class Survey:
         # only change this is there is a list of pointings to be used
         self.pointingslist = None
         self.gainpat       = pattern
-        self.discoveries = None
 #        self.gainpat       = 'gaussian' 
 
         # adding AA parameter, so can scale s/n if the survey is
