@@ -104,36 +104,23 @@ def generate(ngen,
 
     pop.zscale = zscale
 
+    # store the dict of arguments inside the model. Could be useful.
+    argspec = inspect.getargspec(generate)
+    key_values = [(arg, locals()[arg]) for arg in argspec.args]
+    pop.arguments = {key: value for (key,value) in key_values}
+
     if not nostdout:
         print "\tGenerating pulsars with parameters:"
-        print "\t\tngen = {0}".format(ngen)
-        print "\t\tUsing electron distn model {0}".format(
-                                        pop.electronModel)
-        print "\n\t\tPeriod mean, sigma = {0}, {1}".format(
-                                                    pop.pmean,
-                                                    pop.psigma)
-        print "\t\tLuminosity mean, sigma = {0}, {1}".format(
-                                                    pop.lummean,
-                                                    pop.lumsigma)
-        print "\t\tSpectral index mean, sigma = {0}, {1}".format(
-                                                    pop.simean,
-                                                    pop.sisigma)
-        print "\t\tGalactic z scale height = {0} kpc".format(
-                                                    pop.zscale)
+        param_string_list = []
+        for key, value in key_values:
+            s = ": ".join([key, str(value)])
+            param_string_list.append(s)
 
-        print "\t\tWidth {0}% -- (0 == model)".format(duty)
-    
-        print "\t\tGain pattern = {0}".format(pattern)
+        # join this list of strings
+        s = "\n\t\t".join(param_string_list)
 
-        if pop.gpsFrac:
-            print "\n\t\tGPS Fraction = {0}, a = {1}".format(
-                                                    pop.gpsFrac,
-                                                    pop.gpsA)
-        if pop.brokenFrac:
-            print "\n\t\tDbl Spectrum Fraction = {0}, a = {1}".format(
-                                                    pop.brokenFrac,
-                                                    pop.brokenSI)
-
+        print "\t\t{0}".format(s)
+            
         # set up progress bar for fun :)
         prog = ProgressBar(min_value = 0,
                            max_value=ngen,
@@ -329,7 +316,7 @@ def generate(ngen,
 
     # print info to stdout 
     if not nostdout:
-        print "\n\n"
+        print "\n"
         print "  Total pulsars = {0}".format(len(pop.population))
         print "  Total detected = {0}".format(pop.ndet)
         #print "  Number not beaming = {0}".format(surv.nnb)
@@ -341,11 +328,6 @@ def generate(ngen,
             print "    Number smeared = {0}".format(surv.nsmear)
             print "    Number outside survey area = {0}".format(surv.nout)
 
-
-    # store the dict of arguments inside the model. Could be useful.
-    argspec = inspect.getargspec(generate)
-    key_values = [(arg, locals()[arg]) for arg in argspec.args]
-    pop.arguments = {key: value for (key,value) in key_values}
 
     return pop
 
