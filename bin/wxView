@@ -205,6 +205,7 @@ class VisualizeFrame(wx.Frame):
             except IndexError:
                 self.axes.plot(self.dataObjList[dataObjIndex].dataDict[self.xIndex],
                                self.dataObjList[dataObjIndex].dataDict[self.yIndex],
+                               '^',
                                label=self.dataObjList[dataObjIndex].name)
             #self.axes.legend(loc='upper center', bbox_to_anchor=(0.5,-0.05),
             #                   ncol=len(self.modelCheckList.GetChecked()),

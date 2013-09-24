@@ -116,9 +116,8 @@ def generate(ngen,
             s = ": ".join([key, str(value)])
             param_string_list.append(s)
 
-        # join this list of strings
+        # join this list of strings, and print it
         s = "\n\t\t".join(param_string_list)
-
         print "\t\t{0}".format(s)
             
         # set up progress bar for fun :)

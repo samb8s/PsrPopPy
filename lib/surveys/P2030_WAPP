@@ -1,0 +1,25 @@
+########################################
+# Model of PALFA survey (WAPP pointings) 
+########################################
+  1.1  ! survey degradation factor
+  8.6  ! antenna gain (K/Jy)
+  268  ! integration time (s)
+  0.064! sampling time (ms)
+  24.  ! system temperature (K)
+  1400 ! centre frequency (MHz)
+  100  ! bandwidth (MHz)
+  0.39 ! channel bandwidth (MHz)
+  2    ! number of polarizations   
+  3.35 ! full-width half maximum (arcmin)
+  0.   ! minimum RA (deg)
+  360. ! maximum RA (deg)
+  0.   ! minimum DEC (deg)
+  38.  ! maximum DEC (deg)
+  0.   ! minimum Galactic longitude (deg)
+  360. ! maximum Galactic longitude (deg)
+  0.   ! minimum abs(Galactic latitude) (deg)
+  5.   ! maximum abs(Galactic latitude) (deg)
+  1.0  ! fractional survey coverage (0-1)
+  9.0  ! minimum signal-to-noise ratio
+  P2030_WAPP_pos ! galactic pointing list
+  airy ! gain pattern
