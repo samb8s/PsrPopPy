@@ -41,11 +41,6 @@ dosurvey
 
 Run a population model through a survey. Pre-defined surveys are given, but a user may also create their own.
 
-viewHist
---------
-
-Program for making quick histograms of population models
-
 wxView
 ------
 
