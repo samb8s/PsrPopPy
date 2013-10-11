@@ -6,7 +6,7 @@
   600 ! integration time (s)
   0.1 ! sampling time (ms)
   20.  ! system temperature (K)
-  1050 ! centre frequency (MHz)
+  950 ! centre frequency (MHz)
   300  ! bandwidth (MHz)
   0.009  ! channel bandwidth (MHz)
   2    ! number of polarizations
@@ -18,6 +18,6 @@
  -180  ! minimum Galactic longitude (deg)
   180.  ! maximum Galactic longitude (deg)
   0.   ! minimum abs(Galactic latitude) (deg)
-  90.   ! maximum abs(Galactic latitude) (deg)
+  10.   ! maximum abs(Galactic latitude) (deg)
   1.0  ! fractional survey coverage (0-1)
   9.0  ! signal-to-noise ratio

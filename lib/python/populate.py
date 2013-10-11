@@ -29,6 +29,7 @@ def generate(ngen,
              siDistPars= [-1.6,0.35], 
              lumDistType='lnorm',
              lumDistPars=[-1.1, 0.9],
+             zscaleType='exp',
              zscale=0.33, 
              duty=0,
              scindex=-3.86,
@@ -102,6 +103,7 @@ def generate(ngen,
         except ValueError:
             raise PopulateException('Not enough lum distn parameters')
 
+    pop.zscaleType = zscaleType
     pop.zscale = zscale
 
     # store the dict of arguments inside the model. Could be useful.
@@ -237,7 +239,10 @@ def generate(ngen,
                 p.r0 = random.gauss(0., pop.rsigma) 
 
             # then calc xyz,distance, l and b
-            zheight  = go._double_sided_exp(zscale)
+            if pop.zscaleType == 'exp':
+                zheight  = go._double_sided_exp(zscale)
+            else:
+                zheight = random.gauss(0., zscale)
             gx,gy  = go.calcXY(p.r0)
             p.galCoords = gx, gy, zheight
             p.gl, p.gb = go.xyz_to_lb(p.galCoords)
@@ -474,6 +479,9 @@ if __name__ == '__main__':
                          help='surveys to use to check if pulsars are detected'
                          ) 
     # galactic-Z distn
+    parser.add_argument('-zdist', nargs=1, required=False, default=['exp'],
+                        help = 'type of distribution for z-scale',
+                        choices=['exp', 'gauss'])
     parser.add_argument('-z', type=float, required=False, default=0.33,
                          help='exponential z-scale to use (def=0.33kpc)')
 
@@ -566,6 +574,7 @@ if __name__ == '__main__':
                  pDistPars=args.p,
                  lumDistPars=args.l,
                  siDistPars=args.si,
+                 zscaleType=args.zdist[0],
                  zscale=args.z,
                  duty=args.w,
                  scindex=args.sc,
