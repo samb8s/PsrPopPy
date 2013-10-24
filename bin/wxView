@@ -45,7 +45,11 @@ def makeDataObj(frac=None, extnList=['.model', '.results']):
                     print "Could not open file {0}.".format(filename)
                     sys.exit()
 
-                pop = cPickle.load(f)
+                try:
+                    pop = cPickle.load(f)
+                except cPickle.UnpicklingError:
+                    print "File {0} could not be unpickled!".format(filename)
+                    continue
                 f.close()
 
                 # going to throw in a factor to reduce the number of plotted pulsars
