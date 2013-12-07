@@ -31,7 +31,7 @@ def generate(ngen,
              lumDistPars=[-1.1, 0.9],
              zscaleType='exp',
              zscale=0.33, 
-             duty=0,
+             duty=6.,
              scindex=-3.86,
              gpsArgs=[None, None],
              doubleSpec=[None, None],
@@ -486,8 +486,8 @@ if __name__ == '__main__':
                          help='exponential z-scale to use (def=0.33kpc)')
 
     # pulse width model
-    parser.add_argument('-w', type=float, required=False, default=0,
-                         help='pulse width, percent (def=0 = model) ')
+    parser.add_argument('-w', type=float, required=False, default=6,
+                         help='pulse width, percent (def=6%) ')
 
     # spectral index distribution
     parser.add_argument('-si', nargs=2, type=float,
@@ -525,9 +525,9 @@ if __name__ == '__main__':
                         choices=['lfl06', 'yk04', 'isotropic', 'slab',
                                    'disk', 'gauss'])
 
-    parser.add_argument('-r', nargs='+', required = False,
+    parser.add_argument('-r', required = False,
                         default = 7.5, type=float,
-                        help = 'radial distribution parameters \
+                        help = 'radial distribution parameter \
                                 (required for "-rdist gauss")')
 
 

@@ -1,0 +1,23 @@
+###############################################################################
+# model of the Parkes deep ultra high latitude multibeam survey - main parameters
+###############################################################################
+  1.0  ! survey degradation factor
+  0.6  ! antenna gain (K/Jy)
+   540 ! integration time (s)
+  0.064 ! sampling time (ms)
+  23.  ! system temperature (K)
+  1390 ! centre frequency (MHz)
+  340  ! bandwidth (MHz)
+  0.039 ! channel bandwidth (MHz)
+  2    ! number of polarizations
+  14.  ! full-width half maximum (arcmin)
+  0.   ! minimum RA (deg)
+  360. ! maximum RA (deg)
+ -90.  ! minimum DEC (deg)
+  10.  ! maximum DEC (deg)
+ -8.7544  ! minimum Galactic longitude (deg)
+ 28.7544  ! maximum Galactic longitude (deg)
+ 60  ! minimum abs(Galactic latitude) (deg)
+ 65  ! maximum abs(Galactic latitude) (deg)
+  1.0  ! fractional survey coverage (0-1)
+  9.0  ! signal-to-noise ratio

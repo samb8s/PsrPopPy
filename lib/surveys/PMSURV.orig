@@ -15,7 +15,7 @@
   360. ! maximum RA (deg)
  -90.  ! minimum DEC (deg)
   90.  ! maximum DEC (deg)
- -100  ! minimum Galactic longitude (deg)
+ -150  ! minimum Galactic longitude (deg)
   50.  ! maximum Galactic longitude (deg)
   0.   ! minimum abs(Galactic latitude) (deg)
   5.   ! maximum abs(Galactic latitude) (deg)
