@@ -11,6 +11,9 @@ from scipy.special import j1
 import galacticops as go
 from population import Population
 
+class SurveyException(Exception):
+    pass
+
 class CoordinateException(Exception):
     pass
 
@@ -51,15 +54,23 @@ class Survey:
     """Class to store survey parameters and methods"""
     def __init__(self, surveyName, pattern='gaussian'):
         """Read in a survey file and obtain the survey parameters"""
-        try:
-            # get path to surveys directory
-            __dir__ = os.path.dirname(os.path.abspath(__file__))
-            __libdir__ = os.path.dirname(__dir__)
-            filepath = os.path.join(__libdir__, 'surveys', surveyName)
-            f = open(filepath, 'r')
-        except IOError:
-            print 'No such file: ',surveyName
-            sys.exit()
+        
+        # try to open the survey file locally first
+        if os.path.isfile(filepath):
+            f = open(surveyName, 'r')
+        else:
+            try:
+                # try to open file in lib
+                # get path to surveys directory
+                __dir__ = os.path.dirname(os.path.abspath(__file__))
+                __libdir__ = os.path.dirname(__dir__)
+                filepath = os.path.join(__libdir__, 'surveys', surveyName)
+                f = open(filepath, 'r')
+
+            except IOError:
+                # couldn't find the file
+                s = 'File {0} does not exist!!!'.format(surveyName)
+                raise SurveyException(s)
 
         self.surveyName = surveyName
         # initialise the pointings list to None
@@ -91,6 +102,7 @@ class Survey:
                     pointfptr = open(pointfpath, 'r')
                 else:
                     try:
+                        # try to open a local file
                         pointfptr = open(pointfname, 'r')
                     except:
                         s = 'File {0} does not exist!!!'.format(pointfpath)
