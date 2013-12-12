@@ -56,7 +56,7 @@ class Survey:
         """Read in a survey file and obtain the survey parameters"""
         
         # try to open the survey file locally first
-        if os.path.isfile(filepath):
+        if os.path.isfile(surveyName):
             f = open(surveyName, 'r')
         else:
             try:
