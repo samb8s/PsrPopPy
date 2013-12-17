@@ -112,6 +112,43 @@ def lmt85_dist_to_dm( dist, gl, gb):
                          C.byref(inpath),
                          C.byref(linpath))
 
+def ne2001_get_smtau(dist, gl, gb):
+    """Use NE2001 model to get the DISS scattering timescale"""
+    dist = C.c_float(dist)
+    
+    # gl gb need to be in radians
+    gl = C.c_float(math.radians(gl))
+    gb = C.c_float(math.radians(gb))
+    
+    #call dmdsm and get the value out of smtau
+    ndir = C.c_int(-1)
+    smtau = C.c_float(0.)
+    inpath = C.create_string_buffer(fortranpath)
+    linpath = C.c_int(len(fortranpath))
+    ne2001lib.dmdsm(C.byref(gl),
+                    C.byref(gb),
+                    C.byref(ndir),
+                    C.byref(C.c_float(0.0)),
+                    C.byref(dist),
+                    C.byref(C.create_string_buffer(' ')),
+                    C.byref(C.c_float(0.0)),
+                    C.byref(smtau),
+                    C.byref(C.c_float(0.0)),
+                    C.byref(C.c_float(0.0)),
+                    C.byref(inpath),
+                    C.byref(linpath)
+                    )
+    return smtau.value
+
+def ne2001_scintime(dist, gl, gb, freq):
+    """Compute the scintillation timescale from the smtau value"""
+    # freq in is in MHz, needs to be in GHz for the below eqn
+    freq = freq / 1000.
+    # returns scintime in seconds
+    # reference: eqn (46) of Cordes & Lazio 1991, ApJ, 376, 123
+    smtau = ne2001_get_smtau(dist, gl, gb)
+    return 3.3 * freq**1.2 * smtau**(-0.6)
+
 def lb_to_radec( l, b):
     """Convert l, b to RA, Dec using SLA fortran (should be faster)."""
     ra = C.c_float(0.)

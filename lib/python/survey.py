@@ -52,7 +52,7 @@ class Pointing:
 
 class Survey:
     """Class to store survey parameters and methods"""
-    def __init__(self, surveyName, pattern='gaussian'):
+    def __init__(self, surveyName):
         """Read in a survey file and obtain the survey parameters"""
         
         # try to open the survey file locally first
@@ -76,8 +76,7 @@ class Survey:
         # initialise the pointings list to None
         # only change this is there is a list of pointings to be used
         self.pointingslist = None
-        self.gainpat       = pattern
-#        self.gainpat       = 'gaussian' 
+        self.gainpat       = 'gaussian' 
 
         # adding AA parameter, so can scale s/n if the survey is
         # an aperture array
@@ -410,3 +409,60 @@ class Survey:
         tsky_haslam = self.tskylist[180*int(i) + int(j)]
         # scale temperature before returning
         return tsky_haslam * (self.freq/408.0)**(-2.6)
+
+    def scint(self, psr, snr):
+        """ Add scintillation effects and modify the pulsar's S/N"""
+
+        # calculate the scintillation strength (commonly "u")
+        # first, calculate scint BW, assume Kolmogorov, C=1.16
+        tscat = go.scatter_bhat(pulsar.dm, psr.scindex, self.freq) # ms
+        tscat /= 1000. # convert to seconds
+
+        scint_bandwidth = 1.16 / 2.0 / math.pi / tscat # BW in Hz
+        scint_bandwidth /= 1.0E6 # convert to MHz (self.freq is in MHz)
+
+        scint_strength = math.sqrt(self.freq / scint_bandwidth)
+
+        if scint_strength < 1.0:
+            # weak scintillation
+            # modulation index
+            u_term = math.pow(scint_strength, 1.666666)
+            mod_indx = math.sqrt(u_term)
+
+        else:
+            # strong scintillation
+
+            # m^2 = m_riss^2 + m_diss^2 + m_riss x m_diss
+            # e.g. Lorimer and Kramer ~eq 4.44 
+            m_riss = math.pow(scint_strength, -0.33333)
+
+            # lorimer & kramer eq 4.44
+            kappa = 0.15 # taking this as avrg for now
+            
+            # calculate scintillation timescale
+            scint_timescale = go.ne2001_scintime(psr.dtrue, 
+                                                 psr.gl, 
+                                                 psr.gb, 
+                                                 self.freq)
+            
+            n_t = self._calc_n_t(kappa, scint_timescale)
+            n_f = self._calc_n_f(kappa, scint_bandwidth)
+            m_diss = 1. / math.sqrt(n_t * n_f)
+
+            m_tot_sq = m_diss * m_diss + m_riss * m_riss + m_riss * m_diss
+            mod_indx = math.sqrt(m_tot_sq)
+      
+        return self._modulate_flux_scint(snr, mod_indx)
+
+    def _calc_n_t(self, kappa, delt_t):
+        return 1. + kappa * self.tobs / delt_t
+        
+    def _calc_n_f(self, kappa, delt_f):
+        return 1. + kappa * self.bw / delt_f
+
+    def _modulate_flux_scint(self, snr, mod_indx):
+        """Modify pulsar flux according to the modulation index"""
+
+        # sigma of scintillation
+        sig_scint = mod_indx * snr
+        return random.gauss(snr, sig_scint)

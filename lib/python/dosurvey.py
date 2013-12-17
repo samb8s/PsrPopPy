@@ -83,7 +83,7 @@ def run(pop,
         surveyList, 
         nostdout=False, 
         allsurveyfile=False,
-        pattern='gaussian'):
+        scint=False):
     """ Run the surveys and detect the pulsars."""
 
     # print the population
@@ -94,7 +94,7 @@ def run(pop,
     # loop over the surveys we want to run on the pop file
     surveyPops = []
     for surv in surveyList:
-        s = Survey(surv,pattern)
+        s = Survey(surv)
         s.discoveries = 0
         if not nostdout:
             print "\nRunning survey {0}".format(surv)
@@ -116,6 +116,13 @@ def run(pop,
 
             # is the pulsar over the detection threshold?
             snr = s.SNRcalc(psr, pop)
+
+            # add scintillation, if required
+            # modifying S/N rather than flux is sensible because then
+            # a pulsar can have same flux but change S/N in repeated surveys
+            if scint:
+                snr = s.scint(psr, snr)
+
             if snr > s.SNRlimit:
                 ndet += 1
                 psr.snr = snr
@@ -186,6 +193,9 @@ if __name__ == '__main__':
     parser.add_argument('--allsurveys', nargs='?', const=True, default=False,
                         help = 'write additional allsurv.results file (def=False)')
 
+    parser.add_argument('--scint', nargs='?', const=True, default=False,
+                        help = 'include model scintillation effects (def=False)')
+
     args = parser.parse_args()
 
     # Load a model population
@@ -195,7 +205,8 @@ if __name__ == '__main__':
     surveyPopulations = run(population,
                             args.surveys,
                             nostdout=args.nostdout,
-                            allsurveyfile=args.allsurveys)
+                            allsurveyfile=args.allsurveys,
+                            scint=args.scint)
 
     # write the output files
     write(surveyPopulations,

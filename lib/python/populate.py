@@ -218,7 +218,7 @@ def generate(ngen,
             # use gl and gb to compute galactic coordinates
             # pretend the pulsar is at distance of 1kpc
             # not sure why, ask Dunc!
-            p.galCoords = go.lb_to_xyz(1.0, p.gl, p.gb)
+            p.galCoords = go.lb_to_xyz(p.gl, p.gb, 1.0)
         
         elif pop.radialDistType == 'slab':
             p.galCoords= go.slabDist()
