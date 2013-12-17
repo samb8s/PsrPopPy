@@ -432,7 +432,7 @@ class Survey:
         else:
             # strong scintillation
 
-            # m^2 = m_riss^2 + m_diss^2 + m_riss x m_diss
+            # m^2 = m_riss^2 + m_diss^2 + m_riss * m_diss
             # e.g. Lorimer and Kramer ~eq 4.44 
             m_riss = math.pow(scint_strength, -0.33333)
 
@@ -445,11 +445,16 @@ class Survey:
                                                  psr.gb, 
                                                  self.freq)
             
+            # calc n_t and n_f
             n_t = self._calc_n_t(kappa, scint_timescale)
             n_f = self._calc_n_f(kappa, scint_bandwidth)
+            
+            # finally calc m_diss
             m_diss = 1. / math.sqrt(n_t * n_f)
 
             m_tot_sq = m_diss * m_diss + m_riss * m_riss + m_riss * m_diss
+            
+            # modulation index for strong scintillation
             mod_indx = math.sqrt(m_tot_sq)
       
         return self._modulate_flux_scint(snr, mod_indx)
