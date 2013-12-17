@@ -415,7 +415,7 @@ class Survey:
 
         # calculate the scintillation strength (commonly "u")
         # first, calculate scint BW, assume Kolmogorov, C=1.16
-        tscat = go.scatter_bhat(pulsar.dm, psr.scindex, self.freq) # ms
+        tscat = go.scatter_bhat(psr.dm, psr.scindex, self.freq) # ms
         tscat /= 1000. # convert to seconds
 
         scint_bandwidth = 1.16 / 2.0 / math.pi / tscat # BW in Hz
@@ -440,14 +440,14 @@ class Survey:
             kappa = 0.15 # taking this as avrg for now
             
             # calculate scintillation timescale
-            scint_timescale = go.ne2001_scintime(psr.dtrue, 
-                                                 psr.gl, 
-                                                 psr.gb, 
-                                                 self.freq)
+            scint_ts, scint_bw = go.ne2001_scint_time_bw(psr.dtrue, 
+                                                         psr.gl, 
+                                                         psr.gb, 
+                                                         self.freq)
             
             # calc n_t and n_f
-            n_t = self._calc_n_t(kappa, scint_timescale)
-            n_f = self._calc_n_f(kappa, scint_bandwidth)
+            n_t = self._calc_n_t(kappa, scint_ts)
+            n_f = self._calc_n_f(kappa, scint_bw)
             
             # finally calc m_diss
             m_diss = 1. / math.sqrt(n_t * n_f)
@@ -460,9 +460,11 @@ class Survey:
         return self._modulate_flux_scint(snr, mod_indx)
 
     def _calc_n_t(self, kappa, delt_t):
+        """Number of scintles sampled in time"""
         return 1. + kappa * self.tobs / delt_t
         
     def _calc_n_f(self, kappa, delt_f):
+        """Number of scintles sampled in frequency"""
         return 1. + kappa * self.bw / delt_f
 
     def _modulate_flux_scint(self, snr, mod_indx):
