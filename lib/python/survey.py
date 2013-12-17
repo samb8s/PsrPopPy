@@ -446,8 +446,15 @@ class Survey:
                                                          self.freq)
             
             # calc n_t and n_f
-            n_t = self._calc_n_t(kappa, scint_ts)
-            n_f = self._calc_n_f(kappa, scint_bw)
+            if scint_ts is None:
+                n_t = 1.
+            else:
+                n_t = self._calc_n_t(kappa, scint_ts)
+                
+            if scint_bw is None:
+                n_f = 1.
+            else:
+                n_f = self._calc_n_f(kappa, scint_bw)
             
             # finally calc m_diss
             m_diss = 1. / math.sqrt(n_t * n_f)

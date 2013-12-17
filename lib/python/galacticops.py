@@ -126,7 +126,7 @@ def ne2001_get_smtau(dist, gl, gb):
     smtau = C.c_float(0.)
     inpath = C.create_string_buffer(fortranpath)
     linpath = C.c_int(len(fortranpath))
-    ne2001lib.dmdsm(C.byref(gl),
+    ne2001lib.dmdsm_(C.byref(gl),
                     C.byref(gb),
                     C.byref(ndir),
                     C.byref(C.c_float(0.0)),
@@ -143,11 +143,19 @@ def ne2001_get_smtau(dist, gl, gb):
 
 def ne2001_scint_time_bw(dist, gl, gb, freq):
     sm, smtau = ne2001_get_smtau(dist, gl, gb)
-    # reference: eqn (46) of Cordes & Lazio 1991, ApJ, 376, 123
-    scint_time = 3.3 * (freq/1000.)**1.2 * smtau**(-0.6)
-    # and eq 48
-    scint_bw = 223 * (freq/1000.)**4.4 * sm**(-1.2) / dist 
-    
+    if smtau <= 0.:
+        scint_time = None
+    else:
+        # reference: eqn (46) of Cordes & Lazio 1991, ApJ, 376, 123
+        # uses coefficient 3.3 instead of 2.3. Thy do this in the code
+        # and mention it explicitly, so I trust it!
+        scint_time = 3.3 * (freq/1000.)**1.2 * smtau**(-0.6)
+    if sm <= 0.:
+        scint_bw = None
+    else:
+        # and eq 48
+        scint_bw = 223. * (freq/1000.)**4.4 * sm**(-1.2) / dist
+
     return scint_time, scint_bw
 
 def lb_to_radec( l, b):
