@@ -147,7 +147,7 @@ def ne2001_scint_time_bw(dist, gl, gb, freq):
         scint_time = None
     else:
         # reference: eqn (46) of Cordes & Lazio 1991, ApJ, 376, 123
-        # uses coefficient 3.3 instead of 2.3. Thy do this in the code
+        # uses coefficient 3.3 instead of 2.3. They do this in the code
         # and mention it explicitly, so I trust it!
         scint_time = 3.3 * (freq/1000.)**1.2 * smtau**(-0.6)
     if sm <= 0.:
