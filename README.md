@@ -8,6 +8,14 @@ Several of the old models from that (e.g. NE2001) are still included in their na
 
 The main external requirements are [matplotlib](matplotlib.sourceforge.net) and [wxPython](http://wxpython.org/), which are used for the visualization stuff. It has a very useful API for making simple GUIs, as well as making beautiful plots. I've had difficulty compiliing wxPython from scratch on more recent versions of Mac OS X, but it should be straightforward to install via macports or similar.
 
+Dev Notes
+---------
+
+I've just added scintillation effects to `dosurvey`! They can be switched on by adding the
+flag --scint, but are off by default. The code uses equations from Lorimer & Kramer and 
+the NE2001 code to calculate modulation indices for pulsars in the population. The S/N of each
+pulsar is then scaled up or down using the modulation index.
+
 Compiling
 ---------
 
