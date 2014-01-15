@@ -1,5 +1,4 @@
 Suggested future features:
   - Keep track of which pulsars are found in which surveys?
-  - RRATs? 
+  - RRATs / nullers -- just have a switch for a on fraction?
   - Binary parameters & effect on SNR (cf. Bagchi paper)
-  - Scintillation effects?

@@ -487,7 +487,7 @@ if __name__ == '__main__':
 
     # pulse width model
     parser.add_argument('-w', type=float, required=False, default=6,
-                         help='pulse width, percent (def=6%) ')
+                         help='pulse width, percent (def=6) ')
 
     # spectral index distribution
     parser.add_argument('-si', nargs=2, type=float,

@@ -52,7 +52,7 @@ class Pointing:
 
 class Survey:
     """Class to store survey parameters and methods"""
-    def __init__(self, surveyName):
+    def __init__(self, surveyName, pattern='gaussian'):
         """Read in a survey file and obtain the survey parameters"""
         
         # try to open the survey file locally first
@@ -76,7 +76,7 @@ class Survey:
         # initialise the pointings list to None
         # only change this is there is a list of pointings to be used
         self.pointingslist = None
-        self.gainpat       = 'gaussian' 
+        self.gainpat       = pattern 
 
         # adding AA parameter, so can scale s/n if the survey is
         # an aperture array
