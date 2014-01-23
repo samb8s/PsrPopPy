@@ -475,8 +475,8 @@ class Survey:
         return 1. + kappa * self.bw / delt_f
 
     def _modulate_flux_scint(self, snr, mod_indx):
-        """Modify pulsar flux according to the modulation index"""
-
+        """Modify pulsar flux (actually S/N) according to the modulation index"""
+        # flux and S/N are obviously proportional so it's simple to do this 
         # sigma of scintillation
         sig_scint = mod_indx * snr
         return random.gauss(snr, sig_scint)

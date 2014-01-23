@@ -177,4 +177,4 @@ class Population:
             'n'     : np.array([x for x in range(len(self.population))]),
                     }
 
-        return labelDict, dataDict
+        return labelDict, dataDict, self.size()

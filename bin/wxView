@@ -27,7 +27,33 @@ class DataObj:
         self.dataDict = dataDict
         self.count = size
 
-def makeDataObj(frac=None, extnList=['.model', '.results']):
+def loadpicklemodel(filename, frac=None):
+    # read in population file to population self.pop
+    try:
+        f = open(filename, 'rb')
+    except IOError:
+        print "Could not open file {0}.".format(filename)
+        sys.exit()
+
+    try:
+        pop = cPickle.load(f)
+    except cPickle.UnpicklingError:
+        print "File {0} could not be unpickled!".format(filename)
+    f.close()
+
+    # going to throw in a factor to reduce 
+    # the number of plotted pulsars
+    # to improve speed
+    # make this an option
+    if frac is None or frac > 1.0:
+        frac = 1.0
+
+    labelDict, dataDict, size = pop.make_plotting_dicts()
+    return labelDict, dataDict, size
+
+def makeDataObj(frac=None, 
+                extnList=['.model', '.results'],
+                modelname=None):
     """
     Function to get different parameters of a population file
 
@@ -35,34 +61,24 @@ def makeDataObj(frac=None, extnList=['.model', '.results']):
 
     dataObjList = []
     
-    for filename in os.listdir(os.getcwd()):
-        for extn in extnList:
-            if filename.endswith(extn):
-                # read in population file to population self.pop
-                try:
-                    f = open(filename, 'rb')
-                except IOError:
-                    print "Could not open file {0}.".format(filename)
-                    sys.exit()
-
-                try:
-                    pop = cPickle.load(f)
-                except cPickle.UnpicklingError:
-                    print "File {0} could not be unpickled!".format(filename)
-                    continue
-                f.close()
-
-                # going to throw in a factor to reduce the number of plotted pulsars
-                # to improve speed
-                # make this an option
-                if frac is None or frac > 1.0:
-                    frac = 1.0
-
-                labelDict, dataDict = pop.make_plotting_dicts()
-                dataObjList.append(DataObj(filename,
-                                           labelDict, 
-                                           dataDict, 
-                                           pop.size()))
+    if modelname is None:
+        for filename in os.listdir(os.getcwd()):
+            for extn in extnList:
+                if filename.endswith(extn):
+                    labelDict, dataDict, size = loadpicklemodel(filename, frac=frac)
+                    
+                    dataObjList.append(DataObj(filename,
+                                               labelDict, 
+                                               dataDict, 
+                                               size))
+    else:
+        # file was specified
+        labelDict, dataDict, size = loadpicklemodel(modelname, frac=frac)
+        
+        dataObjList.append(DataObj(modelname,
+                                    labelDict,
+                                    dataDict,
+                                    size))
 
     if len(dataObjList) == 0:
         raise ViewException('No files found matching the extensions')
@@ -259,7 +275,7 @@ class VisualizeFrame(wx.Frame):
 if __name__ == '__main__':
     """ 'Main' function for calling from command line"""
     parser = argparse.ArgumentParser(description='Visualize a population object')
-    parser.add_argument('-f', metavar='fname', default='populate.model',
+    parser.add_argument('-f', metavar='fname', default=None,
                           help='file containing population model (def="populate.model")')
 
     parser.add_argument('-frac', nargs=1, type=float, default=None, 
@@ -270,7 +286,9 @@ if __name__ == '__main__':
                         help='extension(s) to look for when finding population models')
     args = parser.parse_args()
 
-    dataObj = makeDataObj(frac=args.frac, extnList=args.extn)
+    dataObj = makeDataObj(frac=args.frac, 
+                          extnList=args.extn, 
+                          modelname=args.f)
 
     app = wx.App(False)
     app.frame = VisualizeFrame(dataObj)
