@@ -291,7 +291,8 @@ class Survey:
         # haven't tested yet, but presumably a lot slower
         # (loops over the list of pointings....)
  
-
+        if pulsar.dead:
+            return 0.
         # otherwise check if pulsar is in entire region
         if self.inRegion(pulsar):
             # If pointing list is provided, check how close nearest 

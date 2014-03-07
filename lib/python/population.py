@@ -7,10 +7,7 @@ import numpy as np
 
 class Population:
 
-    """
-    Class to describe a pulsar population
-    
-    """
+    """ Class to describe a pulsar population """
 
     def __init__(self,
                  pDistType=None,
@@ -102,12 +99,14 @@ class Population:
 
     def write(self, outf):
         """Write the population object to a file"""
+        
         output = open(outf, 'wb')
         cPickle.dump(self, output, 2)
         output.close()
 
     def write_asc(self, outf):
         """Write population to an ascii file"""
+        
         with open(outf, 'w') as f:
             titlestr = "Period_ms DM Width_ms GL GB S1400"
             titlestr = " ".join([titlestr, "L1400 SPINDEX SNR DTRUE X Y Z\n"])
@@ -149,12 +148,14 @@ class Population:
                     'rho'   : 'rho (deg)',
                     'SI'    : 'Spectral Index',
                     'S1400' : 'S1400 (mJy)',
-                    'L1400' : 'L1400 (mJy)',
+                    'L1400' : r'L1400 (mJy kpc$^2$)',
                     'gl'    : 'Galactic Longitude (degrees)',
                     'gb'    : 'Galactic Latitude (degrees)',
                     'D'     : 'Distance (kpc)',
                     'r0'    : 'GalacticRadius (kpc)',
-                    'n'     : 'Array Index'
+                    'n'     : 'Array Index',
+                    'eta'   : 'Efficiency',
+                    'edot'  : 'Edot'
                     }
 
         dataDict = {
@@ -175,6 +176,8 @@ class Population:
             'D'     : np.array([psr.dtrue for psr in self.population]),
             'r0'    : np.array([psr.r0 for psr in self.population]),
             'n'     : np.array([x for x in range(len(self.population))]),
+            'eta'   : np.array([psr.efficiency() for psr in self.population]),
+            'edot'  : np.array([psr.edot() for psr in self.population])
                     }
 
         return labelDict, dataDict, self.size()

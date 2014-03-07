@@ -1,14 +1,12 @@
 #!/usr/bin/python
 
-import math
-import random
-
 class OrbitException(Exception):
     pass
 
 class Orbit(object):
     """ Class to store an individual pulsar"""
     def __init__(self,
+                 is_binary = False,
                  orbital_period_days=None,
                  pulsar_mass_msolar = None,
                  companion_mass_msolar=None,
@@ -17,6 +15,8 @@ class Orbit(object):
                  eccentricity=None):
         """___init___ function for the Orbit class"""
 
+        # is not binary by default
+        self.is_binary = is_binary
         self.orbital_period_days = orbital_period_days
 
         self.pulsar_mass_msolar = pulsar_mass_msolar

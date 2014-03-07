@@ -48,7 +48,7 @@ def write(surveyPops,
         # create an output file, if required
         if not nores:
             if surv is not None:
-                s = ''.join([surv,'.results'])
+                s = ''.join([surv,extension])
 
                 survpop.write(s)
                 # write the survpop to the file

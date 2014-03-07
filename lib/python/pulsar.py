@@ -95,3 +95,22 @@ class Pulsar(Orbit):
         return self.width_degree * self.period / 360.0
 
 
+    def efficiency(self):
+        """Calculate pulsar efficiency at 1400 MHz, L1400 / Edot"""
+
+        edot = self.edot()
+        if edot is None:
+            return None
+        else:
+            #return self.lum_1400 * 1.0e-26 * 3.086e21 * 3.086E21 / edot
+            return self.lum_1400 * 7.4E27 / edot
+
+
+    def edot(self):
+        """Return the Edot of the pulsar in erg / s"""
+
+        if self.pdot is None:
+            return None
+
+        pdot_15 = self.pdot * 1.0E15
+        return 3.95E31 * pdot_15 / (self.period/1000.)**3

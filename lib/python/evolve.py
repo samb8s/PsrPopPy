@@ -44,8 +44,10 @@ def generate(ngen,
              zscale=0.05,
              duty=5.,
              nodeathline=False,
+             efficiencycut=None,
              nostdout=False,
-             nospiralarms=False):
+             nospiralarms=False,
+             keepdead=False):
 
 
     pop = Population()
@@ -82,7 +84,7 @@ def generate(ngen,
     pop.electronModel = electronModel
 
     pop.braking_index = braking_index
-    pop.nodeathline = nodeathline
+    pop.deathline = not nodeathline
     pop.nospiralarms = nospiralarms
 
     pop.zscale = zscale
@@ -158,7 +160,7 @@ def generate(ngen,
             spindown_fk06(pulsar)
 
             # apply deathline if relevant
-            if not pop.nodeathline:
+            if pop.deathline:
                 bhattacharya_deathperiod_92(pulsar)
 
         elif pop.spinModel == 'cs06':
@@ -172,7 +174,7 @@ def generate(ngen,
         pulsar.width_degree = 360. * width / pulsar.period
 
         # plough on - only if the pulsar isn't dead!
-        if not pulsar.dead:
+        if not pulsar.dead or keepdead:
             # is the pulsar beaming? 
             pulsar_beaming(pulsar, pop.beamModel)
             # if not, then skip onto next pulsar
@@ -204,6 +206,14 @@ def generate(ngen,
             else:
                 # something's wrong!
                 raise EvolveException('Invalid luminosity distn selected')
+
+            # apply efficiency cutoff
+            if efficiencycut is not None:
+                if pulsar.efficiency() > efficiencycut:
+                    pulsar.dead = True
+                    if not keepdead:
+                        continue
+
 
             # spectral index
             pulsar.spindex = random.gauss(pop.simean, pop.sisigma)
@@ -533,7 +543,7 @@ def spindown_cs06(pulsar, pop):
 
     # see whether the pulsar should be dead
     # (are we using deathline? Is pulsar above it?)
-    if pulsar.period>pdeath and not pop.nodeathline:
+    if pulsar.period>pdeath and pop.deathline:
         pulsar.dead = True
     else:
         pulsar.dead = False
@@ -648,6 +658,11 @@ if __name__ == '__main__':
     parser.add_argument('-w', type=float, required=False, default=5.,
                      help='pulse width, percent (def=5.0)')
 
+    # efficiency cut off, if wanted
+    parser.add_argument('-efficiencycut', type=float, required=False, 
+                        default=None, 
+                        help= 'efficiancy cutoff value (def=None)')
+
     # galactic-Z distn
     parser.add_argument('-z', type=float, required=False, default=0.05,
                          help='exponential z-scale to use (def=0.05kpc)')
@@ -680,6 +695,9 @@ if __name__ == '__main__':
     parser.add_argument('--nospiralarms', nargs='?', const=True, default=False,
                         help='turn off spiral arms galactic distn')
 
+    parser.add_argument('--keepdead', nargs='?', const=True, default=False,
+                        help='keep dead pulsars in the population model')
+
     args = parser.parse_args()
 
     # write command line to populate.cmd file
@@ -709,6 +727,8 @@ if __name__ == '__main__':
                     braking_index = args.bi,
                     electronModel = args.dm[0],
                     nodeathline = args.nodeathline,
-                    nospiralarms = args.nospiralarms)
+                    efficiencycutoff = args.efficiencycut,
+                    nospiralarms = args.nospiralarms,
+                    keepdead = args.keepdead)
 
     pop.write(outf=args.o)
