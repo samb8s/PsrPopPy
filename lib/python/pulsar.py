@@ -83,18 +83,6 @@ class Pulsar(Orbit):
 
         return self.lum_1400 / self.dtrue / self.dtrue
 
-    def width_ms(self):
-        """Return the pulse width in milliseconds"""
-        if self.period is None:
-            raise PulsarException(
-                    'period not defined')
-        elif self.width_degree is None:
-            raise PulsarException(
-                    'width_degree not defined')
-
-        return self.width_degree * self.period / 360.0
-
-
     def efficiency(self):
         """Calculate pulsar efficiency at 1400 MHz, L1400 / Edot"""
 
@@ -104,7 +92,6 @@ class Pulsar(Orbit):
         else:
             #return self.lum_1400 * 1.0e-26 * 3.086e21 * 3.086E21 / edot
             return self.lum_1400 * 7.4E27 / edot
-
 
     def edot(self):
         """Return the Edot of the pulsar in erg / s"""

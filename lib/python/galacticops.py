@@ -80,6 +80,7 @@ def calcXY( r0):
 
 def ne2001_dist_to_dm( dist, gl, gb):
     """Use NE2001 distance model."""
+    # expects -180 < l < 180
     dist = C.c_float(dist)
     gl = C.c_float(gl)
     gb = C.c_float(gb)

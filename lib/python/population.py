@@ -115,7 +115,8 @@ class Population:
             
                 s = "{0}".format(psr.period)
                 s = "\t".join([s, "{0}".format(psr.dm)])
-                s = "\t".join([s, "{0}".format(psr.width_ms())])
+                w_ms = psr.width_degree * psr.period / 360.0
+                s = "\t".join([s, "{0}".format(w_ms)])
                 s = "\t".join([s, "{0}".format(psr.gl)])
                 s = "\t".join([s, "{0}".format(psr.gb)])
                 s = "\t".join([s, "{0}".format(psr.s_1400())])
