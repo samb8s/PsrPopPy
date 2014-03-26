@@ -382,10 +382,9 @@ def _powerlaw( minval, maxval, power):
     c = -1.0 * logmax * power
     nmax = 10.0**(power*logmin + c)
 
-    # Dunc's code uses a goto statement
     # slightly worried about inf loops here...
     while True:
-        log = logmin + (logmax-logmin)*random.random()
+        log = random.uniform(logmin, logmax)
         n = 10.0**(power*log + c)
 
         if nmax*random.random() <= n:
