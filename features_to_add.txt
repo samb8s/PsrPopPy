@@ -2,3 +2,8 @@ Suggested future features:
   - Keep track of which pulsars are found in which surveys?
   - RRATs / nullers -- just have a switch for a on fraction?
   - Binary parameters & effect on SNR (cf. Bagchi paper)
+
+  - Modify the reference frequency somehow. I think using a variable is
+    counter-productive. Why should I have to pass the population in here?
+    Maybe keep the same but store it in the pulsar???? Or make it a constant
+        def _SNfac(... , ref_freq = 1400.)
