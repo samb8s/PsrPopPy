@@ -331,9 +331,9 @@ def birthVelocity( pulsar, pop):
         pulsar.vy = random.gauss(mean, sigma)
         pulsar.vz = random.gauss(mean, sigma)
     elif bvM == 'exp':
-        pulsar.vx = go._double_sided_exp(sigma, origin = mean)
-        pulsar.vy = go._double_sided_exp(sigma, origin = mean)
-        pulsar.vz = go._double_sided_exp(sigma, origin = mean)
+        pulsar.vx = dists.draw_double_sided_exp(sigma, origin = mean)
+        pulsar.vy = dists.draw_double_sided_exp(sigma, origin = mean)
+        pulsar.vz = dists.draw_double_sided_exp(sigma, origin = mean)
     else:
         raise EvolveException('Invalid velocity model selected')
 
@@ -350,7 +350,7 @@ def galacticDistribute(pulsar, pop):
         y = -20. + random.random()*40.
 
     # calculate z and r0
-    z = go._double_sided_exp(pop.zscale)
+    z = dists.draw_double_sided_exp(pop.zscale)
     pulsar.galCoords = (x, y, z)
     pulsar.r0 = math.sqrt(x**2 + y**2)
         

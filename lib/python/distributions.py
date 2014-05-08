@@ -42,4 +42,12 @@ def draw1d(dist):
         if rand_num <= c:
             return i
 
+def draw_double_sided_exp(scale, origin=0.0):
+    """Exponential distribution around origin, with scale height scale."""
+    if scale == 0.0:
+        return origin
 
+    rn = random.random()
+    sign = random.choice([-1.0, 1.0])
+
+    return origin + sign * scale * math.log(rn)
