@@ -8,6 +8,7 @@ import random
 import inspect
 import cPickle
 
+import distributions as dists
 import galacticops as go
 
 from population import Population 
@@ -152,7 +153,7 @@ def generate(ngen,
         # period, alpha, rho, width distribution calls
         # Start creating the pulsar!
         if pop.pDistType == 'lnorm':
-            p.period = _drawlnorm(pop.pmean, pop.psigma)
+            p.period = dists.drawlnorm(pop.pmean, pop.psigma)
         elif pop.pDistType == 'norm':
             p.period = random.gauss(pop.pmean, pop.psigma)
         elif pop.pDistType == 'cc97':
@@ -168,7 +169,7 @@ def generate(ngen,
             # with a log-normal scatter
             width = (float(duty)/100.) * p.period**0.9
             width = math.log10(width)
-            width = _drawlnorm(width, 0.3)
+            width = dists.drawlnorm(width, 0.3)
 
             p.width_degree = width*360./p.period
         else:
@@ -258,10 +259,10 @@ def generate(ngen,
         # then calc scatter time
         
         if pop.lumDistType == 'lnorm':
-            p.lum_1400 = _drawlnorm(pop.lummean,
+            p.lum_1400 = dists.drawlnorm(pop.lummean,
                                          pop.lumsigma)
         else:
-            p.lum_1400 = _powerlaw(pop.lummin,
+            p.lum_1400 = dists.powerlaw(pop.lummin,
                                         pop.lummax,
                                         pop.lumpow)
 
@@ -347,50 +348,12 @@ def _lorimer2012_msp_periods():
 
     # calculate which bin to take value of
     #
-    bin_num = _draw1d(dist)
+    bin_num = dists.draw1d(dist)
     
     # assume linear distn inside the bins
     logp = logpmin + (logpmax-logpmin)*(bin_num+random.random())/len(dist)
 
     return 10.**logp
-
-def _draw1d(dist):
-    """Draw a bin number form a home-made distribution
-        (dist is a list of numbers per bin)
-    """
-    # sum of distribution
-    total = sum(dist)
-    #cumulative distn
-    cumulative = [sum(dist[:x+1])/total for x in range(len(dist))]
-
-    rand_num = random.random()
-    for i, c in enumerate(cumulative):
-        if rand_num <= c:
-            return i
-
-
-def _drawlnorm(mean, sigma):
-    """Get a random log-normal number."""
-    return 10.0**random.gauss(mean, sigma)
-
-def _powerlaw( minval, maxval, power):
-    """Draw a value randomly from the specified power law"""
-
-    logmin = math.log10(minval)
-    logmax = math.log10(maxval)
-
-    c = -1.0 * logmax * power
-    nmax = 10.0**(power*logmin + c)
-
-    # slightly worried about inf loops here...
-    while True:
-        log = random.uniform(logmin, logmax)
-        n = 10.0**(power*log + c)
-
-        if nmax*random.random() <= n:
-            break
-
-    return 10.0**log
 
 def _cc97():
     """A model for MSP period distribution."""

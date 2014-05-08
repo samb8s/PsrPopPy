@@ -10,6 +10,7 @@ import cPickle
 import scipy.integrate
 import numpy as np
 
+import distributions as dists
 import galacticops as go
 import beaming as beammodels
 import populate
@@ -170,7 +171,7 @@ def generate(ngen,
         # define pulse width (default = 6% = 18 degrees)
         width = (float(duty)/100.) * pulsar.period**0.9
         width = math.log10(width)
-        width = populate._drawlnorm(width, 0.3)
+        width = dists.drawlnorm(width, 0.3)
         pulsar.width_degree = 360. * width / pulsar.period
 
         # plough on - only if the pulsar isn't dead!
@@ -197,10 +198,10 @@ def generate(ngen,
                                 gamma=pop.lumPar3)
 
             elif lumDistType == 'lnorm':
-                pulsar.lum_1400 = populate._drawlnorm(pop.lumPar1, pop.lumPar2)
+                pulsar.lum_1400 = dists.drawlnorm(pop.lumPar1, pop.lumPar2)
 
             elif lumDistType == 'pow':
-                pulsar.lum_1400 = populate._powerlaw(pop.lummin,
+                pulsar.lum_1400 = dists.powerlaw(pop.lummin,
                                                      pop.lummax,
                                                      pop.lumpow)
             else:
