@@ -51,16 +51,9 @@ def write(surveyPops,
                 s = ''.join([surv,extension])
 
                 survpop.write(s)
-                # write the survpop to the file
-                #with open(s,'wb') as output:
-                #    cPickle.dump(survpop, output, 2)
             else:
-                # surv == None; we want to write
-                # a file with all detected pulsars
                 s = 'allsurveys.results'
                 survpop.write(s)
-                #with open(s,'wb') as output:
-                #    cPickle.dump(survpop, output)
 
         # Write ascii file if required
         if asc and surv is not None:
