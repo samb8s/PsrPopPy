@@ -319,9 +319,6 @@ class Survey:
         else:
             degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
 
-        # calculate total temperature
-        Ttot = self.tsys + self.tskypy(pulsar)
-
         # calc dispersion smearing across single channel
         tdm = self._dmsmear(pulsar)
 
@@ -334,21 +331,29 @@ class Survey:
         weff_ms = math.sqrt(width_ms**2 + self.tsamp**2 + tdm**2 + tscat**2)
 
         # calculate duty cycle (period is in ms)
-        delt = weff_ms / pulsar.period
-        #print weff_ms, pulsar.period
+        delta = weff_ms / pulsar.period
 
         # if pulse is smeared out, return -1.0
-        if delt > 1.0:
-            #print weff_ms, tscat, pulsar.dm, pulsar.gl, pulsar.gb, pulsar.dtrue
+        if delta > 1.0:
             return -1
-        else:
-            sig_to_noise = self._SNfac(pulsar, pop.ref_freq, degfac, Ttot) \
-                                  * math.sqrt((1.0 -delt)/delt)
 
-            if self.AA:
-                sig_to_noise *= self._AA_factor(pulsar)
-                
-            return sig_to_noise
+        #radiometer signal to noise
+        sig_to_noise = rad.calcSNR(self.calcflux(pulsar, pop.ref_freq),
+                                   self.beta,
+                                   self.tsys,
+                                   self.tskypy(pulsar),
+                                   self.gain,
+                                   self.npol,
+                                   self.tobs,
+                                   self.bw,
+                                   delta)
+
+        # account for aperture array, if needed
+        if self.AA:
+            sig_to_noise *= self._AA_factor(pulsar)
+            
+        # return the S/N accounting for beam offset
+        return sig_to_noise * degfac
 
     def _AA_factor(self, pulsar):
         """ Aperture array factor """
@@ -360,23 +365,19 @@ class Survey:
 
         return math.cos(math.radians(offset_from_zenith))
 
-    def _SNfac(self, psr, ref_freq, degfac, Ttot):
-        """The S/N factor from system parameters"""
-        # scale flux to survey frequency
+    def calcflux(self, psr, ref_freq):
+        """Calculate the flux at this frequency"""
+
         if psr.gpsFlag == 1:
             # do crazy flux calculation for GPS sources
-            flux = self._gpsFlux(psr, ref_freq)
+            return self._gpsFlux(psr, ref_freq)
 
         elif psr.brokenFlag == 1 and self.freq < ref_freq:
             # assuming the alpha_1 value is for freq<ref_freq (which is ~1GHz)
-            flux = psr.s_1400() * (self.freq / ref_freq)**psr.brokenSI
+            return psr.s_1400() * (self.freq / ref_freq)**psr.brokenSI
         
         else:
-            flux = psr.s_1400() * (self.freq / ref_freq)**psr.spindex
-
-        return flux * degfac * self.gain * \
-                  math.sqrt(self.npol * self.bw * self.tobs) \
-                  / self.beta / Ttot
+            return psr.s_1400() * (self.freq / ref_freq)**psr.spindex
 
     def _gpsFlux(self, psr, ref_freq):
         """Calculate the flux assuming GPS spectrum shape, spindex===b"""
