@@ -10,6 +10,7 @@ from scipy.special import j1
 
 import galacticops as go
 from population import Population
+import radiometer as rad
 
 class SurveyException(Exception):
     pass
