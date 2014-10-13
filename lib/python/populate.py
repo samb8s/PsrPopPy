@@ -257,6 +257,7 @@ def generate(ngen,
 
         p.scindex = scindex
         # then calc scatter time
+        p.t_scatter = go.scatter_bhat(p.dm, p.scindex)
         
         if pop.lumDistType == 'lnorm':
             p.lum_1400 = dists.drawlnorm(pop.lummean,

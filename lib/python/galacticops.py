@@ -240,19 +240,28 @@ def lb_to_xyz( gl, gb, dist):
 
     return (x, y, z)
 
-def scatter_bhat( dm, scatterindex, freq_mhz):
+def scatter_bhat(dm, 
+                 scatterindex, 
+                 freq_mhz=1400.0):
     """Calculate bhat et al 2004 scattering timescale for freq in MHz."""
     logtau = -6.46 + 0.154*math.log10(dm) + \
                 1.07*math.log10(dm)*math.log10(dm) + \
                 scatterindex*math.log10(freq_mhz/1000.0)
     
-    # seems like scattering timescale is tooooooo big? Definitely my weffs are too big
     # return tau with power scattered with a gaussian, width 0.8
     return math.pow(10.0, random.gauss(logtau, 0.8)) 
 
+def scale_bhat(timescale, 
+               frequency):
+    """Scale the scattering timescale from 1.4 GHz to frequency"""
+
+    return timescale * (1400. / frequency)**3.86
+
 def _glgboffset( gl1, gb1, gl2, gb2):
-    """Calculate the angular distance (deg) between two
-    points in galactic coordinates"""
+    """
+    Calculate the angular distance (deg) between two
+    points in galactic coordinates
+    """
     # Angular offset in polar coordinates
     # taken brazenly from
     #http://www.atnf.csiro.au/people/Tobias.Westmeier/tools_hihelpers.php

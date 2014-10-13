@@ -324,7 +324,10 @@ class Survey:
 
         # calculate bhat et al scattering time (inherited from GalacticOps)
         # in units of ms
-        tscat = go.scatter_bhat(pulsar.dm, pulsar.scindex, self.freq)
+        if hasattr(pulsar, 't_scatter'):
+            tscat = go.scale_bhat(pulsar.t_scatter, self.freq)
+        else:
+            tscat = go.scatter_bhat(pulsar.dm, pulsar.scindex, self.freq)
 
         # Calculate the effective width
         width_ms = pulsar.width_degree * pulsar.period / 360.0
@@ -419,8 +422,12 @@ class Survey:
 
         # calculate the scintillation strength (commonly "u")
         # first, calculate scint BW, assume Kolmogorov, C=1.16
-        tscat = go.scatter_bhat(psr.dm, psr.scindex, self.freq) # ms
-        tscat /= 1000. # convert to seconds
+        if hasattr(psr, 't_scatter'):
+            tscat = go.scale_bhat(psr.t_scatter, self.freq)
+        else:
+            tscat = go.scatter_bhat(psr.dm, psr.scindex, self.freq)
+        # convert to seconds
+        tscat /= 1000. 
 
         scint_bandwidth = 1.16 / 2.0 / math.pi / tscat # BW in Hz
         scint_bandwidth /= 1.0E6 # convert to MHz (self.freq is in MHz)

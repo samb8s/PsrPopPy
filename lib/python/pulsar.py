@@ -4,6 +4,7 @@ import math
 import random
 
 from orbit import Orbit
+import galacticops as go
 
 class PulsarException(Exception):
     pass
@@ -27,6 +28,7 @@ class Pulsar(Orbit):
                  snr=None,
                  beaming=None,
                  scindex=-3.86,
+                 t_scatter=None,
                  gpsFlag=0,
                  gpsA=None,
                  brokenFlag=0,
@@ -49,6 +51,10 @@ class Pulsar(Orbit):
         self.lum_1400 = lum_1400
         self.spindex = spindex
         self.scindex = scindex
+
+        # set the scattering timescale
+        # for 1.4 GHz (will scale to obs freq)
+        self.t_scatter = None
 
         self.alpha = alpha
         self.rho = rho

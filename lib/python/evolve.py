@@ -44,6 +44,8 @@ def generate(ngen,
              braking_index=0,
              zscale=0.05,
              duty=5.,
+             scindex=-3.86,
+             widthModel=None,
              nodeathline=False,
              efficiencycut=None,
              nostdout=False,
@@ -106,8 +108,10 @@ def generate(ngen,
                                                     pop.sisigma)
         print "\t\tGalactic z scale height = {0} kpc".format(
                                                     pop.zscale)
-
-        print "\t\tWidth {0}% ".format(duty)
+        if widthModel is None:
+            print "\t\tWidth {0}% ".format(duty)
+        else:
+            print "\t\tUsing Karastergiou & Johnston beam width model"
 
         # set up progress bar for fun :)
         prog = ProgressBar(min_value = 0,
@@ -168,10 +172,35 @@ def generate(ngen,
             # contopoulos and spitkovsky
             spindown_cs06(pulsar, pop)
 
+        # if period > 10 seconds, just try a new one
+        if pulsar.period > 10000.0:
+            continue
+
         # define pulse width (default = 6% = 18 degrees)
-        width = (float(duty)/100.) * pulsar.period**0.9
-        width = math.log10(width)
-        width = dists.drawlnorm(width, 0.3)
+        if widthModel is None:
+            width = (float(duty)/100.) * pulsar.period**0.9
+            width = math.log10(width)
+            width = dists.drawlnorm(width, 0.3)
+        elif widthModel == 'kj07':
+            # Karastergiou & Johnston beam model
+            width = beammodels.kj2007_width(pulsar)
+            no_width = 0
+            while width  == 0.0:
+                no_width+=1
+                width = beammodels.kj2007_width(pulsar)
+
+                # if we get to five, then try a new pulsar
+                if no_width == 5:
+                    no_width = 0
+                    continue
+                
+        else:
+            print "Undefined width model!"
+            sys.exit()
+        #print width
+        if width == 0.0:
+            # some kj2007 models make many zero-width sources. Skip!
+            continue
         pulsar.width_degree = 360. * width / pulsar.period
 
         # plough on - only if the pulsar isn't dead!
@@ -210,6 +239,7 @@ def generate(ngen,
 
             # apply efficiency cutoff
             if efficiencycut is not None:
+                print pulsar.efficiency()
                 if pulsar.efficiency() > efficiencycut:
                     pulsar.dead = True
                     if not keepdead:
@@ -234,6 +264,10 @@ def generate(ngen,
                                                   pulsar.gb)
             else:
                 raise EvolveException('Invalid electron dist model selected')
+
+            pulsar.scindex = scindex
+            pulsar.t_scatter = go.scatter_bhat(pulsar.dm, 
+                                               pulsar.scindex)
 
             # if surveys are given, check if pulsar detected or not
             # in ANY of the surveys
@@ -659,6 +693,16 @@ if __name__ == '__main__':
     parser.add_argument('-w', type=float, required=False, default=5.,
                      help='pulse width, percent (def=5.0)')
 
+    # pulse width model
+    parser.add_argument('-wmod', type=str, required=False, default=None,
+                        choices=[None, 'kj07'],
+                        help='pulse width model to use (def=using -w opt')
+
+    # scattering index
+    parser.add_argument('-sc', type=float, required=False, default=-3.86,
+                        help='modify the frequency-dependance of Bhat et al\
+                                scattering formula (def = -3.86)')
+
     # efficiency cut off, if wanted
     parser.add_argument('-efficiencycut', type=float, required=False, 
                         default=None, 
@@ -725,10 +769,12 @@ if __name__ == '__main__':
                     zscale=args.z,
                     nostdout=args.nostdout,
                     duty=args.w,
+                    widthModel=args.wmod,
+                    scindex=args.sc,
                     braking_index = args.bi,
                     electronModel = args.dm[0],
                     nodeathline = args.nodeathline,
-                    efficiencycutoff = args.efficiencycut,
+                    efficiencycut= args.efficiencycut,
                     nospiralarms = args.nospiralarms,
                     keepdead = args.keepdead)
 

@@ -214,8 +214,8 @@ class VisualizeFrame(wx.Frame):
 if __name__ == '__main__':
     """ 'Main' function for calling from command line"""
     parser = argparse.ArgumentParser(description='Visualize a population object')
-    parser.add_argument('-f', metavar='fname', default='populate.model',
-                          help='file containing population model (def="populate.model")')
+    parser.add_argument('-f', metavar='fname', default=None,
+                          help='file containing population model (def="*.model, *.results")')
 
     parser.add_argument('-frac', nargs=1, type=float, default=None, 
                           help='plot only this fraction of pulsars')
