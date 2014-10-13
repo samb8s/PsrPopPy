@@ -252,10 +252,11 @@ def scatter_bhat(dm,
     return math.pow(10.0, random.gauss(logtau, 0.8)) 
 
 def scale_bhat(timescale, 
-               frequency):
+               frequency,
+               scaling_power=3.86):
     """Scale the scattering timescale from 1.4 GHz to frequency"""
 
-    return timescale * (1400. / frequency)**3.86
+    return timescale * (frequency/1400.0)**scaling_power
 
 def _glgboffset( gl1, gb1, gl2, gb2):
     """
