@@ -32,7 +32,7 @@ def generate(ngen,
              lumDistPars=[-1.1, 0.9],
              zscaleType='exp',
              zscale=0.33, 
-             duty=6.,
+             duty_percent=6.,
              scindex=-3.86,
              gpsArgs=[None, None],
              doubleSpec=[None, None],
@@ -78,8 +78,8 @@ def generate(ngen,
     if pattern not in ['gaussian','airy']:
         print "Unsupported gain pattern: {0}".format(pattern)
 
-    if duty<0.:
-        print "Unsupported value of duty cycle: {0}".format(duty)
+    if duty_percent<0.:
+        print "Unsupported value of duty cycle: {0}".format(duty_percent)
 
     # need to use properties in this class so they're get/set-type props
     pop.pDistType = pDistType
@@ -164,10 +164,10 @@ def generate(ngen,
         elif pop.pDistType == 'lorimer12':
             p.period = _lorimer2012_msp_periods()
 
-        if duty>0.:
+        if duty_percent>0.:
             # use a simple duty cycle for each pulsar
             # with a log-normal scatter
-            width = (float(duty)/100.) * p.period**0.9
+            width = (float(duty_percent)/100.) * p.period**0.9
             width = math.log10(width)
             width = dists.drawlnorm(width, 0.3)
 
@@ -528,22 +528,22 @@ if __name__ == '__main__':
     # run the code and write out a cPickle population class
     
     pop = generate(args.n,
-                 surveyList=args.surveys,
-                 pDistType=args.pdist[0],
+                 surveyList = args.surveys,
+                 pDistType = args.pdist[0],
                  lumDistType = args.ldist[0],
-                 radialDistType=args.rdist[0],
-                 radialDistPars=args.r,
-                 pDistPars=args.p,
-                 lumDistPars=args.l,
-                 siDistPars=args.si,
-                 zscaleType=args.zdist[0],
-                 zscale=args.z,
-                 duty=args.w,
-                 scindex=args.sc,
-                 electronModel=args.dm[0],
-                 gpsArgs=args.gps,
+                 radialDistType = args.rdist[0],
+                 radialDistPars = args.r,
+                 pDistPars = args.p,
+                 lumDistPars = args.l,
+                 siDistPars = args.si,
+                 zscaleType = args.zdist[0],
+                 zscale = args.z,
+                 duty_percent = args.w,
+                 scindex = args.sc,
+                 electronModel = args.dm[0],
+                 gpsArgs = args.gps,
                  doubleSpec = args.doublespec,
-                 nostdout=args.nostdout
+                 nostdout = args.nostdout
                  )
 
     pop.write(outf=args.o)

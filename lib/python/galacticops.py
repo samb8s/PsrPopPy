@@ -241,7 +241,7 @@ def lb_to_xyz( gl, gb, dist):
     return (x, y, z)
 
 def scatter_bhat(dm, 
-                 scatterindex, 
+                 scatterindex=-3.86, 
                  freq_mhz=1400.0):
     """Calculate bhat et al 2004 scattering timescale for freq in MHz."""
     logtau = -6.46 + 0.154*math.log10(dm) + \
