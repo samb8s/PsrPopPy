@@ -51,6 +51,50 @@ class Pointing:
             self.tobs = tobs 
             self.gain = gain
 
+def makepointinglist(filename, coordtype):
+    f = open(filename, 'r')
+
+    gains = []
+    tobs = []
+    glgb = []
+
+    for line in f:
+        a = line.split()
+        gains.append(float(a[2]))
+        tobs.append(float(a[3]))
+
+        glgb.append(makepointing(float(a[0]), float(a[1]), coordtype))
+
+    f.close()
+
+    return np.array(glgb), tobs, gains
+
+def makepointing(coord1, coord2, coordtype):
+
+    if coordtype not in ['eq', 'gal']:
+        raise CoordinateException('Wrong coordtype passed to Pointing')
+
+    if coordtype == 'eq':
+        # assume pointings in decimal degrees
+        ra = coord1
+        dec = coord2
+
+        # convert to l and b :)
+        gl,gb = go.radec_to_lb(ra, dec)
+
+        if gl>180.:
+            gl -= 360.
+
+    else:
+        if coord1>180.:
+            coord1 -= 360.
+
+        gl = coord1
+        gb = coord2
+
+    return (coord1, coord2)
+
+
 class Survey:
     """Class to store survey parameters and methods"""
     def __init__(self, surveyName, pattern='gaussian'):
@@ -77,6 +121,8 @@ class Survey:
         # initialise the pointings list to None
         # only change this is there is a list of pointings to be used
         self.pointingslist = None
+        self.gainslist = None
+        self.tobslist = None
         self.gainpat       = pattern 
 
         # adding AA parameter, so can scale s/n if the survey is
@@ -98,7 +144,8 @@ class Survey:
 
                 # try to open the pointing list locally
                 if os.path.isfile(pointfname):
-                    pointfptr = open(pointfname, 'r')
+                    #pointfptr = open(pointfname, 'r')
+                    filename = pointfname
                 else:
                     try:
                         # try to open pointing file in the surveys dir
@@ -107,14 +154,12 @@ class Survey:
                         filepath = os.path.join(__libdir__, 
                                                 'surveys', 
                                                 pointfname)
-                        pointfptr = open(filepath, 'r')
+                        #pointfptr = open(filepath, 'r')
+                        filename = filepath
                     except:
                         s = 'File {0} does not exist!!!'.format(pointfpath)
                         raise CoordinateException(s)
 
-                # read in the pointing list
-                self.pointingslist = []
-                # set coord conversion to be done, if any
                 if a[1].count('galactic'):
                     p_str = 'gal'
                 elif a[1].count('equatorial'):
@@ -122,6 +167,15 @@ class Survey:
                 else:
                     s = "Unknown coordinate type in survey file"
                     raise CoordinateException(s)
+
+                self.pointingslist, \
+                    self.tobslist, \
+                    self.gainslist = makepointinglist(filename, p_str)
+                """
+                # read in the pointing list
+                self.pointingslist = []
+                # set coord conversion to be done, if any
+                
 
                 for line in pointfptr:
                     a = line.split()
@@ -138,6 +192,7 @@ class Survey:
                     self.pointingslist.append(p)
 
                 pointfptr.close()
+                """
 
             elif a[1].count('survey degradation'):
                 # beta
@@ -268,6 +323,8 @@ class Survey:
         position further down the list!!!"""
         # initialise offset_deg to be a big old number
         # FWHM is in arcmin so always multiply by 60
+        #### MATRIX-IZE THIS PROBLEM??
+        #http://wiki.scipy.org/Cookbook/KDTree
         offset_deg = 1.
 
         # loop over pointings
@@ -287,6 +344,21 @@ class Survey:
 
         return offset_deg
 
+    def inPointing_new(self, pulsar):
+        """Use numpy-foo to determine closest obs pointing"""
+
+        p = (pulsar.gl, pulsar.gb)
+        p = np.array(p)
+        dists = np.sqrt(((self.pointingslist - p)**2).sum(1))
+        # get the min of dists and its index
+        offset_deg = np.min(dists)
+        indx = np.argmin(dists)
+        # set gain and tobs for that point
+        self.gain = self.gainslist[indx]
+        self.tobs = self.tobslist[indx]
+
+        return offset_deg
+
     def SNRcalc(self, pulsar, pop):
         """Calculate the S/N ratio of a given pulsar in the survey"""
         # if not in region, S/N = 0
@@ -303,7 +375,7 @@ class Survey:
             # pointing is
             if self.pointingslist is not None:
                 # convert offset from degree to arcmin
-                offset = self.inPointing(pulsar) * 60.0
+                offset = self.inPointing_new(pulsar) * 60.0
 
             else:
                 # calculate offset as a random offset within FWHM/2
