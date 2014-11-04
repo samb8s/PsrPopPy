@@ -95,45 +95,47 @@ class Survey:
             # rather than a range of l,b or ra,dec
             if a[1].count('pointing list'):
                 pointfname = a[0].strip()
-                pointfpath = os.path.join(__libdir__, 'surveys', pointfname)
 
-                # try to open the pointing list
-                if os.path.isfile(pointfpath):
-                    pointfptr = open(pointfpath, 'r')
+                # try to open the pointing list locally
+                if os.path.isfile(pointfname):
+                    pointfptr = open(pointfname, 'r')
                 else:
                     try:
-                        # try to open a local file
-                        pointfptr = open(pointfname, 'r')
+                        # try to open pointing file in the surveys dir
+                        __dir__ = os.path.dirname(os.path.abspath(__file__))
+                        __libdir__ = os.path.dirname(__dir__)
+                        filepath = os.path.join(__libdir__, 
+                                                'surveys', 
+                                                pointfname)
+                        pointfptr = open(filepath, 'r')
                     except:
                         s = 'File {0} does not exist!!!'.format(pointfpath)
                         raise CoordinateException(s)
 
                 # read in the pointing list
                 self.pointingslist = []
+                # set coord conversion to be done, if any
                 if a[1].count('galactic'):
-                    # already galactic coordinates
-                    for line in pointfptr:
-                        a = line.split()
-                        # Expected form of pointing list files is hard-coded.
-                        if len(a) != 4:
-                            s = 'File {0} should have columns: gl/gb/gain/tobs!'.format(pointfpath)
-                            raise CoordinateException(s)
-                        p = Pointing(float(a[0]), float(a[1]), 'gal', float(a[2]), float(a[3]))
-                        self.pointingslist.append(p)
-
+                    p_str = 'gal'
                 elif a[1].count('equatorial'):
-                    # need to be converted from ra dec to gl gb
-                    for line in pointfptr:
-                        a = line.split()
-                        if len(a) != 4:
-                            s = 'File {0} should have columns: gl/gb/gain/tobs!'.format(pointfpath)
-                            raise CoordinateException(s)
-                        p = Pointing(float(a[0]), float(a[1]), 'eq', float(a[2]), float(a[3]))
-                        self.pointingslist.append(p)
-
+                    p_str = 'eq'
                 else:
-                    s = 'Coordinate type unspecified in {0}.'.format(surveyName)
+                    s = "Unknown coordinate type in survey file"
                     raise CoordinateException(s)
+
+                for line in pointfptr:
+                    a = line.split()
+                    if len(a) != 4:
+                        s = 'File {0} should have cols: gl/gb/gain/tobs'.format(
+                                                                    pointfpath)
+                        raise CoordinateException(s)
+                    p = Pointing(float(a[0]), 
+                                 float(a[1]), 
+                                 p_str, 
+                                 float(a[2]), 
+                                 float(a[3])
+                                 )
+                    self.pointingslist.append(p)
 
                 pointfptr.close()
 
@@ -266,7 +268,7 @@ class Survey:
         position further down the list!!!"""
         # initialise offset_deg to be a big old number
         # FWHM is in arcmin so always multiply by 60
-        offset_deg = 5.
+        offset_deg = 1.
 
         # loop over pointings
         for point in self.pointingslist:
@@ -277,11 +279,12 @@ class Survey:
             offset_new = math.sqrt(glterm + gbterm)
 
             # if the beam is close enough, break out of the loop
-            if offset_new < offset_deg:
+            if offset_new < self.fwhm:
                 offset_deg = offset_new
                 self.gain  = point.gain
                 self.tobs  = point.tobs
-                
+                break
+
         return offset_deg
 
     def SNRcalc(self, pulsar, pop):
