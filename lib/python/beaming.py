@@ -72,7 +72,9 @@ def kj2007_width(pulsar):
         ncomp = 1
         npatch = 10
 
-    rhomax = rho_calc(hmax, period)
+    #rhomax = rho_calc(hmax, period)
+    rhomax = np.degrees(3. * np.sqrt(np.pi * hmax / 
+                        (2. * 3.e5 * period)))
     beta = 1000.
 
     while beta > rhomax:
@@ -94,8 +96,9 @@ def kj2007_width(pulsar):
     hcomp = hmin + hrange * np.random.random(ncomp)**2
     #### NEW HCOMP??? (only freq dependent, so din't include for now)
 
-    rhocomp = [rho_calc(h, period) for h in hcomp]
-    pwcomp = [pw_calc(h, period) for h in hcomp]
+    rhocomp = np.degrees(3. * np.sqrt(np.pi * hcomp / 
+                        (2. * 3.e5 * period)))
+    pwcomp = 0.49 * np.sqrt(hcomp / 10. / period)
 
     delta = 360. / 1000.
     xarray = np.arange(-180., +180., delta)
@@ -112,8 +115,8 @@ def kj2007_width(pulsar):
                                   npatch)
     
     # compute max profile width
-    rhomax = max(rhocomp)
-    pwmax = max(pwcomp)
+    rhomax = rhocomp.max()
+    pwmax = pwcomp.max()
     wtmp = sin_deg(rhomax/2. + pwmax/2.)**2
     wtmp -= sin_deg(beta)**2
 
@@ -139,14 +142,11 @@ def kj2007_width(pulsar):
 
     # get the line-of-sight values for the pulse profile
     # I'll just consider stokes-I for now
-    xinds = [get_stokes_index(val, -180., delta) \
-                for val in xlos]
-    yinds = [get_stokes_index(val, -180., delta) \
-                for val in ylos]
+    xinds = np.rint((xlos +180.)/delta).astype(int)
+    yinds = np.rint((ylos +180.)/delta).astype(int)
 
-    #print stokes_i.shape, max(xinds), max(yinds)
-    #print stokes_i
-    prof = [stokes_i[x][y] for x,y in zip(xinds, yinds)]
+    # get profile
+    prof = stokes_i[xinds, yinds]
 
     # need to make sure this function returns width in 
     # whatever units are consistent with my other code
@@ -169,7 +169,7 @@ def get_lineofsight(alpha, beta):
         xlos.append(xp)
         ylos.append(yp)
 
-    return thetalos, xlos, ylos
+    return thetalos, np.array(xlos), np.array(ylos)
 
 def mapphi(alpha, beta, phi):
     cosR = cos_deg(alpha + beta) \
@@ -256,15 +256,6 @@ def cos_deg(angle):
     a=  math.radians(angle)
     return math.cos(a)
 
-def rho_calc(h, period):
-    r =  3. * math.sqrt(math.pi * h / 
-                                (2. * 3.e5 * period))
-    return math.degrees(r)
-
-def pw_calc(h, period):
-    p = 0.49 * math.sqrt(h / 10. / period)
-    return p
-
 def patchbeam(stokes_i,
               xarray,
               yarray,
@@ -305,21 +296,20 @@ def calcwidth(prof):
     # "area under" profile
     area = np.sum(prof)
 
-    # now iterate along the profile, and find values when 
-    # area gets greater than 0.25*area and 0.75 * area -> width
-    low_x, high_x = 0, 0
-    summed_area = 0.0
-    low_edge = 1
-    for i, y in enumerate(prof):
-        summed_area += y
-        if summed_area > 0.25 * area and low_edge:
-            low_x = i
-            low_edge = 0
+    if area==0.0:
+        return 0.0
+    # cumulative sum of profile
+    sumprof = np.cumsum(prof)
 
-        if summed_area > 0.75 * area :
-            high_x = i
-            break
+    # find all position > 25%
+    indx1 = sumprof>0.25*area
+    # find values > 75%
+    indx2 = sumprof>0.75*area
 
+    # first values in each array are the quartile points, basically
+    low_x = np.where(indx1)[0][0]
+    high_x = np.where(indx2)[0][0]
+
+    # so then compute width of profile
     width = float(high_x) - float(low_x) 
-    width /= len(prof)
-    return width
+    return width / len(prof)
