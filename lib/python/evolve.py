@@ -92,6 +92,11 @@ def generate(ngen,
 
     pop.zscale = zscale
 
+    if widthModel == 'kj07':
+        print "\tLoading KJ07 models.."
+        kj_p_vals, kj_pdot_vals, kj_dists = beammodels.load_kj2007_models()
+        print "\tDone\n"
+
     if not nostdout:
         print "\tGenerating evolved pulsars with parameters:"
         print "\t\tngen = {0}".format(ngen)
@@ -173,7 +178,10 @@ def generate(ngen,
             spindown_cs06(pulsar, pop)
 
         # if period > 10 seconds, just try a new one
-        if pulsar.period > 10000.0:
+        if pulsar.period > 10000.0 or pulsar.period < 10.:
+            continue
+        # cut on pdot too - this doesn't help
+        if pulsar.pdot > 1.e-11 or pulsar.pdot < 1.e-18:
             continue
 
         # define pulse width (default = 6% = 18 degrees)
@@ -183,6 +191,19 @@ def generate(ngen,
             width = dists.drawlnorm(width, 0.3)
         elif widthModel == 'kj07':
             # Karastergiou & Johnston beam model
+
+            # find closest p, pdot in the kj lists
+            logp = math.log10(pulsar.period)
+            logpdot = math.log10(pulsar.pdot)
+
+            p_idx = (np.abs(kj_p_vals - logp)).argmin()
+            pd_idx = (np.abs(kj_pdot_vals - logpdot)).argmin()
+
+            # pick a width from relevant model
+            dist = kj_dists[p_idx][pd_idx][2]
+            width = np.random.choice(dist)
+
+            """
             width = beammodels.kj2007_width(pulsar)
             no_width = 0
             while width  == 0.0:
@@ -193,11 +214,13 @@ def generate(ngen,
                 if no_width == 5:
                     no_width = 0
                     continue
+            """
                 
         else:
             print "Undefined width model!"
             sys.exit()
         #print width
+        #print pulsar.period, width, pulsar.pdot
         if width == 0.0:
             # some kj2007 models make many zero-width sources. Skip!
             continue
@@ -239,7 +262,6 @@ def generate(ngen,
 
             # apply efficiency cutoff
             if efficiencycut is not None:
-                print pulsar.efficiency()
                 if pulsar.efficiency() > efficiencycut:
                     pulsar.dead = True
                     if not keepdead:

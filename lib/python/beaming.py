@@ -1,7 +1,11 @@
 #!/usr/bin/python
 
+import os
+import sys
 import math
 import random
+
+from operator import itemgetter
 
 import numpy as np
 
@@ -43,13 +47,61 @@ def wj08_fraction(pulsar):
 
     return fraction
 
-def kj2007_angles_calc(pulsar):
+def load_kj2007_models():
     """
     Karastergiou & Johnston 2007 beam model - 
-    initialise alpha beta etc
+    Load the pre-run reesults
     """
 
-    pass
+    # get current directory
+    __dir__ = os.path.dirname(os.path.abspath(__file__))
+    __models__ = os.path.join(__dir__, 'models')
+
+    # lists to save p, pdot values in 
+    pd_vals = []
+    p_vals = []
+    all_dists = []
+
+    # get dist_XXX_YYY.npy file names
+    for model in os.listdir(__models__):
+        # get full path and root of filename
+        filepath = os.path.join(__models__, model)
+        filename = os.path.splitext(model)[0]
+
+        # get p, pdot vals
+        vals = filename.split("_")
+        p, pd = float(vals[1]), float(vals[2])
+        p_vals.append(p)
+        pd_vals.append(pd)
+
+        dist = np.load(filepath)
+        all_dists.append((p, pd, dist))
+
+    # now get unique values of p, pdot
+    p_vals = sorted(set(p_vals))
+    pd_vals = sorted(set(pd_vals), reverse=True)
+
+    # and sort the dists accordingly
+    sorted_dists = []
+    for p in p_vals:
+        dists = []
+        # get dists with correct p value
+        for dist in all_dists:
+            if dist[0] == p:
+                dists.append(dist)
+
+        # sort according to pdot value, i.e. dist[1]
+        sorted(dists, key=itemgetter(1))
+
+        # add dists to sorted_dists
+        sorted_dists.append(dists)
+        #for d in dists:
+        #    print d[0], d[1]
+        
+
+    #print pd_vals
+
+    return np.array(p_vals), np.array(pd_vals), sorted_dists
 
 def kj2007_width(pulsar):
     """
