@@ -16,12 +16,12 @@ gammalib.gamma3_.restype = C.c_double
 
 
 # BEGIN FUNCTION DEFINITIONS
-def gamma1(pulsar, survey, harmonic):
+def gamma1(pulsar, tobs, harmonic):
 
+    """S/N ratio decrease in a standard pulsar search"""
     gamma = C.c_double(0.)
 
     harm = float(harmonic)
-    tobs = survey.tobs
     m1 = pulsar.pulsar_mass_msolar
     m2 = pulsar.companion_mass_msolar
     period_s = pulsar.period / 1000.
@@ -46,12 +46,12 @@ def gamma1(pulsar, survey, harmonic):
 
     return gamma.value
 
-def gamma2(pulsar, survey, harmonic):
+def gamma2(pulsar, tobs, harmonic):
+    """S/N ratio decrease in an accel pulsar search"""
 
     gamma = C.c_double(0.)
 
     harm = float(harmonic)
-    tobs = survey.tobs
     m1 = pulsar.pulsar_mass_msolar
     m2 = pulsar.companion_mass_msolar
     period_s = pulsar.period / 1000.
@@ -76,12 +76,12 @@ def gamma2(pulsar, survey, harmonic):
 
     return gamma.value
 
-def gamma3(pulsar, survey, harmonic):
+def gamma3(pulsar, tobs, harmonic):
+    """S/N ratio decrease in an accel & jerk pulsar search"""
 
     gamma = C.c_double(0.)
 
     harm = float(harmonic)
-    tobs = survey.tobs
     m1 = pulsar.pulsar_mass_msolar
     m2 = pulsar.companion_mass_msolar
     period_s = pulsar.period / 1000.

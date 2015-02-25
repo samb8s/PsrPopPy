@@ -10,6 +10,7 @@ import cPickle
 
 import distributions as dists
 import galacticops as go
+import orbitalparams
 
 from population import Population 
 from pulsar import Pulsar
@@ -37,7 +38,8 @@ def generate(ngen,
              gpsArgs=[None, None],
              doubleSpec=[None, None],
              nostdout=False,
-             pattern='gaussian'):
+             pattern='gaussian',
+             orbits=False):
 
     """
     Generate a population of pulsars.
@@ -108,9 +110,12 @@ def generate(ngen,
     pop.zscale = zscale
 
     # store the dict of arguments inside the model. Could be useful.
-    argspec = inspect.getargspec(generate)
-    key_values = [(arg, locals()[arg]) for arg in argspec.args]
-    pop.arguments = {key: value for (key,value) in key_values}
+    try:
+        argspec = inspect.getargspec(generate)
+        key_values = [(arg, locals()[arg]) for arg in argspec.args]
+        pop.arguments = {key: value for (key,value) in key_values}
+    except SyntaxError:
+        pass
 
     if not nostdout:
         print "\tGenerating pulsars with parameters:"
@@ -266,6 +271,13 @@ def generate(ngen,
             p.lum_1400 = dists.powerlaw(pop.lummin,
                                         pop.lummax,
                                         pop.lumpow)
+
+
+        # add in orbital parameters
+        if orbits:
+            orbitalparams.test_1802_2124(p)
+            print p.gb, p.gl
+        
 
         # if no surveys, just generate ngen pulsars
         if surveyList is None:
@@ -517,6 +529,9 @@ if __name__ == '__main__':
     parser.add_argument('--nostdout', nargs='?', const=True, default=False,
                          help='flag to switch off std output (def=False)')
 
+    parser.add_argument('--orbits', nargs='?', const=True, default=False,
+                        help='TESTING: flag to generate orbital params')
+
     args = parser.parse_args()
 
 
@@ -543,7 +558,8 @@ if __name__ == '__main__':
                  electronModel = args.dm[0],
                  gpsArgs = args.gps,
                  doubleSpec = args.doublespec,
-                 nostdout = args.nostdout
+                 nostdout = args.nostdout,
+                 orbits = args.orbits
                  )
 
     pop.write(outf=args.o)

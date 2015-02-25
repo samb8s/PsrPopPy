@@ -11,6 +11,7 @@ from scipy.special import j1
 import galacticops as go
 from population import Population
 import radiometer as rad
+import degradation
 
 class SurveyException(Exception):
     pass
@@ -295,6 +296,7 @@ class Survey:
     def inRegion(self, pulsar):
         """Test if pulsar is inside region bounded by survey."""
         # check if l, b are outside region first of all
+        print pulsar.gl, pulsar.gb, self.GLmax, self.GLmin
         if pulsar.gl>180.:
             pulsar.gl -= 360.
         if pulsar.gl > self.GLmax or pulsar.gl < self.GLmin:
@@ -359,7 +361,11 @@ class Survey:
 
         return offset_deg
 
-    def SNRcalc(self, pulsar, pop):
+    def SNRcalc(self,
+                pulsar, 
+                pop,
+                accelsearch=False,
+                jerksearch=False):
         """Calculate the S/N ratio of a given pulsar in the survey"""
         # if not in region, S/N = 0
 
@@ -381,6 +387,7 @@ class Survey:
                 # calculate offset as a random offset within FWHM/2
                 offset = self.fwhm * math.sqrt(random.random()) / 2.0
         else:
+            print "blahbah"
             return -2
 
         # Get degfac depending on self.gainpat
@@ -415,6 +422,7 @@ class Survey:
 
         # if pulse is smeared out, return -1.0
         if delta > 1.0:
+            print width_ms, self.tsamp, tdm, tscat
             return -1
 
         #radiometer signal to noise
@@ -432,6 +440,44 @@ class Survey:
         if self.AA:
             sig_to_noise *= self._AA_factor(pulsar)
             
+
+        # account for binary motion
+        if pulsar.is_binary:
+            #print "the pulsar is a binary!"
+            if jerksearch:
+                print "jerk"
+                gamma = degradation.gamma3(pulsar,
+                                           self.tobs,
+                                           1)
+            elif accelsearch:
+                print "accel"
+                gamma = degradation.gamma2(pulsar,
+                                           self.tobs,
+                                           1)
+            else:
+                print "norm"
+                gamma = degradation.gamma1(pulsar,
+                                           self.tobs,
+                                           1)
+
+                print "gamma harm1 = ", gamma
+                
+                gamma = degradation.gamma1(pulsar,
+                                           self.tobs,
+                                           2)
+                
+                print "gamma harm2 = ", gamma
+                gamma = degradation.gamma1(pulsar,
+                                           self.tobs,
+                                           3)
+
+                print "gamma harm3 = ", gamma
+                gamma = degradation.gamma1(pulsar,
+                                           self.tobs,
+                                           4)
+                print "gamma harm4 = ", gamma
+
+
         # return the S/N accounting for beam offset
         return sig_to_noise * degfac
 

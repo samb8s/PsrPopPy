@@ -9,6 +9,11 @@ if (len(sys.argv)!=2):
     print "Usage: popheader [pop model]"
     sys.exit()
 
+if sys.argv[1] == "-h" or sys.argv[1] == "--help":
+    print "Usage: popheader [pop model]"
+    sys.exit()
+
+
 # load the model
 with open(sys.argv[1], 'rb') as f:
     pop = cPickle.load(f)

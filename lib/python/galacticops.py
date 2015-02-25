@@ -25,7 +25,7 @@ yklib.llfr_.restype = C.c_float
 
 # BEGIN FUNCTION DEFINITIONS
 
-def vxyz( pulsar):
+def vxyz(pulsar):
     """Evolve a pulsar through galactic potential"""
     x,y,z = pulsar.galCoords
     vx,vy,vz = pulsar.vx, pulsar.vy, pulsar.vz
@@ -62,12 +62,12 @@ def vxyz( pulsar):
 
 
 
-def calc_dtrue( (x, y, z)):
+def calc_dtrue((x, y, z)):
     """Calculate true distance to pulsar from the sun."""
     rsun = 8.5 # kpc
-    return math.sqrt( x*x + (y-rsun)*(y-rsun) + z*z)
+    return math.sqrt(x*x + (y-rsun)*(y-rsun) + z*z)
 
-def calcXY( r0):
+def calcXY(r0):
     """Calculate the X, Y, Z alactic coords for the pulsar."""
     # calculate a random theta in a unifrom distribution
     theta = 2.0 * math.pi * random.random()
@@ -78,7 +78,7 @@ def calcXY( r0):
 
     return x, y
 
-def ne2001_dist_to_dm( dist, gl, gb):
+def ne2001_dist_to_dm(dist, gl, gb):
     """Use NE2001 distance model."""
     # expects -180 < l < 180
     dist = C.c_float(dist)
@@ -94,7 +94,7 @@ def ne2001_dist_to_dm( dist, gl, gb):
                          C.byref(inpath),
                          C.byref(linpath))
 
-def lmt85_dist_to_dm( dist, gl, gb):
+def lmt85_dist_to_dm(dist, gl, gb):
     """ Use Lyne, Manchester & Taylor distance model to compute DM."""
     dist = C.c_float(dist)
     gl = C.c_float(gl)
@@ -159,7 +159,7 @@ def ne2001_scint_time_bw(dist, gl, gb, freq):
 
     return scint_time, scint_bw
 
-def lb_to_radec( l, b):
+def lb_to_radec(l, b):
     """Convert l, b to RA, Dec using SLA fortran (should be faster)."""
     ra = C.c_float(0.)
     dec = C.c_float(0.)
@@ -173,7 +173,7 @@ def lb_to_radec( l, b):
                     C.byref(C.c_int(1)))
     return ra.value, dec.value
 
-def radec_to_lb( ra, dec):
+def radec_to_lb(ra, dec):
     """Convert RA, Dec to l, b using SLA fortran.
     Be sure to return l in range -180 -> +180"""
     l = C.c_float(0.)
@@ -190,12 +190,12 @@ def radec_to_lb( ra, dec):
         l.value -= 360.
     return l.value, b.value
 
-def xyz_to_lb( (x, y, z)):
+def xyz_to_lb((x, y, z)):
     """ Convert galactic xyz in kpc to l and b in degrees."""
     rsun = 8.5 # kpc
 
     # distance to pulsar
-    d = math.sqrt( x*x + (rsun-y)*(rsun-y) + z*z)
+    d = math.sqrt(x*x + (rsun-y)*(rsun-y) + z*z)
     # radial distance
     b = math.asin(z/d)
 
@@ -227,7 +227,7 @@ def xyz_to_lb( (x, y, z)):
 
     return l, b
 
-def lb_to_xyz( gl, gb, dist):
+def lb_to_xyz(gl, gb, dist):
     """ Convert galactic coords to Galactic XYZ."""
     rsun = 8.5 # kpc
 
@@ -258,7 +258,7 @@ def scale_bhat(timescale,
 
     return timescale * (frequency/1400.0)**scaling_power
 
-def _glgboffset( gl1, gb1, gl2, gb2):
+def _glgboffset(gl1, gb1, gl2, gb2):
     """
     Calculate the angular distance (deg) between two
     points in galactic coordinates
@@ -302,7 +302,7 @@ def ykr():
     """ Y&K Model"""
     return yklib.ykr_(C.byref(seed()))
 
-def spiralize( r):
+def spiralize(r):
     """ Make spiral arms, as seen in Fuacher-Giguere & Kaspi 2006"""
 
     # definitions
@@ -339,7 +339,7 @@ def spiralize( r):
 
     return x, y
 
-def _double_sided_exp( scale, origin=0.0):
+def _double_sided_exp(scale, origin=0.0):
     """Exponential distribution around origin, with scale height scale."""
     if scale == 0.0:
         return origin

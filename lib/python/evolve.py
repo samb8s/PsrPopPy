@@ -93,7 +93,7 @@ def generate(ngen,
     pop.zscale = zscale
 
     if widthModel == 'kj07':
-        print "\tLoading KJ07 models.."
+        print "\tLoading KJ07 models...."
         kj_p_vals, kj_pdot_vals, kj_dists = beammodels.load_kj2007_models()
         print "\tDone\n"
 
@@ -370,9 +370,12 @@ def generate(ngen,
 
 
     # save list of arguments into the pop
-    argspec = inspect.getargspec(generate)
-    key_values = [(arg, locals()[arg]) for arg in argspec.args]
-    pop.arguments = {key: value for (key,value) in key_values}
+    try:
+        argspec = inspect.getargspec(generate)
+        key_values = [(arg, locals()[arg]) for arg in argspec.args]
+        pop.arguments = {key: value for (key,value) in key_values}
+    except SyntaxError:
+        pass
 
     return pop
 
@@ -726,9 +729,9 @@ if __name__ == '__main__':
                                 scattering formula (def = -3.86)')
 
     # efficiency cut off, if wanted
-    parser.add_argument('-efficiencycut', type=float, required=False, 
+    parser.add_argument('-eff', type=float, required=False, 
                         default=None, 
-                        help= 'efficiancy cutoff value (def=None)')
+                        help= 'efficiency cutoff value (def=None)')
 
     # galactic-Z distn
     parser.add_argument('-z', type=float, required=False, default=0.05,
@@ -796,7 +799,7 @@ if __name__ == '__main__':
                     braking_index = args.bi,
                     electronModel = args.dm[0],
                     nodeathline = args.nodeathline,
-                    efficiencycut= args.efficiencycut,
+                    efficiencycut= args.eff,
                     nospiralarms = args.nospiralarms,
                     keepdead = args.keepdead)
 

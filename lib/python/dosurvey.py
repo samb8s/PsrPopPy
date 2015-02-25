@@ -74,9 +74,12 @@ def write(surveyPops,
     
 def run(pop,
         surveyList, 
-        nostdout=False, 
-        allsurveyfile=False,
-        scint=False):
+        nostdout = False, 
+        allsurveyfile = False,
+        scint = False,
+        accelsearch = False,
+        jerksearch = False):
+
     """ Run the surveys and detect the pulsars."""
 
     # print the population
@@ -138,6 +141,7 @@ def run(pop,
 
         # report the results
         if not nostdout:
+            print "Total pulsars in model = {0}".format(len(pop.population))
             print "Number detected by survey {0} = {1}".format(surv,ndet)
             print "Of which are discoveries = {0}".format(s.discoveries)
             print "Number too faint = {0}".format(ntf)
@@ -189,6 +193,12 @@ if __name__ == '__main__':
     parser.add_argument('--scint', nargs='?', const=True, default=False,
                         help = 'include model scintillation effects (def=False)')
 
+    parser.add_argument('--accel', nargs='?', const=True, default=False,
+                        help = 'use accel search for MSPs (def=False)')
+
+    parser.add_argument('--jerk', nargs='?', const=True, default=False,
+                        help = 'use accel & jerk search for MSPs (def=False)')
+
     args = parser.parse_args()
 
     # Load a model population
@@ -199,7 +209,9 @@ if __name__ == '__main__':
                             args.surveys,
                             nostdout=args.nostdout,
                             allsurveyfile=args.allsurveys,
-                            scint=args.scint)
+                            scint=args.scint,
+                            accelsearch=args.accel,
+                            jerksearch=args.jerk)
 
     # write the output files
     write(surveyPopulations,

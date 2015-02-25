@@ -36,6 +36,7 @@ c      read(1,*)m,Tobs,m1input,m2input,Ps,omperinput,ideg,ec,Pod
     
        
 
+c      write(*,*) "PROGRAM IS RUNNING!"
       sini=SIN(ideg*pi/180.0D0)
        
 CCCCCCCCCCCCCCCCCCCCc
@@ -71,7 +72,7 @@ CC ---- initialisation of the array to avoid accidental junk
         
        ENDDO
        
-CC ------ probability calculation ------       
+CC ------ probability calculation ------      
        DO lpTp1=1,37
  
         fcd(lpTp1)=0.0D0+dble(lpTp1-1)*10.0D0
@@ -113,7 +114,7 @@ c         write(*,*)gammamavg
 
 
 c       STOP
-       RETURN
+c      RETURN
        END
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       subroutine gamma2(m,Tobs,m1input,m2input,Ps,omperinput,
@@ -228,7 +229,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 c         write(*,*)gammamavg
 
 
-       STOP
        END
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
       subroutine gamma3(m,Tobs,m1input,m2input,Ps,omperinput,
@@ -336,7 +336,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CC -------- variation of Tp and weighted avg ends here
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC       
 
-       STOP
        END
 
 
@@ -517,7 +516,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   
 CCCCCCCCCCCCCCCCCCCCCC
 
-       RETURN
        END
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc
       subroutine 
@@ -708,7 +706,6 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
   
 CCCCCCCCCCCCCCCCCCCCCC
 
-       RETURN
        END
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
