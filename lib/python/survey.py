@@ -296,7 +296,7 @@ class Survey:
     def inRegion(self, pulsar):
         """Test if pulsar is inside region bounded by survey."""
         # check if l, b are outside region first of all
-        print pulsar.gl, pulsar.gb, self.GLmax, self.GLmin
+        #print pulsar.gl, pulsar.gb, self.GLmax, self.GLmin
         if pulsar.gl>180.:
             pulsar.gl -= 360.
         if pulsar.gl > self.GLmax or pulsar.gl < self.GLmin:
@@ -387,7 +387,6 @@ class Survey:
                 # calculate offset as a random offset within FWHM/2
                 offset = self.fwhm * math.sqrt(random.random()) / 2.0
         else:
-            print "blahbah"
             return -2
 
         # Get degfac depending on self.gainpat
@@ -422,7 +421,7 @@ class Survey:
 
         # if pulse is smeared out, return -1.0
         if delta > 1.0:
-            print width_ms, self.tsamp, tdm, tscat
+            #print width_ms, self.tsamp, tdm, tscat
             return -1
 
         #radiometer signal to noise

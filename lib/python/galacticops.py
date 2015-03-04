@@ -295,7 +295,6 @@ def diskdist():
 
 def lfl06():
     """lfl06 model, using Y&K"""
-    #print self.seed
     return yklib.llfr_(C.byref(seed()))
 
 def ykr():

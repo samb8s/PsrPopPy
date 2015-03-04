@@ -32,8 +32,14 @@ class Pulsar(Orbit):
                  gpsFlag=0,
                  gpsA=None,
                  brokenFlag=0,
-                 brokenSI=None):
+                 brokenSI=None,
+                 *args,
+                 **kwargs):
         """___init___ function for the Pulsar class"""
+
+        # initialise the inherited orbit class
+        super(Pulsar, self).__init__(*args, **kwargs)
+
         self.period = period
         self.pdot = pdot
         self.dm = dm
