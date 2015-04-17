@@ -49,7 +49,7 @@ class Pointing:
 
             self.gl = coord1
             self.gb = coord2
-            self.tobs = tobs 
+            self.tobs = tobs
             self.gain = gain
 
 def makepointinglist(filename, coordtype):
@@ -100,7 +100,7 @@ class Survey:
     """Class to store survey parameters and methods"""
     def __init__(self, surveyName, pattern='gaussian'):
         """Read in a survey file and obtain the survey parameters"""
-        
+
         # try to open the survey file locally first
         if os.path.isfile(surveyName):
             f = open(surveyName, 'r')
@@ -124,7 +124,7 @@ class Survey:
         self.pointingslist = None
         self.gainslist = None
         self.tobslist = None
-        self.gainpat       = pattern 
+        self.gainpat = pattern
 
         # adding AA parameter, so can scale s/n if the survey is
         # an aperture array
@@ -137,7 +137,7 @@ class Survey:
                 continue
             # otherwise, parse!
             a = line.split('!')
-            
+
             # new feature - possible to have a list of positions in survey,
             # rather than a range of l,b or ra,dec
             if a[1].count('pointing list'):
@@ -152,8 +152,8 @@ class Survey:
                         # try to open pointing file in the surveys dir
                         __dir__ = os.path.dirname(os.path.abspath(__file__))
                         __libdir__ = os.path.dirname(__dir__)
-                        filepath = os.path.join(__libdir__, 
-                                                'surveys', 
+                        filepath = os.path.join(__libdir__,
+                                                'surveys',
                                                 pointfname)
                         #pointfptr = open(filepath, 'r')
                         filename = filepath
@@ -176,7 +176,7 @@ class Survey:
                 # read in the pointing list
                 self.pointingslist = []
                 # set coord conversion to be done, if any
-                
+
 
                 for line in pointfptr:
                     a = line.split()
@@ -184,10 +184,10 @@ class Survey:
                         s = 'File {0} should have cols: gl/gb/gain/tobs'.format(
                                                                     pointfpath)
                         raise CoordinateException(s)
-                    p = Pointing(float(a[0]), 
-                                 float(a[1]), 
-                                 p_str, 
-                                 float(a[2]), 
+                    p = Pointing(float(a[0]),
+                                 float(a[1]),
+                                 p_str,
+                                 float(a[2]),
                                  float(a[3])
                                  )
                     self.pointingslist.append(p)
@@ -312,12 +312,12 @@ class Survey:
             return False
         if dec > self.DECmax or dec < self.DECmin:
             return False
-        
+
         # randomly decide if pulsar is in completed area of survey
         if random.random() > self.coverage:
             return False
-        
-        return True 
+
+        return True
 
     def inPointing(self, pulsar):
         """Calculate whether pulsar is inside FWHM/2 of pointing position.
@@ -362,7 +362,7 @@ class Survey:
         return offset_deg
 
     def SNRcalc(self,
-                pulsar, 
+                pulsar,
                 pop,
                 accelsearch=False,
                 jerksearch=False):
@@ -372,12 +372,12 @@ class Survey:
         # if we have a list of pointings, use this bit of code
         # haven't tested yet, but presumably a lot slower
         # (loops over the list of pointings....)
- 
+
         if pulsar.dead:
             return 0.
         # otherwise check if pulsar is in entire region
         if self.inRegion(pulsar):
-            # If pointing list is provided, check how close nearest 
+            # If pointing list is provided, check how close nearest
             # pointing is
             if self.pointingslist is not None:
                 # convert offset from degree to arcmin
@@ -438,7 +438,7 @@ class Survey:
         # account for aperture array, if needed
         if self.AA:
             sig_to_noise *= self._AA_factor(pulsar)
-            
+
 
         # account for binary motion
         if pulsar.is_binary:
@@ -460,11 +460,11 @@ class Survey:
                                            1)
 
                 print "gamma harm1 = ", gamma
-                
+
                 gamma = degradation.gamma1(pulsar,
                                            self.tobs,
                                            2)
-                
+
                 print "gamma harm2 = ", gamma
                 gamma = degradation.gamma1(pulsar,
                                            self.tobs,
@@ -500,7 +500,7 @@ class Survey:
         elif psr.brokenFlag == 1 and self.freq < ref_freq:
             # assuming the alpha_1 value is for freq<ref_freq (which is ~1GHz)
             return psr.s_1400() * (self.freq / ref_freq)**psr.brokenSI
-        
+
         else:
             return psr.s_1400() * (self.freq / ref_freq)**psr.spindex
 
@@ -534,7 +534,7 @@ class Survey:
         if l < 0.5:
             nl = 359
         i = float(nl) / 4.
-        
+
         tsky_haslam = self.tskylist[180*int(i) + int(j)]
         # scale temperature before returning
         return tsky_haslam * (self.freq/408.0)**(-2.6)
@@ -545,13 +545,13 @@ class Survey:
         # calculate the scintillation strength (commonly "u")
         # first, calculate scint BW, assume Kolmogorov, C=1.16
         if hasattr(psr, 't_scatter'):
-            tscat = go.scale_bhat(psr.t_scatter, 
+            tscat = go.scale_bhat(psr.t_scatter,
                                   self.freq,
                                   psr.scindex)
         else:
             tscat = go.scatter_bhat(psr.dm, psr.scindex, self.freq)
         # convert to seconds
-        tscat /= 1000. 
+        tscat /= 1000.
 
         scint_bandwidth = 1.16 / 2.0 / math.pi / tscat # BW in Hz
         scint_bandwidth /= 1.0E6 # convert to MHz (self.freq is in MHz)
@@ -568,50 +568,50 @@ class Survey:
             # strong scintillation
 
             # m^2 = m_riss^2 + m_diss^2 + m_riss * m_diss
-            # e.g. Lorimer and Kramer ~eq 4.44 
+            # e.g. Lorimer and Kramer ~eq 4.44
             m_riss = math.pow(scint_strength, -0.33333)
 
             # lorimer & kramer eq 4.44
             kappa = 0.15 # taking this as avrg for now
-            
+
             # calculate scintillation timescale
-            scint_ts, scint_bw = go.ne2001_scint_time_bw(psr.dtrue, 
-                                                         psr.gl, 
-                                                         psr.gb, 
+            scint_ts, scint_bw = go.ne2001_scint_time_bw(psr.dtrue,
+                                                         psr.gl,
+                                                         psr.gb,
                                                          self.freq)
-            
+
             # calc n_t and n_f
             if scint_ts is None:
                 n_t = 1.
             else:
                 n_t = self._calc_n_t(kappa, scint_ts)
-                
+
             if scint_bw is None:
                 n_f = 1.
             else:
                 n_f = self._calc_n_f(kappa, scint_bw)
-            
+
             # finally calc m_diss
             m_diss = 1. / math.sqrt(n_t * n_f)
 
             m_tot_sq = m_diss * m_diss + m_riss * m_riss + m_riss * m_diss
-            
+
             # modulation index for strong scintillation
             mod_indx = math.sqrt(m_tot_sq)
-      
+
         return self._modulate_flux_scint(snr, mod_indx)
 
     def _calc_n_t(self, kappa, delt_t):
         """Number of scintles sampled in time"""
         return 1. + kappa * self.tobs / delt_t
-        
+
     def _calc_n_f(self, kappa, delt_f):
         """Number of scintles sampled in frequency"""
         return 1. + kappa * self.bw / delt_f
 
     def _modulate_flux_scint(self, snr, mod_indx):
         """Modify pulsar flux (actually S/N) according to the modulation index"""
-        # flux and S/N are obviously proportional so it's simple to do this 
+        # flux and S/N are obviously proportional so it's simple to do this
         # sigma of scintillation
         sig_scint = mod_indx * snr
         return random.gauss(snr, sig_scint)

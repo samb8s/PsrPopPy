@@ -12,7 +12,7 @@ import distributions as dists
 import galacticops as go
 import orbitalparams
 
-from population import Population 
+from population import Population
 from pulsar import Pulsar
 from survey import Survey
 
@@ -28,11 +28,11 @@ def generate(ngen,
              radialDistPars=7.5,
              electronModel='ne2001',
              pDistPars=[2.7, -0.34],
-             siDistPars= [-1.6,0.35], 
+             siDistPars= [-1.6,0.35],
              lumDistType='lnorm',
              lumDistPars=[-1.1, 0.9],
              zscaleType='exp',
-             zscale=0.33, 
+             zscale=0.33,
              duty_percent=6.,
              scindex=-3.86,
              gpsArgs=[None, None],
@@ -73,7 +73,7 @@ def generate(ngen,
     if radialDistType not in ['lfl06', 'yk04', 'isotropic',
                                  'slab', 'disk', 'gauss']:
         print "Unsupported radial distribution: {0}".format(radialDistType)
-    
+
     if electronModel not in ['ne2001', 'lmt85']:
         print "Unsupported electron model: {0}".format(electronModel)
 
@@ -127,7 +127,7 @@ def generate(ngen,
         # join this list of strings, and print it
         s = "\n\t\t".join(param_string_list)
         print "\t\t{0}".format(s)
-            
+
         # set up progress bar for fun :)
         prog = ProgressBar(min_value = 0,
                            max_value=ngen,
@@ -138,7 +138,7 @@ def generate(ngen,
     # create survey objects here and put them in a list
     if surveyList is not None:
         surveys = [Survey(s,pattern) for s in surveyList]
-        # initialise these counters to zero 
+        # initialise these counters to zero
         for surv in surveys:
             surv.ndet =0 # number detected
             surv.nout=0 # number outside survey region
@@ -180,7 +180,7 @@ def generate(ngen,
         else:
             # use the model to caculate if beaming
             p.alpha = _genAlpha()
-            
+
             p.rho, p.width_degree = _genRhoWidth(p)
 
             if p.width_degree == 0.0 and p.rho ==0.0:
@@ -192,7 +192,7 @@ def generate(ngen,
 
         # Spectral index stuff here
 
-        # suppose it might be nice to be able to have GPS sources 
+        # suppose it might be nice to be able to have GPS sources
         # AND double spectra. But for now I assume only have one or
         # none of these types.
         if random.random() > pop.gpsFrac:
@@ -202,7 +202,7 @@ def generate(ngen,
         else:
             p.gpsFlag = 1
             p.gpsA = pop.gpsA
-            
+
         if random.random() > pop.brokenFrac:
             p.brokenFlag=0
         else:
@@ -211,9 +211,9 @@ def generate(ngen,
 
         p.spindex = random.gauss(pop.simean, pop.sisigma)
 
-        # get galactic position 
+        # get galactic position
         # first, Galactic distribution models
-        if pop.radialDistType == 'isotropic': 
+        if pop.radialDistType == 'isotropic':
             # calculate gl and gb randomly
             p.gb = math.degrees(math.asin(random.random()))
             if random.random() < 0.5:
@@ -224,14 +224,14 @@ def generate(ngen,
             # pretend the pulsar is at distance of 1kpc
             # not sure why, ask Dunc!
             p.galCoords = go.lb_to_xyz(p.gl, p.gb, 1.0)
-        
+
         elif pop.radialDistType == 'slab':
             p.galCoords= go.slabDist()
             p.gl, p.gb = go.xyz_to_lb(p.galCoords)
 
         elif pop.radialDistType == 'disk':
             p.galCoords = go.diskDist()
-            p.gl, p.gb = go.xyz_to_lb(p.galCoords)              
+            p.gl, p.gb = go.xyz_to_lb(p.galCoords)
 
         else: # we want to use exponential z and a radial dist
             if pop.radialDistType == 'lfl06':
@@ -241,7 +241,7 @@ def generate(ngen,
             elif pop.radialDistType == 'gauss':
                 # guassian of mean 0
                 # and stdDev given by parameter (kpc)
-                p.r0 = random.gauss(0., pop.rsigma) 
+                p.r0 = random.gauss(0., pop.rsigma)
 
             # then calc xyz,distance, l and b
             if pop.zscaleType == 'exp':
@@ -263,7 +263,7 @@ def generate(ngen,
         p.scindex = scindex
         # then calc scatter time
         p.t_scatter = go.scatter_bhat(p.dm, p.scindex)
-        
+
         if pop.lumDistType == 'lnorm':
             p.lum_1400 = dists.drawlnorm(pop.lummean,
                                          pop.lumsigma)
@@ -277,7 +277,7 @@ def generate(ngen,
         if orbits:
             orbitalparams.test_1802_2124(p)
             print p.gb, p.gl
-        
+
 
         # if no surveys, just generate ngen pulsars
         if surveyList is None:
@@ -290,15 +290,16 @@ def generate(ngen,
         # if surveys are given, check if pulsar detected or not
         # in ANY of the surveys
         else:
-            detect_int = 0 # just a flag to increment if pulsar is detected
+            # just a flag to increment if pulsar is detected
+            detect_int = 0
             for surv in surveys:
                 # do SNR calculation
                 SNR = surv.SNRcalc(p, pop)
 
                 if SNR > surv.SNRlimit:
                     # SNR is over threshold
-                    
-                    # increment the flag 
+
+                    # increment the flag
                     # and survey ndetected
                     detect_int += 1
                     surv.ndet += 1
@@ -315,10 +316,10 @@ def generate(ngen,
                     continue
 
                 else:
-                    #pulsar is just too faint
+                    # pulsar is just too faint
                     surv.ntf += 1
-                    continue 
-            
+                    continue
+
             # add the pulsar to the population
             pop.population.append(p)
 
@@ -331,12 +332,12 @@ def generate(ngen,
                     print prog, '\r',
                     sys.stdout.flush()
 
-    # print info to stdout 
+    # print info to stdout
     if not nostdout:
         print "\n"
         print "  Total pulsars = {0}".format(len(pop.population))
         print "  Total detected = {0}".format(pop.ndet)
-        #print "  Number not beaming = {0}".format(surv.nnb)
+        # print "  Number not beaming = {0}".format(surv.nnb)
 
         for surv in surveys:
             print "\n  Results for survey '{0}'".format(surv.surveyName)
@@ -345,28 +346,28 @@ def generate(ngen,
             print "    Number smeared = {0}".format(surv.nsmear)
             print "    Number outside survey area = {0}".format(surv.nout)
 
-
     return pop
 
 
 def _lorimer2012_msp_periods():
     """Picks a period at random from Dunc's
-       distribution as mentioned in IAU 
+       distribution as mentioned in IAU
        (China 2012) proceedings
     """
     # min max and n in distribution
     logpmin = 0.
     logpmax = 1.5
-    dist = [1.,3.,5.,16.,9.,5.,5.,3.,2.]
+    dist = [1., 3., 5., 16., 9., 5., 5., 3., 2.]
 
     # calculate which bin to take value of
     #
     bin_num = dists.draw1d(dist)
-    
+
     # assume linear distn inside the bins
     logp = logpmin + (logpmax-logpmin)*(bin_num+random.random())/len(dist)
 
     return 10.**logp
+
 
 def _cc97():
     """A model for MSP period distribution."""
@@ -378,12 +379,13 @@ def _cc97():
 
     return p
 
+
 def _beaming(psr):
     """Returns a boolean indicating if the pulsar is beaming at Earth."""
     # Emmering & Chevalier 89
     # find fraction of 4pi steradians that the pulsars beams to
     # for alpha and rho in degrees
-    
+
     thetal = math.radians(max([0.0, psr.alpha-psr.rho]))
     thetau = math.radians(min([90.0, psr.alpha+psr.rho]))
 
@@ -391,6 +393,7 @@ def _beaming(psr):
 
     # compare beamfrac vs a random number
     return random.random() < beamfrac
+
 
 def _genRhoWidth(psr):
     """Calculate the opening angle of pulsar, and the beamwidth.
@@ -404,12 +407,12 @@ def _genRhoWidth(psr):
         rho = _rhoLaw(psr.period)
     else:
         rho = _rhoLaw(perCut)
-    
+
     logrho = math.log10(rho) + randfactor
     rho = 10. ** logrho
 
     # generate beta and pulse width
-    beta = random.uniform(-1,1) * rho
+    beta = random.uniform(-1, 1) * rho
     width = _sindegree(0.5 * rho) * _sindegree(0.5 * rho)
     width = width - (_sindegree(0.5 * beta) * _sindegree(0.5 * beta))
     width = width /(_sindegree(psr.alpha) * _sindegree(psr.alpha + beta))
@@ -434,7 +437,7 @@ def _genAlpha():
 def _rhoLaw(p_ms):
     """Calculate rho based on Rankin law of rho(period_ms)."""
     return 5.4 / math.sqrt(0.001 * p_ms)
-    
+
 def _sindegree(angle):
     """Return the sine of an angle in degrees."""
     return math.sin(math.radians(angle))
@@ -451,7 +454,7 @@ if __name__ == '__main__':
     # list of surveys to use (if any)
     parser.add_argument('-surveys', metavar='S', nargs='+', default=None,
                          help='surveys to use to check if pulsars are detected'
-                         ) 
+                         )
     # galactic-Z distn
     parser.add_argument('-zdist', nargs=1, required=False, default=['exp'],
                         help = 'type of distribution for z-scale',
@@ -510,7 +513,7 @@ if __name__ == '__main__':
                         default=['ne2001'],
                         help='Galactic electron distribution model to use',
                         choices=['ne2001', 'lmt85'])
-    
+
     # GPS sources
     parser.add_argument('-gps', type=float, nargs=2, required=False,
                         default=[None,None],
@@ -541,7 +544,7 @@ if __name__ == '__main__':
         f.write('\n')
 
     # run the code and write out a cPickle population class
-    
+
     pop = generate(args.n,
                  surveyList = args.surveys,
                  pDistType = args.pdist[0],
