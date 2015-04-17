@@ -52,6 +52,7 @@ class Pointing:
             self.tobs = tobs
             self.gain = gain
 
+
 def makepointinglist(filename, coordtype):
     f = open(filename, 'r')
 
@@ -61,8 +62,11 @@ def makepointinglist(filename, coordtype):
 
     for line in f:
         a = line.split()
-        gains.append(float(a[2]))
-        tobs.append(float(a[3]))
+        try:
+            gains.append(float(a[2]))
+            tobs.append(float(a[3]))
+        except IndexError:
+            pass
 
         glgb.append(makepointing(float(a[0]), float(a[1]), coordtype))
 
@@ -356,8 +360,10 @@ class Survey:
         offset_deg = np.min(dists)
         indx = np.argmin(dists)
         # set gain and tobs for that point
-        self.gain = self.gainslist[indx]
-        self.tobs = self.tobslist[indx]
+        if self.gainslist:
+            self.gain = self.gainslist[indx]
+        if self.tobslist:
+            self.tobs = self.tobslist[indx]
 
         return offset_deg
 
