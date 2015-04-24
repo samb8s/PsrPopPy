@@ -1,19 +1,21 @@
 #!/usr/bin/python
 
-import os 
+import os
 
 import cPickle
+
 
 class DataObj:
     def __init__(self, name, labelDict, dataDict, size):
         self.name = name
-        
+
         self.labelDict = labelDict
         self.dataDict = dataDict
         self.count = size
 
-def makeDataObj(modelname = None,
-                frac=None, 
+
+def makeDataObj(modelname=None,
+                frac=None,
                 extnList=['.model', '.results']):
     """
     Function to get different parameters of a population file
@@ -21,7 +23,7 @@ def makeDataObj(modelname = None,
     """
 
     dataObjList = []
-    
+
     if modelname is None:
         for filename in os.listdir(os.getcwd()):
             for extn in extnList:
@@ -37,6 +39,7 @@ def makeDataObj(modelname = None,
     dataObjList.sort(key=lambda x: x.count, reverse=True)
 
     return dataObjList
+
 
 def readfile_return_dataobj(filename):
     """Read in the given file and make a dataobj"""
@@ -56,8 +59,6 @@ def readfile_return_dataobj(filename):
     labelDict, dataDict, size = pop.make_plotting_dicts()
 
     return DataObj(filename,
-                   labelDict, 
-                   dataDict, 
+                   labelDict,
+                   dataDict,
                    pop.size())
-
-

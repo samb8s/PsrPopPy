@@ -18,8 +18,10 @@ from survey import Survey
 
 from progressbar import ProgressBar
 
+
 class PopulateException(Exception):
     pass
+
 
 def generate(ngen,
              surveyList=None,
@@ -28,7 +30,7 @@ def generate(ngen,
              radialDistPars=7.5,
              electronModel='ne2001',
              pDistPars=[2.7, -0.34],
-             siDistPars= [-1.6,0.35],
+             siDistPars=[-1.6, 0.35],
              lumDistType='lnorm',
              lumDistPars=[-1.1, 0.9],
              zscaleType='exp',
@@ -46,7 +48,8 @@ def generate(ngen,
 
     Keyword args:
     ngen -- the number of pulsars to generate (or detect)
-    surveyList -- a list of surveys you want to use to try and detect the pulsars
+    surveyList -- a list of surveys you want to use to try and detect
+        the pulsars
     pDistType -- the pulsar period distribution model to use (def=lnorm)
     radialDistType -- radial distribution model
     electronModel -- mode to use for Galactic electron distribution
@@ -71,16 +74,16 @@ def generate(ngen,
         print "Unsupported period distribution: {0}".format(pDistType)
 
     if radialDistType not in ['lfl06', 'yk04', 'isotropic',
-                                 'slab', 'disk', 'gauss']:
+                              'slab', 'disk', 'gauss']:
         print "Unsupported radial distribution: {0}".format(radialDistType)
 
     if electronModel not in ['ne2001', 'lmt85']:
         print "Unsupported electron model: {0}".format(electronModel)
 
-    if pattern not in ['gaussian','airy']:
+    if pattern not in ['gaussian', 'airy']:
         print "Unsupported gain pattern: {0}".format(pattern)
 
-    if duty_percent<0.:
+    if duty_percent < 0.:
         print "Unsupported value of duty cycle: {0}".format(duty_percent)
 
     # need to use properties in this class so they're get/set-type props
@@ -113,7 +116,7 @@ def generate(ngen,
     try:
         argspec = inspect.getargspec(generate)
         key_values = [(arg, locals()[arg]) for arg in argspec.args]
-        pop.arguments = {key: value for (key,value) in key_values}
+        pop.arguments = {key: value for (key, value) in key_values}
     except SyntaxError:
         pass
 
@@ -129,27 +132,26 @@ def generate(ngen,
         print "\t\t{0}".format(s)
 
         # set up progress bar for fun :)
-        prog = ProgressBar(min_value = 0,
+        prog = ProgressBar(min_value=0,
                            max_value=ngen,
                            width=65,
                            mode='dynamic')
 
-
     # create survey objects here and put them in a list
     if surveyList is not None:
-        surveys = [Survey(s,pattern) for s in surveyList]
+        surveys = [Survey(s, absolute_importpattern) for s in surveyList]
         # initialise these counters to zero
         for surv in surveys:
-            surv.ndet =0 # number detected
-            surv.nout=0 # number outside survey region
-            surv.nsmear=0 # number smeared out
-            surv.ntf=0 # number too faint
+            surv.ndet = 0  # number detected
+            surv.nout = 0  # number outside survey region
+            surv.nsmear = 0  # number smeared out
+            surv.ntf = 0  # number too faint
 
-            #surv.gainpat=pattern
+            # surv.gainpat=pattern
     else:
         # make an empty list here - makes some code just a little
         # simpler - can still loop over an empty list (ie zero times)
-        surveys=[]
+        surveys = []
 
     while pop.ndet < ngen:
         # Declare new pulsar object
@@ -169,7 +171,7 @@ def generate(ngen,
         elif pop.pDistType == 'lorimer12':
             p.period = _lorimer2012_msp_periods()
 
-        if duty_percent>0.:
+        if duty_percent > 0.:
             # use a simple duty cycle for each pulsar
             # with a log-normal scatter
             width = (float(duty_percent)/100.) * p.period**0.9
@@ -183,7 +185,7 @@ def generate(ngen,
 
             p.rho, p.width_degree = _genRhoWidth(p)
 
-            if p.width_degree == 0.0 and p.rho ==0.0:
+            if p.width_degree == 0.0 and p.rho == 0.0:
                 continue
             # is pulsar beaming at us? If not, move on!
             p.beaming = _beaming(p)
@@ -204,9 +206,9 @@ def generate(ngen,
             p.gpsA = pop.gpsA
 
         if random.random() > pop.brokenFrac:
-            p.brokenFlag=0
+            p.brokenFlag = 0
         else:
-            p.brokenFlag=1
+            p.brokenFlag = 1
             p.brokenSI = pop.brokenSI
 
         p.spindex = random.gauss(pop.simean, pop.sisigma)
@@ -226,14 +228,14 @@ def generate(ngen,
             p.galCoords = go.lb_to_xyz(p.gl, p.gb, 1.0)
 
         elif pop.radialDistType == 'slab':
-            p.galCoords= go.slabDist()
+            p.galCoords = go.slabDist()
             p.gl, p.gb = go.xyz_to_lb(p.galCoords)
 
         elif pop.radialDistType == 'disk':
             p.galCoords = go.diskDist()
             p.gl, p.gb = go.xyz_to_lb(p.galCoords)
 
-        else: # we want to use exponential z and a radial dist
+        else:  # we want to use exponential z and a radial dist
             if pop.radialDistType == 'lfl06':
                 p.r0 = go.lfl06()
             elif pop.radialDistType == 'yk04':
@@ -245,10 +247,10 @@ def generate(ngen,
 
             # then calc xyz,distance, l and b
             if pop.zscaleType == 'exp':
-                zheight  = go._double_sided_exp(zscale)
+                zheight = go._double_sided_exp(zscale)
             else:
                 zheight = random.gauss(0., zscale)
-            gx,gy  = go.calcXY(p.r0)
+            gx, gy = go.calcXY(p.r0)
             p.galCoords = gx, gy, zheight
             p.gl, p.gb = go.xyz_to_lb(p.galCoords)
 
@@ -272,12 +274,10 @@ def generate(ngen,
                                         pop.lummax,
                                         pop.lumpow)
 
-
         # add in orbital parameters
         if orbits:
             orbitalparams.test_1802_2124(p)
             print p.gb, p.gl
-
 
         # if no surveys, just generate ngen pulsars
         if surveyList is None:
@@ -415,7 +415,7 @@ def _genRhoWidth(psr):
     beta = random.uniform(-1, 1) * rho
     width = _sindegree(0.5 * rho) * _sindegree(0.5 * rho)
     width = width - (_sindegree(0.5 * beta) * _sindegree(0.5 * beta))
-    width = width /(_sindegree(psr.alpha) * _sindegree(psr.alpha + beta))
+    width = width / (_sindegree(psr.alpha) * _sindegree(psr.alpha + beta))
 
     if width < 0.0 or width > 1.0:
         width = 0.0
@@ -428,15 +428,18 @@ def _genRhoWidth(psr):
 
     return rho, width
 
+
 def _genAlpha():
     """Pick an inclination angle from 0-> 90 degrees.
         Based on model outlined in Smits et al. 2009"""
-    angle = math.degrees(math.acos(random.uniform(0,1)))
+    angle = math.degrees(math.acos(random.uniform(0, 1)))
     return math.fabs(angle)
+
 
 def _rhoLaw(p_ms):
     """Calculate rho based on Rankin law of rho(period_ms)."""
     return 5.4 / math.sqrt(0.001 * p_ms)
+
 
 def _sindegree(angle):
     """Return the sine of an angle in degrees."""
@@ -447,29 +450,30 @@ if __name__ == '__main__':
     """ 'Main' function; read in options, then generate population"""
 
     # set defaults here
-    parser = argparse.ArgumentParser(description='Generate a population of pulsars')
+    parser = argparse.ArgumentParser(
+                        description='Generate a population of pulsars')
     # number of pulsars to detect!
     parser.add_argument('-n', type=int, required=True,
-                         help='number of pulsars to generate/detect')
+                        help='number of pulsars to generate/detect')
     # list of surveys to use (if any)
     parser.add_argument('-surveys', metavar='S', nargs='+', default=None,
-                         help='surveys to use to check if pulsars are detected'
-                         )
+                        help='surveys to use to check if pulsars are detected'
+                        )
     # galactic-Z distn
     parser.add_argument('-zdist', nargs=1, required=False, default=['exp'],
-                        help = 'type of distribution for z-scale',
+                        help='type of distribution for z-scale',
                         choices=['exp', 'gauss'])
     parser.add_argument('-z', type=float, required=False, default=0.33,
-                         help='exponential z-scale to use (def=0.33kpc)')
+                        help='exponential z-scale to use (def=0.33kpc)')
 
     # pulse width model
     parser.add_argument('-w', type=float, required=False, default=6,
-                         help='pulse width, percent (def=6) ')
+                        help='pulse width, percent (def=6) ')
 
     # spectral index distribution
     parser.add_argument('-si', nargs=2, type=float,
-                         required=False, default=[-1.6, 0.35],
-                         help='mean and std dev of spectral index distribution\
+                        required=False, default=[-1.6, 0.35],
+                        help='mean and std dev of spectral index distribution\
                                  (def = -1.6, 0.35)')
     # scattering index
     parser.add_argument('-sc', type=float, required=False, default=-3.86,
@@ -482,8 +486,8 @@ if __name__ == '__main__':
                         choices=['lnorm', 'norm', 'cc97', 'lorimer12'])
 
     parser.add_argument('-p', nargs=2, required=False, type=float,
-                         default=[2.7, -0.34],
-                         help='period distribution mean and std dev \
+                        default=[2.7, -0.34],
+                        help='period distribution mean and std dev \
                                  (def= [2.7, -0.34], Lorimer et al. 2006)')
 
     # luminosity distribution parameters
@@ -500,13 +504,12 @@ if __name__ == '__main__':
                         default=['lfl06'],
                         help='type of distrbution to use for Galactic radius',
                         choices=['lfl06', 'yk04', 'isotropic', 'slab',
-                                   'disk', 'gauss'])
+                                 'disk', 'gauss'])
 
-    parser.add_argument('-r', required = False,
-                        default = 7.5, type=float,
-                        help = 'radial distribution parameter \
+    parser.add_argument('-r', required=False,
+                        default=7.5, type=float,
+                        help='radial distribution parameter \
                                 (required for "-rdist gauss")')
-
 
     # electron/dm model
     parser.add_argument('-dm', type=str, nargs=1, required=False,
@@ -516,12 +519,12 @@ if __name__ == '__main__':
 
     # GPS sources
     parser.add_argument('-gps', type=float, nargs=2, required=False,
-                        default=[None,None],
+                        default=[None, None],
                         help='GPS fraction and "a" value')
 
     # double-spectral-index sources
     parser.add_argument('-doublespec', type=float, nargs=2, required=False,
-                        default=[None,None],
+                        default=[None, None],
                         help='Dbl spec fraction and alpha value')
 
     # output file name
@@ -530,13 +533,12 @@ if __name__ == '__main__':
                         help='Output filename for population model')
 
     parser.add_argument('--nostdout', nargs='?', const=True, default=False,
-                         help='flag to switch off std output (def=False)')
+                        help='flag to switch off std output (def=False)')
 
     parser.add_argument('--orbits', nargs='?', const=True, default=False,
                         help='TESTING: flag to generate orbital params')
 
     args = parser.parse_args()
-
 
     # write command line to populate.cmd file
     with open('populate.cmd', 'a') as f:
@@ -546,23 +548,23 @@ if __name__ == '__main__':
     # run the code and write out a cPickle population class
 
     pop = generate(args.n,
-                 surveyList = args.surveys,
-                 pDistType = args.pdist[0],
-                 lumDistType = args.ldist[0],
-                 radialDistType = args.rdist[0],
-                 radialDistPars = args.r,
-                 pDistPars = args.p,
-                 lumDistPars = args.l,
-                 siDistPars = args.si,
-                 zscaleType = args.zdist[0],
-                 zscale = args.z,
-                 duty_percent = args.w,
-                 scindex = args.sc,
-                 electronModel = args.dm[0],
-                 gpsArgs = args.gps,
-                 doubleSpec = args.doublespec,
-                 nostdout = args.nostdout,
-                 orbits = args.orbits
-                 )
+                   surveyList=args.surveys,
+                   pDistType=args.pdist[0],
+                   lumDistType=args.ldist[0],
+                   radialDistType=args.rdist[0],
+                   radialDistPars=args.r,
+                   pDistPars=args.p,
+                   lumDistPars=args.l,
+                   siDistPars=args.si,
+                   zscaleType=args.zdist[0],
+                   zscale=args.z,
+                   duty_percent=args.w,
+                   scindex=args.sc,
+                   electronModel=args.dm[0],
+                   gpsArgs=args.gps,
+                   doubleSpec=args.doublespec,
+                   nostdout=args.nostdout,
+                   orbits=args.orbits
+                   )
 
     pop.write(outf=args.o)

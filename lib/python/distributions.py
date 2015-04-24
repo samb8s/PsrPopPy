@@ -4,10 +4,12 @@ import sys
 import math
 import random
 
+
 def drawlnorm(mean, sigma):
     """Draw a random number from a log-normal distribution"""
 
     return 10.0**random.gauss(mean, sigma)
+
 
 def powerlaw(minval, maxval, power):
     """Draw a value randomly from the specified power law"""
@@ -28,19 +30,21 @@ def powerlaw(minval, maxval, power):
 
     return 10.0**log
 
+
 def draw1d(dist):
     """Draw a bin number form a home-made distribution
         (dist is a list of numbers per bin)
     """
     # sum of distribution
     total = sum(dist)
-    #cumulative distn
+    # cumulative distn
     cumulative = [sum(dist[:x+1])/total for x in range(len(dist))]
 
     rand_num = random.random()
     for i, c in enumerate(cumulative):
         if rand_num <= c:
             return i
+
 
 def draw_double_sided_exp(scale, origin=0.0):
     """Exponential distribution around origin, with scale height scale."""

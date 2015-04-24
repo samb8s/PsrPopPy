@@ -1,14 +1,16 @@
 #!/usr/bin/python
 
+
 class OrbitException(Exception):
     pass
+
 
 class Orbit(object):
     """ Class to store an individual pulsar"""
     def __init__(self,
-                 is_binary = False,
+                 is_binary=False,
                  orbital_period_days=None,
-                 pulsar_mass_msolar = None,
+                 pulsar_mass_msolar=None,
                  companion_mass_msolar=None,
                  long_peri_degrees=None,
                  inclination_degrees=None,

@@ -2,11 +2,12 @@
 
 import math
 
+
 def calcFlux(snr,
              beta,
              Trec,
              Tsky,
-             gain, 
+             gain,
              n_p,
              t_obs,
              bw,
@@ -15,21 +16,22 @@ def calcFlux(snr,
     """Calculate flux assuming radiometer equation"""
 
     signal = signalterm(beta,
-                       Trec,
-                       Tsky,
-                       gain, 
-                       n_p,
-                       t_obs,
-                       bw,
-                       duty)
+                        Trec,
+                        Tsky,
+                        gain,
+                        n_p,
+                        t_obs,
+                        bw,
+                        duty)
 
     return snr * signal
 
-def calcSNR(flux, 
+
+def calcSNR(flux,
             beta,
             Trec,
             Tsky,
-            gain, 
+            gain,
             n_p,
             t_obs,
             bw,
@@ -38,28 +40,29 @@ def calcSNR(flux,
     """Calculate the S/N ratio assuming radiometer equation"""
 
     signal = signalterm(beta,
-                       Trec,
-                       Tsky,
-                       gain, 
-                       n_p,
-                       t_obs,
-                       bw,
-                       duty)
+                        Trec,
+                        Tsky,
+                        gain,
+                        n_p,
+                        t_obs,
+                        bw,
+                        duty)
 
     return flux / signal
+
 
 def signalterm(beta,
                Trec,
                Tsky,
-               gain, 
+               gain,
                n_p,
                t_obs,
                bw,
                duty):
 
-    """Returns the rest of the radiometer equation (aside from 
+    """Returns the rest of the radiometer equation (aside from
         SNR/Flux"""
 
     dterm = duty / (1.0 - duty)
     return beta * (Trec+Tsky) * math.sqrt(dterm) \
-                / gain / math.sqrt(n_p * t_obs * bw)
+        / gain / math.sqrt(n_p * t_obs * bw)

@@ -6,14 +6,16 @@ import random
 from orbit import Orbit
 import galacticops as go
 
+
 class PulsarException(Exception):
     pass
+
 
 class Pulsar(Orbit):
     """ Class to store an individual pulsar"""
     def __init__(self,
                  period=None,
-                 pdot = None,
+                 pdot=None,
                  dm=None,
                  gl=None,
                  gb=None,
@@ -43,9 +45,9 @@ class Pulsar(Orbit):
         self.period = period
         self.pdot = pdot
         self.dm = dm
-        
+
         # convert to -180->+180 range
-        if gl >180.:
+        if gl > 180.:
             gl -= 360.
 
         self.gl = gl
@@ -65,18 +67,18 @@ class Pulsar(Orbit):
         self.alpha = alpha
         self.rho = rho
         self.width_degree = width_degree
-            
+
         self.beaming = beaming
 
         self.gpsFlag = gpsFlag
         self.gpsA = gpsA
 
-        self.brokenFlag= brokenFlag
+        self.brokenFlag = brokenFlag
         self.brokenSI = brokenSI
 
-        self.snr=snr
+        self.snr = snr
 
-        # add this little flag which can be 
+        # add this little flag which can be
         # switched if the pulsar is detected in any survey
         self.detected = False
 
@@ -102,7 +104,7 @@ class Pulsar(Orbit):
         if edot is None:
             return None
         else:
-            #return self.lum_1400 * 1.0e-26 * 3.086e21 * 3.086E21 / edot
+            # return self.lum_1400 * 1.0e-26 * 3.086e21 * 3.086E21 / edot
             return self.lum_1400 * 7.4E27 / edot
 
     def edot(self):

@@ -13,15 +13,20 @@ from population import Population
 import radiometer as rad
 import degradation
 
+
 class SurveyException(Exception):
     pass
+
 
 class CoordinateException(Exception):
     pass
 
+
 class Pointing:
-    """Simple class -- pointing has a gl and gb position (***NEWLY ADDED GAIN/TOBS***)"""
-    """This class works with pointing list files, which have GL/GB/GAIN/TOBS columns. """
+    """Simple class -- pointing has a gl and gb position
+    (***NEWLY ADDED GAIN/TOBS***)"""
+    """This class works with pointing list files,
+    which have GL/GB/GAIN/TOBS columns. """
 
     def __init__(self, coord1, coord2, coordtype, gain, tobs):
         """Set the coordinates of the pointing.
@@ -36,15 +41,15 @@ class Pointing:
             dec = coord2
 
             # convert to l and b :)
-            gl,gb = go.radec_to_lb(ra, dec)
+            gl, gb = go.radec_to_lb(ra, dec)
 
-            if gl>180.:
+            if gl > 180.:
                 gl -= 360.
 
             self.gl = gl
             self.gb = gb
         else:
-            if coord1>180.:
+            if coord1 > 180.:
                 coord1 -= 360.
 
             self.gl = coord1
@@ -74,6 +79,7 @@ def makepointinglist(filename, coordtype):
 
     return np.array(glgb), tobs, gains
 
+
 def makepointing(coord1, coord2, coordtype):
 
     if coordtype not in ['eq', 'gal']:
@@ -85,13 +91,13 @@ def makepointing(coord1, coord2, coordtype):
         dec = coord2
 
         # convert to l and b :)
-        gl,gb = go.radec_to_lb(ra, dec)
+        gl, gb = go.radec_to_lb(ra, dec)
 
-        if gl>180.:
+        if gl > 180.:
             gl -= 360.
 
     else:
-        if coord1>180.:
+        if coord1 > 180.:
             coord1 -= 360.
 
         gl = coord1
@@ -149,7 +155,7 @@ class Survey:
 
                 # try to open the pointing list locally
                 if os.path.isfile(pointfname):
-                    #pointfptr = open(pointfname, 'r')
+                    # pointfptr = open(pointfname, 'r')
                     filename = pointfname
                 else:
                     try:
@@ -159,7 +165,7 @@ class Survey:
                         filepath = os.path.join(__libdir__,
                                                 'surveys',
                                                 pointfname)
-                        #pointfptr = open(filepath, 'r')
+                        # pointfptr = open(filepath, 'r')
                         filename = filepath
                     except:
                         s = 'File {0} does not exist!!!'.format(pointfpath)
@@ -185,7 +191,7 @@ class Survey:
                 for line in pointfptr:
                     a = line.split()
                     if len(a) != 4:
-                        s = 'File {0} should have cols: gl/gb/gain/tobs'.format(
+                s = 'File {0} should have cols: gl/gb/gain/tobs'.format(
                                                                     pointfpath)
                         raise CoordinateException(s)
                     p = Pointing(float(a[0]),
@@ -268,7 +274,7 @@ class Survey:
                 # turn on AA
                 self.AA = True
             else:
-                print "Parameter '",a[1].strip(),"' not recognized!"
+                print "Parameter '", a[1].strip(), "' not recognized!"
 
         f.close()
 
@@ -296,16 +302,16 @@ class Survey:
         """ Returns the number of channels in the survey backend."""
         return self.bw / self.bw_chan
 
-
     def inRegion(self, pulsar):
         """Test if pulsar is inside region bounded by survey."""
         # check if l, b are outside region first of all
-        #print pulsar.gl, pulsar.gb, self.GLmax, self.GLmin
-        if pulsar.gl>180.:
+        # print pulsar.gl, pulsar.gb, self.GLmax, self.GLmin
+        if pulsar.gl > 180.:
             pulsar.gl -= 360.
         if pulsar.gl > self.GLmax or pulsar.gl < self.GLmin:
             return False
-        if math.fabs(pulsar.gb) > self.GBmax or math.fabs(pulsar.gb) < self.GBmin:
+        if math.fabs(pulsar.gb) > self.GBmax \
+                or math.fabs(pulsar.gb) < self.GBmin:
             return False
 
         # need to compute ra/dec of pulsar from the l and b (galtfeq)
@@ -329,8 +335,7 @@ class Survey:
         position further down the list!!!"""
         # initialise offset_deg to be a big old number
         # FWHM is in arcmin so always multiply by 60
-        #### MATRIX-IZE THIS PROBLEM??
-        #http://wiki.scipy.org/Cookbook/KDTree
+        # http://wiki.scipy.org/Cookbook/KDTree
         offset_deg = 1.
 
         # loop over pointings
@@ -344,8 +349,8 @@ class Survey:
             # if the beam is close enough, break out of the loop
             if offset_new < self.fwhm:
                 offset_deg = offset_new
-                self.gain  = point.gain
-                self.tobs  = point.tobs
+                self.gain = point.gain
+                self.tobs = point.tobs
                 break
 
         return offset_deg
@@ -359,7 +364,7 @@ class Survey:
         # get the min of dists and its index
         offset_deg = np.min(dists)
         indx = np.argmin(dists)
-        # set gain and tobs for that point
+        # set gain and tobs for that point - if given
         if self.gainslist:
             self.gain = self.gainslist[indx]
         if self.tobslist:
@@ -397,14 +402,15 @@ class Survey:
 
         # Get degfac depending on self.gainpat
         if self.gainpat == 'airy':
-            conv    = math.pi/(60*180.)         # Conversion arcmins -> radians
+            conv = math.pi/(60*180.)         # Conversion arcmins -> radians
             eff_diam = 3.0e8/(self.freq*self.fwhm*conv*1.0e6)  # Also MHz -> Hz
-            a       = eff_diam/2.               # Effective radius of telescope
-            lamda   = 3.0e8/(self.freq*1.0e6)   # Obs. wavelength
-            kasin   = (2*math.pi*a/lamda)*np.sin(offset*conv)
+            a = eff_diam/2.               # Effective radius of telescope
+            lamda = 3.0e8/(self.freq*1.0e6)   # Obs. wavelength
+            kasin = (2*math.pi*a/lamda)*np.sin(offset*conv)
             degfac = 4*(j1(kasin)/kasin)**2
         else:
-            degfac = math.exp(-2.7726 * offset * offset / (self.fwhm *self.fwhm))
+            degfac = math.exp(
+                -2.7726 * offset * offset / (self.fwhm * self.fwhm))
 
         # calc dispersion smearing across single channel
         tdm = self._dmsmear(pulsar)
@@ -427,10 +433,10 @@ class Survey:
 
         # if pulse is smeared out, return -1.0
         if delta > 1.0:
-            #print width_ms, self.tsamp, tdm, tscat
+            # print width_ms, self.tsamp, tdm, tscat
             return -1
 
-        #radiometer signal to noise
+        # radiometer signal to noise
         sig_to_noise = rad.calcSNR(self.calcflux(pulsar, pop.ref_freq),
                                    self.beta,
                                    self.tsys,
@@ -445,10 +451,9 @@ class Survey:
         if self.AA:
             sig_to_noise *= self._AA_factor(pulsar)
 
-
         # account for binary motion
         if pulsar.is_binary:
-            #print "the pulsar is a binary!"
+            # print "the pulsar is a binary!"
             if jerksearch:
                 print "jerk"
                 gamma = degradation.gamma3(pulsar,
@@ -482,7 +487,6 @@ class Survey:
                                            4)
                 print "gamma harm4 = ", gamma
 
-
         # return the S/N accounting for beam offset
         return sig_to_noise * degfac
 
@@ -515,7 +519,7 @@ class Survey:
         log_nu_1 = math.log10(ref_freq/1000.)
         log_nu_2 = math.log10(self.freq/1000.)
         gpsC = math.log10(psr.s_1400()) - (psr.gpsA * log_nu_1**2) \
-                                            - psr.spindex * log_nu_1
+                                        - psr.spindex * log_nu_1
         return 10.**(psr.gpsA * log_nu_2**2 + psr.spindex * log_nu_2 + gpsC)
 
     def _dmsmear(self, psr):
@@ -559,8 +563,8 @@ class Survey:
         # convert to seconds
         tscat /= 1000.
 
-        scint_bandwidth = 1.16 / 2.0 / math.pi / tscat # BW in Hz
-        scint_bandwidth /= 1.0E6 # convert to MHz (self.freq is in MHz)
+        scint_bandwidth = 1.16 / 2.0 / math.pi / tscat  # BW in Hz
+        scint_bandwidth /= 1.0E6  # convert to MHz (self.freq is in MHz)
 
         scint_strength = math.sqrt(self.freq / scint_bandwidth)
 
@@ -578,7 +582,7 @@ class Survey:
             m_riss = math.pow(scint_strength, -0.33333)
 
             # lorimer & kramer eq 4.44
-            kappa = 0.15 # taking this as avrg for now
+            kappa = 0.15  # taking this as avrg for now
 
             # calculate scintillation timescale
             scint_ts, scint_bw = go.ne2001_scint_time_bw(psr.dtrue,
@@ -616,7 +620,8 @@ class Survey:
         return 1. + kappa * self.bw / delt_f
 
     def _modulate_flux_scint(self, snr, mod_indx):
-        """Modify pulsar flux (actually S/N) according to the modulation index"""
+        """Modify pulsar flux (actually S/N)
+        according to the modulation index"""
         # flux and S/N are obviously proportional so it's simple to do this
         # sigma of scintillation
         sig_scint = mod_indx * snr

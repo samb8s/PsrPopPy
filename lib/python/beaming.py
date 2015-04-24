@@ -9,6 +9,7 @@ from operator import itemgetter
 
 import numpy as np
 
+
 def tm98_fraction(pulsar):
     """
     Tauris and Manchester 1998 beaming fraction
@@ -17,8 +18,9 @@ def tm98_fraction(pulsar):
 
     return 0.03 + 0.09 * periodterm**2.0
 
+
 def wj08_fraction(pulsar):
-    """ 
+    """
     Weltevrede & Johnston 2008 beaming model
     """
     if pulsar.chi < 1.0E-5:
@@ -35,21 +37,21 @@ def wj08_fraction(pulsar):
     chi_rad = math.radians(pulsar.chi)
     rho_rad = math.radians(rho)
 
-    if pulsar.chi > rho and (pulsar.chi + rho)<90.:
+    if pulsar.chi > rho and (pulsar.chi + rho) < 90.:
         fraction = 2.0 * math.sin(chi_rad) * math.sin(rho_rad)
-    elif pulsar.chi>rho and (pulsar.chi + rho) > 90.:
-        fraction= math.cos(chi_rad - rho_rad)
+    elif pulsar.chi > rho and (pulsar.chi + rho) > 90.:
+        fraction = math.cos(chi_rad - rho_rad)
     elif pulsar.chi <= rho and (pulsar.chi + rho) < 90.:
         fraction = 1.0 - math.cos(chi_rad + rho_rad)
     else:
         fraction = 1.
 
-
     return fraction
+
 
 def load_kj2007_models():
     """
-    Karastergiou & Johnston 2007 beam model - 
+    Karastergiou & Johnston 2007 beam model -
     Load the pre-run reesults
     """
 
@@ -57,7 +59,7 @@ def load_kj2007_models():
     __dir__ = os.path.dirname(os.path.abspath(__file__))
     __models__ = os.path.join(__dir__, 'models')
 
-    # lists to save p, pdot values in 
+    # lists to save p, pdot values in
     pd_vals = []
     p_vals = []
     all_dists = []
@@ -95,13 +97,9 @@ def load_kj2007_models():
 
         # add dists to sorted_dists
         sorted_dists.append(dists)
-        #for d in dists:
-        #    print d[0], d[1]
-        
-
-    #print pd_vals
 
     return np.array(p_vals), np.array(pd_vals), sorted_dists
+
 
 def kj2007_width(pulsar):
     """
@@ -124,15 +122,12 @@ def kj2007_width(pulsar):
         ncomp = 1
         npatch = 10
 
-    #rhomax = rho_calc(hmax, period)
-    rhomax = np.degrees(3. * np.sqrt(np.pi * hmax / 
+    rhomax = np.degrees(3. * np.sqrt(np.pi * hmax /
                         (2. * 3.e5 * period)))
     beta = 1000.
 
     while beta > rhomax:
         alpha = math.degrees(math.acos(random.random()))
-        #else:
-        #    alpha = alpha
         zeta = math.degrees(math.acos(random.random()))
         beta = zeta - alpha
 
@@ -143,29 +138,27 @@ def kj2007_width(pulsar):
     zeta = zeta
 
     hrange = hmax - hmin
-    #hcomp = [hmin + hrange * random.random()**2 for \
-    #                            i in xrange(ncomp)]
     hcomp = hmin + hrange * np.random.random(ncomp)**2
-    #### NEW HCOMP??? (only freq dependent, so din't include for now)
+    # NEW HCOMP??? (only freq dependent, so din't include for now)
 
-    rhocomp = np.degrees(3. * np.sqrt(np.pi * hcomp / 
-                        (2. * 3.e5 * period)))
+    rhocomp = np.degrees(3. * np.sqrt(np.pi * hcomp /
+                                      (2. * 3.e5 * period)))
     pwcomp = 0.49 * np.sqrt(hcomp / 10. / period)
 
     delta = 360. / 1000.
     xarray = np.arange(-180., +180., delta)
     yarray = np.arange(-180., +180., delta)
-    
+
     stokes_i = np.zeros((len(xarray), len(yarray)))
 
     for rho, pw in zip(rhocomp, pwcomp):
         stokes_i = patchbeam(stokes_i,
-                                  xarray,
-                                  yarray,
-                                  rho,
-                                  pw,
-                                  npatch)
-    
+                             xarray,
+                             yarray,
+                             rho,
+                             pw,
+                             npatch)
+
     # compute max profile width
     rhomax = rhocomp.max()
     pwmax = pwcomp.max()
@@ -177,8 +170,8 @@ def kj2007_width(pulsar):
         widthmax = 360.
     else:
         albe = alpha + beta
-        widthmax = math.sqrt(wtmp / 
-                               sin_deg(alpha) / 
+        widthmax = math.sqrt(wtmp /
+                               sin_deg(alpha) /
                                math.fabs(sin_deg(albe)))
         if widthmax > 1.:
             widthmax = 360.
@@ -188,19 +181,19 @@ def kj2007_width(pulsar):
     """
     # compute line of sight angle
     theta_los, xlos, ylos = get_lineofsight(alpha, beta)
-    
+
     # compute rvm swing
-    #pa = rvm()
+    # pa = rvm()
 
     # get the line-of-sight values for the pulse profile
     # I'll just consider stokes-I for now
-    xinds = np.rint((xlos +180.)/delta).astype(int)
-    yinds = np.rint((ylos +180.)/delta).astype(int)
+    xinds = np.rint((xlos + 180.) / delta).astype(int)
+    yinds = np.rint((ylos + 180.) / delta).astype(int)
 
     # get profile
     prof = stokes_i[xinds, yinds]
 
-    # need to make sure this function returns width in 
+    # need to make sure this function returns width in
     # whatever units are consistent with my other code
     return calcwidth(prof) * pulsar.period
 
@@ -209,7 +202,8 @@ def get_stokes_index(val, x1, dx):
     n = round((val - x1) / dx)
     return int(n)
 
-def get_lineofsight(alpha, beta):   
+
+def get_lineofsight(alpha, beta):
     delta = 360./1024.
     phiarray = np.arange(-180., +180., delta)
 
@@ -222,6 +216,7 @@ def get_lineofsight(alpha, beta):
         ylos.append(yp)
 
     return thetalos, np.array(xlos), np.array(ylos)
+
 
 def mapphi(alpha, beta, phi):
     cosR = cos_deg(alpha + beta) \
@@ -237,10 +232,8 @@ def mapphi(alpha, beta, phi):
         R = int(R*100.0)/100.0
 
     if (R != 0.0) and (R != 180.) and (alpha > 0.):
-        cosgamma = (cos_deg(alpha + beta) \
-                    - cos_deg(alpha) \
-                    * cosR) / (sin_deg(alpha) \
-                    * sin_deg(R))
+        cosgamma = (cos_deg(alpha + beta) - cos_deg(alpha) * cosR)
+        cosgamma /= (sin_deg(alpha) * sin_deg(R))
     else:
         cosgamma = 0.0
 
@@ -254,25 +247,27 @@ def mapphi(alpha, beta, phi):
 
     return xp, yp
 
+
 def rvm(alpha, zeta):
 
     delta = 360./1024.
     xprof = np.arange(-180., +180., delta)
     phi0, psi0 = 0.0, 0.0
 
-    pa = [rvm_calc(x, phi0, psi0, alpha,zeta) for x in xprof]
-    
+    pa = [rvm_calc(x, phi0, psi0, alpha, zeta) for x in xprof]
+
     return pa
+
 
 def rvm_calc(x, phi0, psi0, alpha, zeta):
     """Do the rvm calculation"""
     phi = x * math.pi / 180.
 
     num = sin_deg(alpha) * \
-            sin_deg(phi - phi0)
+        sin_deg(phi - phi0)
     denom = sin_deg(zeta) * cos_deg(alpha) - \
-            cos_deg(zeta) * sin_deg(alpha) * \
-            cos_deg(phi - phi0)
+        cos_deg(zeta) * sin_deg(alpha) * \
+        cos_deg(phi - phi0)
 
     result = psi0 + math.atan(num/denom)
 
@@ -283,11 +278,12 @@ def rvm_calc(x, phi0, psi0, alpha, zeta):
 
     return math.degrees(result)
 
+
 def correct(x):
     """Correct value x for rounding errors"""
     tol = 1.0e-7
 
-    if x>=0.:
+    if x >= 0.:
         sign = 1.0
     else:
         sign = -1.0
@@ -300,39 +296,42 @@ def correct(x):
 
     return y * sign
 
+
 def sin_deg(angle):
     a = math.radians(angle)
     return math.sin(a)
 
+
 def cos_deg(angle):
-    a=  math.radians(angle)
+    a = math.radians(angle)
     return math.cos(a)
+
 
 def patchbeam(stokes_i,
               xarray,
               yarray,
-              rho, 
+              rho,
               pw,
               npatch):
 
-    #patch centre, radians
+    # patch centre, radians
     pcr = 2.0 * math.pi * np.random.random(npatch)
     pcx = rho * np.sin(pcr)
     pcy = rho * np.cos(pcr)
 
-    #radii = np.zeros((len(xarray), len(yarray)))
-    # do numpy stuff 
+    # radii = np.zeros((len(xarray), len(yarray)))
+    # do numpy stuff
     for px, py in zip(pcx, pcy):
         xtmp = xarray - px
         ytmp = yarray - py
 
-        #x2 = xtmp * xtmp
-        #y2 = ytmp * ytmp
+        # x2 = xtmp * xtmp
+        # y2 = ytmp * ytmp
         radii = np.sqrt(np.add.outer(xtmp*xtmp, ytmp*ytmp))
-        #for i,x in enumerate(xtmp):
+        # for i,x in enumerate(xtmp):
         #    radii[i] = np.sqrt(x*x + ytmp*ytmp)
 
-        #Then masks here and operate for the if statements
+        # Then masks here and operate for the if statements
         index1 = radii/3.0 > pw
         index2 = radii/3.0 <= pw
 
@@ -343,25 +342,26 @@ def patchbeam(stokes_i,
 
     return stokes_i
 
+
 def calcwidth(prof):
-    
+
     # "area under" profile
     area = np.sum(prof)
 
-    if area==0.0:
+    if area == 0.0:
         return 0.0
     # cumulative sum of profile
     sumprof = np.cumsum(prof)
 
     # find all position > 25%
-    indx1 = sumprof>0.25*area
+    indx1 = sumprof > 0.25 * area
     # find values > 75%
-    indx2 = sumprof>0.75*area
+    indx2 = sumprof > 0.75 * area
 
     # first values in each array are the quartile points, basically
     low_x = np.where(indx1)[0][0]
     high_x = np.where(indx2)[0][0]
 
     # so then compute width of profile
-    width = float(high_x) - float(low_x) 
+    width = float(high_x) - float(low_x)
     return width / len(prof)

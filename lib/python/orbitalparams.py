@@ -1,8 +1,9 @@
 #!/usr/bin/python
 
+
 def test_1802_2124(pulsar):
 
-    """For testing, give the pulsar the orbital parameters of 
+    """For testing, give the pulsar the orbital parameters of
         PSR J1802-2142"""
 
     pulsar.period = 12.648
