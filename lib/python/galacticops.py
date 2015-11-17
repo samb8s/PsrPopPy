@@ -16,7 +16,7 @@ fortranpath = os.path.join(__libdir__, 'fortran')
 ne2001lib = C.CDLL(os.path.join(fortranpath, 'libne2001.so'))
 ne2001lib.dm_.restype = C.c_float
 
-slalib = absolute_importC.CDLL(os.path.join(fortranpath, 'libsla.so'))
+slalib = C.CDLL(os.path.join(fortranpath, 'libsla.so'))
 vxyzlib = C.CDLL(os.path.join(fortranpath, 'libvxyz.so'))
 
 yklib = C.CDLL(os.path.join(fortranpath, 'libykarea.so'))
