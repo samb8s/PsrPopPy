@@ -139,7 +139,7 @@ def generate(ngen,
 
     # create survey objects here and put them in a list
     if surveyList is not None:
-        surveys = [Survey(s, absolute_importpattern) for s in surveyList]
+        surveys = [Survey(s, pattern) for s in surveyList]
         # initialise these counters to zero
         for surv in surveys:
             surv.ndet = 0  # number detected
