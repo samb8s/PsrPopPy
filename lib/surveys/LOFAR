@@ -5,7 +5,7 @@
   3.0  ! antenna gain (K/Jy)
   3600 ! integration time (s)
   0.05 ! sampling time (ms)
-  1000 ! system temperature (K)
+  160 ! system temperature (K)
   140  ! centre frequency (MHz)
   32   ! bandwidth (MHz)
   0.008! channel bandwidth (MHz)
