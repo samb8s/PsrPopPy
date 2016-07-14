@@ -5,7 +5,7 @@
   5.6  ! antenna gain (K/Jy)    #SEFD(=G*Tsys) is given as 2.8 for 150MHz, this is my best guess
   1020 ! integration time (s)
   1.31 ! sampling time (ms)
-  500  ! system temperature (K) #dominated by sky temperature, given by T=60*\lambda**2.55
+  160  ! system temperature (K) 
   143  ! centre frequency (MHz)
   47.66 ! bandwidth (MHz)
   0.012 ! channel bandwidth (MHz)
