@@ -7,9 +7,19 @@ import random
 
 import cPickle
 
-from population import Population
-from pulsar import Pulsar
-from survey import Survey
+try:
+    # try and import from the current path (for package usage or use as an uninstalled executable)
+    from population import Population
+    from pulsar import Pulsar
+    from survey import Survey
+except:
+    try:
+        # import from the installed package
+        from psrpoppy.population import Population
+        from psrpoppy.pulsar import Pulsar
+        from psrpoppy.survey import Survey
+    except ImportError:
+        raise ImportError('Could not import "psrpoppy" package')
 
 
 class Detections:

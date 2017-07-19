@@ -19,12 +19,12 @@ env = Environment(tools=['default', 'packaging', enscons.generate],
 # set the compiler to gfortran
 env['CC'] = 'gfortran'
 
-py_source = (Glob('psrpoppy/python/*.py') + ['psrpoppy/__init__.py'])
+py_source = Glob('psrpoppy/*.py')
 
 libpath = os.path.join('psrpoppy', 'fortran')
 
 # check whether installing on a Mac
-if 'darwin' in os.environ['OSTYPE']:
+if 'Darwin' in os.uname()[0]:
     env.Append(CFLAGS=['-m 32'])
     env.Append(CPPFLAGS=['-dynamiclib', '-O2', '-fPIC', '-fno-second-underscore', '-c', '-std=legacy'])
 else:
@@ -53,7 +53,16 @@ for libname in LIBDIC:
 
     libs += sharedlib
 
-otherfiles = Glob('psrpoppy/fortran/*.so') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/python/models/*') + Glob('psrpoppy/surveys/*')
+# executable install prefix
+installprefix='/usr/local/bin'
+pyprefix='psrpoppy'
+executables = ['dosurvey', 'evolve', 'populate']
+
+# install executables
+insbins = env.InstallAs(target=[os.path.join(installprefix, ex) for ex in executables],
+               source=[os.path.join(pyprefix, ex+'.py') for ex in executables])
+
+otherfiles = Glob('psrpoppy/fortran/*.so') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')
 
 platlib = env.Whl('platlib', py_source + libs + otherfiles, root='')
 whl = env.WhlFile(source=platlib)
@@ -61,7 +70,7 @@ whl = env.WhlFile(source=platlib)
 # Add automatic source files, plus any other needed files.
 sdist_source=list(set(FindSourceFiles() +
                   ['PKG-INFO', 'setup.py'] +
-                  Glob('psrpoppy/fortran/*.*') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/python/models/*') + Glob('psrpoppy/surveys/*')))
+                  Glob('psrpoppy/fortran/*.*') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')))
 
 sdist_source += py_source
 
@@ -69,8 +78,8 @@ sdist = env.SDist(source=sdist_source)
 env.Alias('sdist', sdist)
 
 install = env.Command("#DUMMY", whl, ' '.join([sys.executable, '-m', 'pip', 'install', '--no-deps', '$SOURCE']))
-env.Alias('install', install)
-env.AlwaysBuild(install)
+env.Alias('install', install + insbins)
+env.AlwaysBuild(install + insbins)
 
 env.Default(sdist)
 
