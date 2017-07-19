@@ -70,7 +70,7 @@ whl = env.WhlFile(source=platlib)
 # Add automatic source files, plus any other needed files.
 sdist_source=list(set(FindSourceFiles() +
                   ['PKG-INFO', 'setup.py'] +
-                  Glob('psrpoppy/fortran/*.*') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')))
+                  Glob('psrpoppy/fortran/*.f') + Glob('psrpoppy/fortran/*.inc') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')))
 
 sdist_source += py_source
 

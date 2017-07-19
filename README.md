@@ -58,7 +58,7 @@ pop = populate.generate(1038,
 Usage
 =====
 
-If not installing the package via `enscons` I'd recommend adding the `psrpoppy/python` directory to your PYTHONPATH and adding the `bin` directory to your PATH. This should then leave you set up to run the code from wherever you like.
+If not installing the package via `enscons` I'd recommend adding the `psrpoppy` directory to your PYTHONPATH and adding the `bin` directory to your PATH. This should then leave you set up to run the code from wherever you like.
 
 
 A brief description of the "executables" follows.
