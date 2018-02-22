@@ -666,7 +666,7 @@ if __name__ == '__main__':
     # maximum initial age of pulsars
     parser.add_argument('-tmax', type=float, required=False,
                         default=1.0E9,
-                        help='maximum initial age of pulsars')
+                        help='maximum initial age of pulsars, in years (def=1.0E9)')
 
     # period distribution
     parser.add_argument('-p', nargs=2, type=float,
