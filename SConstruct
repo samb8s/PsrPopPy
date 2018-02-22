@@ -1,8 +1,17 @@
 # Starter SConstruct for enscons
 
-import sys, os
+import sys
+import os
 import pytoml as toml
 import enscons
+
+# check if prefix is set
+AddOption('--prefix', dest='prefix', type='string', nargs=1,
+          action='store', metavar='DIR', default='/usr/local',
+          help='Installation Prefix')
+
+AddOption('--user', dest='user', action='store_true', default=False,
+          help='Install as pip-like "--user" (this overrides "--prefix")')
 
 metadata = dict(toml.load(open('pyproject.toml')))['tool']['enscons']
 
@@ -53,13 +62,16 @@ for libname in LIBDIC:
 
     libs += sharedlib
 
-# executable install prefix
-installprefix='/usr/local/bin'
+# install prefix
+if not GetOption('user'):
+    installprefix=GetOption('prefix')
+else: # install in --user location
+    installprefix=os.path.join(os.environ['HOME'], '.local')
 pyprefix='psrpoppy'
 executables = ['dosurvey', 'evolve', 'populate']
 
 # install executables
-insbins = env.InstallAs(target=[os.path.join(installprefix, ex) for ex in executables],
+insbins = env.InstallAs(target=[os.path.join(installprefix, 'bin', ex) for ex in executables],
                source=[os.path.join(pyprefix, ex+'.py') for ex in executables])
 
 otherfiles = Glob('psrpoppy/fortran/*.so') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')
@@ -77,7 +89,10 @@ sdist_source += py_source
 sdist = env.SDist(source=sdist_source)
 env.Alias('sdist', sdist)
 
-install = env.Command("#DUMMY", whl, ' '.join([sys.executable, '-m', 'pip', 'install', '--no-deps', '$SOURCE']))
+if GetOption('user'):
+    install = env.Command("#DUMMY", whl, ' '.join([sys.executable, '-m', 'pip', 'install', '--no-deps', '--user', '$SOURCE']))
+else:
+    install = env.Command("#DUMMY", whl, ' '.join(['PYTHONUSERBASE={}'.format(installprefix), sys.executable, '-m', 'pip', 'install', '--no-deps', '--user', '$SOURCE']))
 env.Alias('install', install + insbins)
 env.AlwaysBuild(install + insbins)
 
