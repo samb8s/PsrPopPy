@@ -11,7 +11,7 @@ import ctypes as C
 # get the FORTRAN libraries
 __dir__ = os.path.dirname(os.path.abspath(__file__))
 __libdir__ = os.path.dirname(__dir__)
-fortranpath = os.path.join(__libdir__, 'fortran')
+fortranpath = os.path.join(__libdir__, 'psrpoppy', 'fortran')
 
 ne2001lib = C.CDLL(os.path.join(fortranpath, 'libne2001.so'))
 ne2001lib.dm_.restype = C.c_float

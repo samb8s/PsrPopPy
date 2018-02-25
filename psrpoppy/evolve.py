@@ -10,16 +10,33 @@ import cPickle
 import scipy.integrate
 import numpy as np
 
-import distributions as dists
-import galacticops as go
-import beaming as beammodels
-import populate
+try:
+    # try and import from the current path (for package usage or use as an uninstalled executable)
+    import distributions as dists
+    import galacticops as go
+    import beaming as beammodels
+    import populate
 
-from population import Population
-from pulsar import Pulsar
-from survey import Survey
+    from population import Population
+    from pulsar import Pulsar
+    from survey import Survey
 
-from progressbar import ProgressBar
+    from progressbar import ProgressBar
+except:
+    try:
+        # import from the installed package
+        import psrpoppy.distributions as dists
+        import psrpoppy.galacticops as go
+        import psrpoppy.beaming as beammodels
+        import psrpoppy.populate
+
+        from psrpoppy.population import Population
+        from psrpoppy.pulsar import Pulsar
+        from psrpoppy.survey import Survey
+
+        from psrpoppy.progressbar import ProgressBar
+    except ImportError:
+        raise ImportError('Could not import "psrpoppy" package')
 
 
 class EvolveException(Exception):

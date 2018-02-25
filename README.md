@@ -25,11 +25,40 @@ If this fails, try using the scripts. Inside the lib/fortran directory, edit `ma
 
 Note mac users should be sure to use a suitable version of gfortran - available from http://gcc.gnu.org/wiki/GFortranBinaries
 
+### Compiling using `enscons`
+
+An experimental compiling option is available to install everything as a python package, called `psrpoppy`, using
+[`enscons`](https://bitbucket.org/dholth/enscons) (available on PyPi via `pip install enscons`). To compile and install the package system-wide just use:
+
+```
+sudo python setup.py install
+```
+
+After this you can import the python module with:
+
+```python
+import psrpoppy
+```
+
+or, following [this example](examples/populate_and_survey.py), you could do:
+
+```python
+from psrpoppy import populate
+
+pop = populate.generate(1038, 
+                        surveyList=['PMSURV'],
+                        radialDistType='lfl06',
+                        siDistPars=[-1.41, 0.96], # non-standard SI distribution
+                        duty_percent=6.,
+                        electronModel='lmt85',
+                        nostdout=True # switches off output to stdout
+                       )
+```
 
 Usage
 =====
 
-I'd recommend adding the `lib/python` directory to your PYTHONPATH and adding the `bin` directory to your PATH. This should then leave you set up to run the code from wherever you like.
+If not installing the package via `enscons` I'd recommend adding the `psrpoppy` directory to your PYTHONPATH and adding the `bin` directory to your PATH. This should then leave you set up to run the code from wherever you like.
 
 
 A brief description of the "executables" follows.

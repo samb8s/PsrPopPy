@@ -120,7 +120,7 @@ class Survey:
                 # get path to surveys directory
                 __dir__ = os.path.dirname(os.path.abspath(__file__))
                 __libdir__ = os.path.dirname(__dir__)
-                filepath = os.path.join(__libdir__, 'surveys', surveyName)
+                filepath = os.path.join(__libdir__, 'psrpoppy', 'surveys', surveyName)
                 f = open(filepath, 'r')
 
             except IOError:
