@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import sys
 import argparse
@@ -12,8 +12,8 @@ from matplotlib.widgets import Button, RadioButtons, CheckButtons
 
 import numpy as np
 
-from population import Population 
-from pulsar import Pulsar
+from psrpoppy.population import Population 
+from psrpoppy.pulsar import Pulsar
 
 
 class Visualize:
