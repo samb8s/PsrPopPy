@@ -346,7 +346,7 @@ def spiralize(r):
     theta += angle
 
     # blur in radial direction a little
-    dr = math.fabs(random.gauss(0.0, 0.5 * r))
+    dr = math.fabs(random.gauss(0.0, 0.07 * r))
     angle = random.random() * 2.0 * math.pi
     dx = dr * math.cos(angle)
     dy = dr * math.sin(angle)
