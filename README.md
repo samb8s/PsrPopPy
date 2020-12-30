@@ -8,6 +8,13 @@ Several of the old models from that (e.g. NE2001) are still included in their na
 
 The main external requirements are [matplotlib](matplotlib.sourceforge.net) and [wxPython](http://wxpython.org/), which are used for the visualization stuff. It has a very useful API for making simple GUIs, as well as making beautiful plots. I've had difficulty compiliing wxPython from scratch on more recent versions of Mac OS X, but it should be straightforward to install via macports or similar.
 
+Thanks
+------
+
+Many thanks to recent suggestions from Manjari Bagchi and Anirban Chakraborty. Their work https://arxiv.org/abs/2012.13243 used PsrPopPy, and they found some issues which I've been happy to correct.
+
+If you spot any issues, please either let me know, or make a pull request - I'm not actively developing the code anymore, but I'm happy to keep it reasonably maintained.
+
 Dev Notes
 ---------
 
