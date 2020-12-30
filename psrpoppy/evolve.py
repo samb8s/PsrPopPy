@@ -446,9 +446,9 @@ def alignpulsar(pulsar, pop):
         chi = math.acos(random.random())  # in radians
 
         pulsar.chi = math.degrees(chi)  # -> degrees
-        pulsar.sinchi_init = math.sin(math.radians(chi))
+        pulsar.sinchi_init = math.sin(chi)
         pulsar.sinchi = pulsar.sinchi_init
-        pulsar.coschi = math.cos(math.radians(chi))
+        pulsar.coschi = math.cos(chi)
 
     elif pop.alignModel == 'rand45':
         pulsar.coschi = random.random() * (1.0 - math.sqrt(0.5)) \
