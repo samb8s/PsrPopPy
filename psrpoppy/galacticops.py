@@ -352,7 +352,7 @@ def spiralize(r):
     dy = dr * math.sin(angle)
 
     x = r * math.cos(theta) + dx
-    y = r * math.cos(theta) + dy
+    y = r * math.sin(theta) + dy
 
     return x, y
 
