@@ -62,8 +62,9 @@ def vxyz(pulsar):
     pulsar.vz = vz.value
 
 
-def calc_dtrue((x, y, z)):
+def calc_dtrue(xxx_todo_changeme):
     """Calculate true distance to pulsar from the sun."""
+    (x, y, z) = xxx_todo_changeme
     rsun = 8.5  # kpc
     return math.sqrt(x*x + (y-rsun)*(y-rsun) + z*z)
 
@@ -198,8 +199,9 @@ def radec_to_lb(ra, dec):
     return l.value, b.value
 
 
-def xyz_to_lb((x, y, z)):
+def xyz_to_lb(xxx_todo_changeme1):
     """ Convert galactic xyz in kpc to l and b in degrees."""
+    (x, y, z) = xxx_todo_changeme1
     rsun = 8.5  # kpc
 
     # distance to pulsar

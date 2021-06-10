@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
 import sys
-import cPickle
+import pickle
 
 import matplotlib.pyplot as plt
 
 # open file, read in model
 filename = sys.argv[1]
 f = open(filename, 'rb')
-pop = cPickle.load(f)
+pop = pickle.load(f)
 f.close()
 
 # lists to store p/pdot
