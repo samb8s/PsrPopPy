@@ -1,11 +1,14 @@
 #!/usr/bin/python
 
 import os
+import sys
 
 import math
 import random
 
 import ctypes as C
+
+PYVERSION = sys.version_info[0]
 
 
 # get the FORTRAN libraries
@@ -62,8 +65,9 @@ def vxyz(pulsar):
     pulsar.vz = vz.value
 
 
-def calc_dtrue((x, y, z)):
+def calc_dtrue(xyz):
     """Calculate true distance to pulsar from the sun."""
+    (x, y, z) = xyz
     rsun = 8.5  # kpc
     return math.sqrt(x*x + (y-rsun)*(y-rsun) + z*z)
 
@@ -86,7 +90,10 @@ def ne2001_dist_to_dm(dist, gl, gb):
     dist = C.c_float(dist)
     gl = C.c_float(gl)
     gb = C.c_float(gb)
-    inpath = C.create_string_buffer(fortranpath)
+    if PYVERSION == 3:
+        inpath = C.create_string_buffer(bytes(fortranpath.encode("utf-8")))
+    else:
+        inpath = C.create_string_buffer(fortranpath)
     linpath = C.c_int(len(fortranpath))
     return ne2001lib.dm_(C.byref(dist),
                          C.byref(gl),
@@ -105,7 +112,10 @@ def lmt85_dist_to_dm(dist, gl, gb):
     # passing path to fortran dir and the length of
     # this path --- removes need to edit getpath.f
     # during installation
-    inpath = C.create_string_buffer(fortranpath)
+    if PYVERSION == 3:
+        inpath = C.create_string_buffer(bytes(fortranpath.encode("utf-8")))
+    else:
+        inpath = C.create_string_buffer(fortranpath)
     linpath = C.c_int(len(fortranpath))
 
     return ne2001lib.dm_(C.byref(dist),
@@ -129,14 +139,19 @@ def ne2001_get_smtau(dist, gl, gb):
     ndir = C.c_int(-1)
     sm = C.c_float(0.)
     smtau = C.c_float(0.)
-    inpath = C.create_string_buffer(fortranpath)
+    if PYVERSION == 3:
+        inpath = C.create_string_buffer(bytes(fortranpath.encode("utf-8")))
+        buf = C.create_string_buffer(b" ")
+    else:
+        inpath = C.create_string_buffer(fortranpath)
+        buf = C.create_string_buffer(" ")
     linpath = C.c_int(len(fortranpath))
     ne2001lib.dmdsm_(C.byref(gl),
                      C.byref(gb),
                      C.byref(ndir),
                      C.byref(C.c_float(0.0)),
                      C.byref(dist),
-                     C.byref(C.create_string_buffer(' ')),
+                     C.byref(buf),
                      C.byref(sm),
                      C.byref(smtau),
                      C.byref(C.c_float(0.0)),
@@ -198,8 +213,9 @@ def radec_to_lb(ra, dec):
     return l.value, b.value
 
 
-def xyz_to_lb((x, y, z)):
+def xyz_to_lb(xyz):
     """ Convert galactic xyz in kpc to l and b in degrees."""
+    (x, y, z) = xyz
     rsun = 8.5  # kpc
 
     # distance to pulsar

@@ -1,24 +1,24 @@
 #!/usr/bin/env python
 
 import sys
+import copy
 import argparse
 import math
 import random
 
 import inspect
-import cPickle
 
 try:
     # try and import from the current path (for package usage or use as an uninstalled executable)
-    import distributions as dists
-    import galacticops as go
-    import orbitalparams
+    from . import distributions as dists
+    from . import galacticops as go
+    from . import orbitalparams
 
-    from population import Population
-    from pulsar import Pulsar
-    from survey import Survey
+    from .population import Population
+    from .pulsar import Pulsar
+    from .survey import Survey
 
-    from progressbar import ProgressBar
+    from .progressbar import ProgressBar
 except:
     try:
         # import from the installed package
@@ -84,23 +84,23 @@ def generate(ngen,
 
     # check that the distribution types are supported....
     if lumDistType not in ['lnorm', 'pow']:
-        print "Unsupported luminosity distribution: {0}".format(lumDistType)
+        print("Unsupported luminosity distribution: {0}".format(lumDistType))
 
     if pDistType not in ['lnorm', 'norm', 'cc97', 'lorimer12']:
-        print "Unsupported period distribution: {0}".format(pDistType)
+        print("Unsupported period distribution: {0}".format(pDistType))
 
     if radialDistType not in ['lfl06', 'yk04', 'isotropic',
                               'slab', 'disk', 'gauss']:
-        print "Unsupported radial distribution: {0}".format(radialDistType)
+        print("Unsupported radial distribution: {0}".format(radialDistType))
 
     if electronModel not in ['ne2001', 'lmt85']:
-        print "Unsupported electron model: {0}".format(electronModel)
+        print("Unsupported electron model: {0}".format(electronModel))
 
     if pattern not in ['gaussian', 'airy']:
-        print "Unsupported gain pattern: {0}".format(pattern)
+        print("Unsupported gain pattern: {0}".format(pattern))
 
     if duty_percent < 0.:
-        print "Unsupported value of duty cycle: {0}".format(duty_percent)
+        print("Unsupported value of duty cycle: {0}".format(duty_percent))
 
     # need to use properties in this class so they're get/set-type props
     pop.pDistType = pDistType
@@ -131,13 +131,14 @@ def generate(ngen,
     # store the dict of arguments inside the model. Could be useful.
     try:
         argspec = inspect.getargspec(generate)
-        key_values = [(arg, locals()[arg]) for arg in argspec.args]
+        argdict = copy.deepcopy(locals())
+        key_values = [(arg, argdict[arg]) for arg in argspec.args if arg in argdict]
         pop.arguments = {key: value for (key, value) in key_values}
     except SyntaxError:
         pass
 
     if not nostdout:
-        print "\tGenerating pulsars with parameters:"
+        print("\tGenerating pulsars with parameters:")
         param_string_list = []
         for key, value in key_values:
             s = ": ".join([key, str(value)])
@@ -145,7 +146,7 @@ def generate(ngen,
 
         # join this list of strings, and print it
         s = "\n\t\t".join(param_string_list)
-        print "\t\t{0}".format(s)
+        print("\t\t{0}".format(s))
 
         # set up progress bar for fun :)
         prog = ProgressBar(min_value=0,
@@ -182,7 +183,7 @@ def generate(ngen,
         elif pop.pDistType == 'cc97':
             p.period = _cc97()
         elif pop.pDistType == 'gamma':
-            print "Gamma function not yet supported"
+            print("Gamma function not yet supported")
             sys.exit()
         elif pop.pDistType == 'lorimer12':
             p.period = _lorimer2012_msp_periods()
@@ -213,15 +214,17 @@ def generate(ngen,
         # suppose it might be nice to be able to have GPS sources
         # AND double spectra. But for now I assume only have one or
         # none of these types.
-        if random.random() > pop.gpsFrac:
-            # This will evaluate true when gpsArgs[0] is NoneType
-            # might have to change in future
+        if pop.gpsFrac is None:
+            p.gpsFlag = 0
+        elif random.random() > pop.gpsFrac:
             p.gpsFlag = 0
         else:
             p.gpsFlag = 1
             p.gpsA = pop.gpsA
 
-        if random.random() > pop.brokenFrac:
+        if pop.brokenFrac is None:
+            p.brokenFlag = 0
+        elif random.random() > pop.brokenFrac:
             p.brokenFlag = 0
         else:
             p.brokenFlag = 1
@@ -293,7 +296,7 @@ def generate(ngen,
         # add in orbital parameters
         if orbits:
             orbitalparams.test_1802_2124(p)
-            print p.gb, p.gl
+            print(p.gb, p.gl)
 
         # if no surveys, just generate ngen pulsars
         if surveyList is None:
@@ -301,7 +304,7 @@ def generate(ngen,
             pop.ndet += 1
             if not nostdout:
                 prog.increment_amount()
-                print prog, '\r',
+                print(prog, '\r', end=' ')
                 sys.stdout.flush()
         # if surveys are given, check if pulsar detected or not
         # in ANY of the surveys
@@ -345,22 +348,22 @@ def generate(ngen,
                 pop.ndet += 1
                 if not nostdout:
                     prog.increment_amount()
-                    print prog, '\r',
+                    print(prog, '\r', end=' ')
                     sys.stdout.flush()
 
     # print info to stdout
     if not nostdout:
-        print "\n"
-        print "  Total pulsars = {0}".format(len(pop.population))
-        print "  Total detected = {0}".format(pop.ndet)
+        print("\n")
+        print("  Total pulsars = {0}".format(len(pop.population)))
+        print("  Total detected = {0}".format(pop.ndet))
         # print "  Number not beaming = {0}".format(surv.nnb)
 
         for surv in surveys:
-            print "\n  Results for survey '{0}'".format(surv.surveyName)
-            print "    Number detected = {0}".format(surv.ndet)
-            print "    Number too faint = {0}".format(surv.ntf)
-            print "    Number smeared = {0}".format(surv.nsmear)
-            print "    Number outside survey area = {0}".format(surv.nout)
+            print("\n  Results for survey '{0}'".format(surv.surveyName))
+            print("    Number detected = {0}".format(surv.ndet))
+            print("    Number too faint = {0}".format(surv.ntf))
+            print("    Number smeared = {0}".format(surv.nsmear))
+            print("    Number outside survey area = {0}".format(surv.nout))
 
     return pop
 

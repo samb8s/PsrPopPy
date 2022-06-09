@@ -1,9 +1,14 @@
 #!/usr/bin/python
 
 import copy
-import cPickle
+import sys
 
 import numpy as np
+
+if sys.version_info[0] == 3:
+    import pickle
+else:
+    import cPickle as pickle
 
 
 class Population:
@@ -68,7 +73,7 @@ class Population:
         s = "Population model:"
 
         try:
-            for key, value in self.arguments.iteritems():
+            for key, value in self.arguments.items():
                 s = '\n\t'.join([s, "{0} = {1}".format(key, value)])
         except AttributeError:
             # handle old-fashioned models without self.arguments
@@ -102,7 +107,7 @@ class Population:
         """Write the population object to a file"""
 
         output = open(outf, 'wb')
-        cPickle.dump(self, output, 2)
+        pickle.dump(self, output, 2)
         output.close()
 
     def write_asc(self, outf):
