@@ -6,22 +6,22 @@ import math
 import random
 
 import inspect
-import cPickle
+import pickle
 import scipy.integrate
 import numpy as np
 
 try:
     # try and import from the current path (for package usage or use as an uninstalled executable)
-    import distributions as dists
-    import galacticops as go
-    import beaming as beammodels
-    import populate
+    from . import distributions as dists
+    from . import galacticops as go
+    from . import beaming as beammodels
+    from . import populate
 
-    from population import Population
-    from pulsar import Pulsar
-    from survey import Survey
+    from .population import Population
+    from .pulsar import Pulsar
+    from .survey import Survey
 
-    from progressbar import ProgressBar
+    from .progressbar import ProgressBar
 except:
     try:
         # import from the installed package
@@ -109,30 +109,30 @@ def generate(ngen,
     pop.zscale = zscale
 
     if widthModel == 'kj07':
-        print "\tLoading KJ07 models...."
+        print("\tLoading KJ07 models....")
         kj_p_vals, kj_pdot_vals, kj_dists = beammodels.load_kj2007_models()
-        print "\tDone\n"
+        print("\tDone\n")
 
     if not nostdout:
-        print "\tGenerating evolved pulsars with parameters:"
-        print "\t\tngen = {0}".format(ngen)
-        print "\t\tUsing electron distn model {0}".format(
-                                        pop.electronModel)
-        print "\n\t\tPeriod mean, sigma = {0}, {1}".format(
+        print("\tGenerating evolved pulsars with parameters:")
+        print("\t\tngen = {0}".format(ngen))
+        print("\t\tUsing electron distn model {0}".format(
+                                        pop.electronModel))
+        print("\n\t\tPeriod mean, sigma = {0}, {1}".format(
                                                     pop.pmean,
-                                                    pop.psigma)
-        print "\t\tLuminosity mean, sigma = {0}, {1}".format(
+                                                    pop.psigma))
+        print("\t\tLuminosity mean, sigma = {0}, {1}".format(
                                                     pop.lummean,
-                                                    pop.lumsigma)
-        print "\t\tSpectral index mean, sigma = {0}, {1}".format(
+                                                    pop.lumsigma))
+        print("\t\tSpectral index mean, sigma = {0}, {1}".format(
                                                     pop.simean,
-                                                    pop.sisigma)
-        print "\t\tGalactic z scale height = {0} kpc".format(
-                                                    pop.zscale)
+                                                    pop.sisigma))
+        print("\t\tGalactic z scale height = {0} kpc".format(
+                                                    pop.zscale))
         if widthModel is None:
-            print "\t\tWidth {0}% ".format(duty)
+            print("\t\tWidth {0}% ".format(duty))
         else:
-            print "\t\tUsing Karastergiou & Johnston beam width model"
+            print("\t\tUsing Karastergiou & Johnston beam width model")
 
         # set up progress bar for fun :)
         prog = ProgressBar(min_value=0,
@@ -233,7 +233,7 @@ def generate(ngen,
             """
 
         else:
-            print "Undefined width model!"
+            print("Undefined width model!")
             sys.exit()
         # print width
         # print pulsar.period, width, pulsar.pdot
@@ -343,7 +343,7 @@ def generate(ngen,
                     # update the counter
                     if not nostdout:
                         prog.increment_amount()
-                        print prog, '\r',
+                        print(prog, '\r', end=' ')
                         sys.stdout.flush()
 
             else:
@@ -353,7 +353,7 @@ def generate(ngen,
                 # update the counter
                 if not nostdout:
                     prog.increment_amount()
-                    print prog, '\r',
+                    print(prog, '\r', end=' ')
                     sys.stdout.flush()
 
             # pulsar isn't dead, add to population!
@@ -367,20 +367,20 @@ def generate(ngen,
                 # update the counter
                 if not nostdout:
                     prog.increment_amount()
-                    print prog, '\r',
+                    print(prog, '\r', end=' ')
                     sys.stdout.flush()
 
     if not nostdout:
-        print "\n\n"
-        print "  Total pulsars = {0}".format(len(pop.population))
-        print "  Total detected = {0}".format(pop.ndet)
+        print("\n\n")
+        print("  Total pulsars = {0}".format(len(pop.population)))
+        print("  Total detected = {0}".format(pop.ndet))
 
         for surv in surveys:
-            print "\n  Results for survey '{0}'".format(surv.surveyName)
-            print "    Number detected = {0}".format(surv.ndet)
-            print "    Number too faint = {0}".format(surv.ntf)
-            print "    Number smeared = {0}".format(surv.nsmear)
-            print "    Number outside survey area = {0}".format(surv.nout)
+            print("\n  Results for survey '{0}'".format(surv.surveyName))
+            print("    Number detected = {0}".format(surv.ndet))
+            print("    Number too faint = {0}".format(surv.ntf))
+            print("    Number smeared = {0}".format(surv.nsmear))
+            print("    Number outside survey area = {0}".format(surv.nout))
 
     # save list of arguments into the pop
     try:

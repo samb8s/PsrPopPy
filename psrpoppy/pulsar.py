@@ -3,8 +3,8 @@
 import math
 import random
 
-from orbit import Orbit
-import galacticops as go
+from .orbit import Orbit
+from . import galacticops as go
 
 
 class PulsarException(Exception):
