@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from __future__ import print_function, division, absolute_import
+
 import sys
 import math
 import random

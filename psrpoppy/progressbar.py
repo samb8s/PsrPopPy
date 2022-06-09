@@ -20,6 +20,8 @@
 #   http://code.activestate.com/recipes/168639/
 #
 
+from __future__ import print_function, division, absolute_import
+
 import os
 import sys
 
