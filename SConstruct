@@ -15,9 +15,7 @@ AddOption('--user', dest='user', action='store_true', default=False,
 
 metadata = dict(toml.load(open('pyproject.toml')))['tool']['enscons']
 
-# most specific binary, non-manylinux1 tag should be at the top of this list
-import wheel.pep425tags
-full_tag = '-'.join(next(tag for tag in wheel.pep425tags.get_supported() if not 'manylinux' in tag))
+full_tag = enscons.get_binary_tag()
 
 # full_tag = py2.py3-none-any # pure Python packages compatible with 2+3
 
