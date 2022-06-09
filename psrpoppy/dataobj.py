@@ -1,8 +1,14 @@
 #!/usr/bin/python
 
-import os
+from __future__ import print_function, division, absolute_import
 
-import cPickle
+import os
+import sys
+
+if sys.version_info[0] == 3:
+    import pickle
+else:
+    import cPickle as pickle
 
 
 class DataObj:
@@ -46,13 +52,13 @@ def readfile_return_dataobj(filename):
     try:
         f = open(filename, 'rb')
     except IOError:
-        print "Could not open file {0}.".format(filename)
+        print("Could not open file {0}.".format(filename))
         return
 
     try:
-        pop = cPickle.load(f)
-    except cPickle.UnpicklingError:
-        print "File {0} could not be unpickled!".format(filename)
+        pop = pickle.load(f)
+    except pickle.UnpicklingError:
+        print("File {0} could not be unpickled!".format(filename))
         return
     f.close()
 

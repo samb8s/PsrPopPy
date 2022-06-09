@@ -20,6 +20,8 @@
 #   http://code.activestate.com/recipes/168639/
 #
 
+from __future__ import print_function, division, absolute_import
+
 import os
 import sys
 
@@ -95,29 +97,29 @@ class ProgressBar:
 
 
 def main():
-    print
+    print()
     limit = 1000000
 
-    print 'Example 1: Fixed Bar'
+    print('Example 1: Fixed Bar')
     prog = ProgressBar(0, limit, 77, mode='fixed')
     oldprog = str(prog)
-    for i in xrange(limit+1):
+    for i in range(limit+1):
         prog.update_amount(i)
         if oldprog != str(prog):
-            print prog, "\r",
+            print(prog, "\r", end=' ')
             sys.stdout.flush()
             oldprog = str(prog)
 
-    print '\n\n'
+    print('\n\n')
 
-    print 'Example 2: Dynamic Bar'
+    print('Example 2: Dynamic Bar')
     prog = ProgressBar(0, limit, 77, mode='dynamic', char='-')
     oldprog = str(prog)
-    for i in xrange(limit+1):
+    for i in range(limit+1):
         prog.increment_amount()
         if oldprog != str(prog):
-            print prog, "\r",
+            print(prog, "\r", end=' ')
             sys.stdout.flush()
             oldprog = str(prog)
 
-    print '\n\n'
+    print('\n\n')

@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from __future__ import print_function, division, absolute_import
+
 
 def test_1802_2124(pulsar):
 
@@ -17,10 +19,10 @@ def test_1802_2124(pulsar):
     pulsar.inclination_degrees = 78.52
     pulsar.pulsar_mass_msolar = 1.24
 
-    print pulsar.gb, pulsar.gl
+    print(pulsar.gb, pulsar.gl)
     pulsar.gb = 0.61
     pulsar.gl = 4.38
-    print pulsar.gb, pulsar.gl
+    print(pulsar.gb, pulsar.gl)
     pulsar.galcoords = (0.49, 5.2, 0.04)
     pulsar.lum_1400 = 8.54
     pulsar.t_scatter = 0.0

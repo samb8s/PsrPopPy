@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from __future__ import print_function, division, absolute_import
+
 import os
 import sys
 import numpy as np
@@ -8,10 +10,10 @@ import math
 import random
 from scipy.special import j1
 
-import galacticops as go
-from population import Population
-import radiometer as rad
-import degradation
+from . import galacticops as go
+from .population import Population
+from . import radiometer as rad
+from . import degradation
 
 
 class SurveyException(Exception):
@@ -274,7 +276,7 @@ class Survey:
                 # turn on AA
                 self.AA = True
             else:
-                print "Parameter '", a[1].strip(), "' not recognized!"
+                print("Parameter '", a[1].strip(), "' not recognized!")
 
         f.close()
 
@@ -455,37 +457,37 @@ class Survey:
         if pulsar.is_binary:
             # print "the pulsar is a binary!"
             if jerksearch:
-                print "jerk"
+                print("jerk")
                 gamma = degradation.gamma3(pulsar,
                                            self.tobs,
                                            1)
             elif accelsearch:
-                print "accel"
+                print("accel")
                 gamma = degradation.gamma2(pulsar,
                                            self.tobs,
                                            1)
             else:
-                print "norm"
+                print("norm")
                 gamma = degradation.gamma1(pulsar,
                                            self.tobs,
                                            1)
 
-                print "gamma harm1 = ", gamma
+                print("gamma harm1 = ", gamma)
 
                 gamma = degradation.gamma1(pulsar,
                                            self.tobs,
                                            2)
 
-                print "gamma harm2 = ", gamma
+                print("gamma harm2 = ", gamma)
                 gamma = degradation.gamma1(pulsar,
                                            self.tobs,
                                            3)
 
-                print "gamma harm3 = ", gamma
+                print("gamma harm3 = ", gamma)
                 gamma = degradation.gamma1(pulsar,
                                            self.tobs,
                                            4)
-                print "gamma harm4 = ", gamma
+                print("gamma harm4 = ", gamma)
 
         # return the S/N accounting for beam offset
         return sig_to_noise * degfac

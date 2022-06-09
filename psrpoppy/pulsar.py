@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
+from __future__ import print_function, division, absolute_import
+
 import math
 import random
 
-from orbit import Orbit
-import galacticops as go
+from .orbit import Orbit
+from . import galacticops as go
 
 
 class PulsarException(Exception):
@@ -47,8 +49,9 @@ class Pulsar(Orbit):
         self.dm = dm
 
         # convert to -180->+180 range
-        if gl > 180.:
-            gl -= 360.
+        if gl is not None:
+            if gl > 180.:
+                gl -= 360.
 
         self.gl = gl
         self.gb = gb
