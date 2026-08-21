@@ -68,11 +68,18 @@ class test_populate_generate_distributions(unittest.TestCase):
                                    rtol=0, atol=5 * sampstd_sterr,
                                    err_msg="x==sP, y==np.std(periods, ddof=1)")
 
-    def test_pDistType_norm_disallows_negative_periods(self):
-        npsrs = 100
+    @ptzd.parameterized.expand([("norm", [0., 1.]),
+                                ("lnorm", [1e-3, 2.]),
+                                ("lorimer12", [0., 0.]),
+                                ("cc97", [0., 0.])],
+                               name_func=lambda fxn, n, par : "{}".format(ptzd.parameterized.to_safe_name(str(par.args[0]))).join(fxn.__name__.split("_disttype_")))
+    def test_pDistType__disttype__disallows_negative_periods(self,
+                                                             pdisttype,
+                                                             pdistpars):
+        npsrs = 1000
         pop = populate.generate(npsrs,
-                                pDistType='norm',
-                                pDistPars=[0., 1.],
+                                pDistType=pdisttype,
+                                pDistPars=pdistpars,
                                 nostdout=True)
         periods = np.array([p.period for p in pop.population])
         np.testing.assert_array_less(np.zeros(npsrs), periods)
