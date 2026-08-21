@@ -114,6 +114,7 @@ class test_populate_generate_distributions(unittest.TestCase):
         np.testing.assert_allclose(np.std(periods, ddof=1), sampstd,
                                    rtol=0, atol=5 * sampstd_sterr,
                                    err_msg="x==sP, y==np.std(periods, ddof=1)")
+        
     @ptzd.parameterized.expand([(1000,),],
                                name_func=lambda fxn, n, par : "_{}".format(ptzd.parameterized.to_safe_name(str(par.args[0]))).join(fxn.__name__.split("_npsrs")))
     def test_pDistType__cc97_mean_std_ngen_npsrs(self, npsrs):
@@ -155,33 +156,64 @@ class test_populate_generate_distributions(unittest.TestCase):
         zs = np.array([p.galCoords[2] for p in pop.population])
         np.testing.assert_array_equal(zs, np.zeros(len(zs)))
 
-    def test_radialDistType_disk_mean_std(self):
+    @ptzd.parameterized.expand([("X", 0, -15., 15.),
+                                ("Y", 1, -15., 15.),],
+                               name_func=lambda fxn, n, par : "{}".format(ptzd.parameterized.to_safe_name(str(par.args[0]))).join(fxn.__name__.split("COORD")))
+    def test_radialDistType_disk_galCOORD_mean_std(self,
+                                                   coordname,
+                                                   coordidx,
+                                                   a, b):
         random.seed(12345)
         npsrs = 1000
-        a = -15.
-        b = 15.
         pop = populate.generate(npsrs,
                                 radialDistType='disk',
                                 nostdout=True)
-        galX = np.array([p.galCoords[0] for p in pop.population])
-        galY = np.array([p.galCoords[1] for p in pop.population])
+        galcoord = np.array([p.galCoords[coordidx] for p in pop.population])
         mean = 0
         std = (b - a) / np.sqrt(12)
         mean_sterr = std / np.sqrt(npsrs)
         std_sterr = std * np.sqrt(9 / 5. - ((npsrs - 3) / (npsrs - 2))) /\
             (2 * np.sqrt(npsrs))
-        np.testing.assert_allclose(np.mean(galX), mean,
-                                   rtol=0, atol=5 * mean_sterr,
-                                   err_msg="x==E(galX), y==np.mean(galX)")
-        np.testing.assert_allclose(np.std(galX, ddof=1), std,
-                                   rtol=0, atol=5 * std_sterr,
-                                   err_msg="x==sgalX, y==np.std(galX, ddof=1)")
-        np.testing.assert_allclose(np.mean(galY), mean,
-                                   rtol=0, atol=5 * mean_sterr,
-                                   err_msg="x==E(galY), y==np.mean(galY)")
-        np.testing.assert_allclose(np.std(galY, ddof=1), std,
-                                   rtol=0, atol=5 * std_sterr,
-                                   err_msg="x==sgalY, y==np.std(galY, ddof=1)")
+        np.testing.assert_allclose(
+            np.mean(galcoord), mean,
+            rtol=0, atol=5 * mean_sterr,
+            err_msg="x==E(gal{0}), y==np.mean(gal{0})".format(coordname))
+        np.testing.assert_allclose(
+            np.std(galcoord, ddof=1), std,
+            rtol=0, atol=5 * std_sterr,
+            err_msg="x==sgal{0}, y==np.std(gal{0}, ddof=1)".format(coordname))
+
+    @ptzd.parameterized.expand([("X", 0, -15., 15.),
+                                ("Y", 1, -15., 15.),
+                                ("Z", 2, -5., 5.),],
+                               name_func=lambda fxn, n, par : "{}".format(ptzd.parameterized.to_safe_name(str(par.args[0]))).join(fxn.__name__.split("COORD")))
+    def test_radialDistType_slab_galCOORD_mean_std(self,
+                                                   coordname,
+                                                   coordidx,
+                                                   a, b):
+        """
+        Test sample mean and sample std for galXYZ consistent with uniform dist
+        """
+        random.seed(12345)
+        npsrs = 1000
+        pop = populate.generate(npsrs,
+                                radialDistType='slab',
+                                nostdout=True)
+        galcoord = np.array([p.galCoords[coordidx] for p in pop.population])
+        mean = 0
+        std = (b - a) / np.sqrt(12)
+        mean_sterr = std / np.sqrt(npsrs)
+        momentfac = np.sqrt(9 / 5. - ((npsrs - 3) / (npsrs - 2))) /\
+            (2 * np.sqrt(npsrs))
+        std_sterr = std * momentfac
+        np.testing.assert_allclose(
+            np.mean(galcoord), mean,
+            rtol=0, atol=5 * mean_sterr,
+            err_msg="x==E(gal{0}), y==np.mean(gal{0})".format(coordname))
+        np.testing.assert_allclose(
+            np.std(galcoord, ddof=1), std,
+            rtol=0, atol=5 * std_sterr,
+            err_msg="x==sgal{0}, y==np.std(gal{0}, ddof=1)".format(coordname))
         
 def powerlaw_moment(k, alpha, a, b):
     if alpha == 1.:
