@@ -7,7 +7,8 @@ import random
 
 import inspect
 import cPickle
-
+import numpy as np
+from scipy import stats
 try:
     # try and import from the current path (for package usage or use as an uninstalled executable)
     import distributions as dists
@@ -178,7 +179,8 @@ def generate(ngen,
         if pop.pDistType == 'lnorm':
             p.period = dists.drawlnorm(pop.pmean, pop.psigma)
         elif pop.pDistType == 'norm':
-            p.period = random.gauss(pop.pmean, pop.psigma)
+            p.period = stats.truncnorm.rvs(-pop.pmean / pop.psigma, np.inf,
+                                           loc=pop.pmean, scale=pop.psigma)
         elif pop.pDistType == 'cc97':
             p.period = _cc97()
         elif pop.pDistType == 'gamma':
