@@ -146,6 +146,43 @@ class test_populate_generate_distributions(unittest.TestCase):
                                    rtol=0, atol=5 * std_sterr,
                                    err_msg="x==sP, y==np.std(periods, ddof=1)")
 
+    def test_radialDistType_disk_have_zero_scale_height(self):
+        random.seed(12345)
+        npsrs = 1000
+        pop = populate.generate(npsrs,
+                                radialDistType='disk',
+                                nostdout=True)
+        zs = np.array([p.galCoords[2] for p in pop.population])
+        np.testing.assert_array_equal(zs, np.zeros(len(zs)))
+
+    def test_radialDistType_disk_mean_std(self):
+        random.seed(12345)
+        npsrs = 1000
+        a = -15.
+        b = 15.
+        pop = populate.generate(npsrs,
+                                radialDistType='disk',
+                                nostdout=True)
+        galX = np.array([p.galCoords[0] for p in pop.population])
+        galY = np.array([p.galCoords[1] for p in pop.population])
+        mean = 0
+        std = (b - a) / np.sqrt(12)
+        mean_sterr = std / np.sqrt(npsrs)
+        std_sterr = std * np.sqrt(9 / 5. - ((npsrs - 3) / (npsrs - 2))) /\
+            (2 * np.sqrt(npsrs))
+        np.testing.assert_allclose(np.mean(galX), mean,
+                                   rtol=0, atol=5 * mean_sterr,
+                                   err_msg="x==E(galX), y==np.mean(galX)")
+        np.testing.assert_allclose(np.std(galX, ddof=1), std,
+                                   rtol=0, atol=5 * std_sterr,
+                                   err_msg="x==sgalX, y==np.std(galX, ddof=1)")
+        np.testing.assert_allclose(np.mean(galY), mean,
+                                   rtol=0, atol=5 * mean_sterr,
+                                   err_msg="x==E(galY), y==np.mean(galY)")
+        np.testing.assert_allclose(np.std(galY, ddof=1), std,
+                                   rtol=0, atol=5 * std_sterr,
+                                   err_msg="x==sgalY, y==np.std(galY, ddof=1)")
+        
 def powerlaw_moment(k, alpha, a, b):
     if alpha == 1.:
         c = 1. / np.log(b / a)
