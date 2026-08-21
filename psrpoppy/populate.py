@@ -250,7 +250,7 @@ def generate(ngen,
             p.gl, p.gb = go.xyz_to_lb(p.galCoords)
 
         elif pop.radialDistType == 'disk':
-            p.galCoords = go.diskDist()
+            p.galCoords = go.diskdist()
             p.gl, p.gb = go.xyz_to_lb(p.galCoords)
 
         else:  # we want to use exponential z and a radial dist
