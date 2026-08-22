@@ -172,10 +172,8 @@ c    .              ne1,ne2,negc,nelism,necN,nevN
 	sb=sin(b)
 	cb=cos(b)
 	limit=' '
-c	dstep=0.02			! Step size in kpc
+	dstep=0.01			! Step size in kpc
 c       dstep = min(h1, h2) / 10.       ! step size in terms of scale heights
-c	dstep=0.01
-        dstep=0.05
         if(ndir.lt.0) dtest=dist     
         if(ndir.ge.0) dtest=dmpsr/(n1h1/h1)   ! approximate test distance
         nstep = dtest / dstep	        ! approximate number of steps
@@ -380,7 +378,7 @@ c     .     d,x,y,z,ne,sm_term,whicharm,hitclump,hitvoid
 	endif
 	go to 999
 
-40	dmpsr=dm-dmstep*(d+0.5*dstep-dist)/dstep
+40	dmpsr=dm-dmstep*(d-dist)/dstep
         if(ncount .lt. 10) then 
 	   dstep = dstep / 10.
 	   go to 5
