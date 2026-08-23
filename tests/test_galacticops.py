@@ -3,7 +3,7 @@ import os
 
 import math
 import unittest
-
+import numpy as np
 import psrpoppy.galacticops as go
 
 class test_double_sided_exp(unittest.TestCase):
@@ -47,3 +47,16 @@ class test_double_sided_exp(unittest.TestCase):
         finally:
             go.random.random = old_random
             go.random.choice = old_choice
+
+class test_vcirc(unittest.TestCase):
+    """
+    Test implementation of Kuijken & Gilmore (1989) galactic potential
+    for computing circular velocity 
+    """
+
+    def test_vcirc_zero_at_GC(self):
+        self.assertAlmostEqual(go.vcirc(0), 0.0)
+
+    def test_vcirc_at_R0(self):
+        """See K&J (89) Table 2"""
+        np.testing.assert_allclose(go.vcirc(7.8), 222., rtol=0.01)

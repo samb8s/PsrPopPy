@@ -61,6 +61,30 @@ def vxyz(pulsar):
     pulsar.vy = vy.value
     pulsar.vz = vz.value
 
+def kggalmod(r, z):
+    """Return radial and vertical derivatives of Galactic potential."""
+    r = C.c_float(r)
+    z = C.c_float(z)
+    dpdr = C.c_float(0.0)
+    dpdz = C.c_float(0.0)
+
+    vxyzlib.kggalmod_(C.byref(r),
+                      C.byref(z),
+                      C.byref(dpdr),
+                      C.byref(dpdz))
+
+    return dpdr.value, dpdz.value
+
+def vcirc(r):
+    """Circular velocity in km/s using the Galactic potential."""
+    dpdr, _ = kggalmod(r, 0.0)
+
+    # same constants as vxyz.f
+    dpc2m = 3.085678e16
+    dsec2yr = 1.0 / (60.0 * 60.0 * 24.0 * 365.25)
+    dkpcmy2kms = dpc2m * dsec2yr * 1.0e-6
+
+    return math.sqrt(r * dpdr) * dkpcmy2kms
 
 def calc_dtrue((x, y, z)):
     """Calculate true distance to pulsar from the sun."""
