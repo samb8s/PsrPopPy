@@ -50,6 +50,8 @@ def generate(ngen,
              siDistPars=[-1.6, 0.35],
              lumDistType='lnorm',
              lumDistPars=[-1.1, 0.9],
+             velDistType='gauss',
+             velDistPars=[0., 196.3],
              zscaleType='exp',
              zscale=0.33,
              duty_percent=6.,
@@ -73,6 +75,8 @@ def generate(ngen,
     pDistPars -- parameters to use for period distribution
     siDistPars -- parameters to use for spectral index distribution
     lumDistPars -- parameters to use for luminosity distribution
+    velDistType -- single velocity component distribution model
+    velDistPars -- parameters for velocity distribution
     radialDistPars -- parameters for radial distribution
     zscale -- if using exponential z height, set it here (in kpc)
     scindex -- spectral index of the scattering model
@@ -87,6 +91,9 @@ def generate(ngen,
     if lumDistType not in ['lnorm', 'pow']:
         print "Unsupported luminosity distribution: {0}".format(lumDistType)
 
+    if velDistType not in ['gauss']:
+       print "Unsupported velocity distribution: {0}".format(velDistType)
+        
     if pDistType not in ['lnorm', 'norm', 'cc97', 'lorimer12']:
         print "Unsupported period distribution: {0}".format(pDistType)
 
@@ -108,7 +115,8 @@ def generate(ngen,
     pop.radialDistType = radialDistType
     pop.electronModel = electronModel
     pop.lumDistType = lumDistType
-
+    pop.velDistType = velDistType
+    
     pop.rsigma = radialDistPars
     pop.pmean, pop.psigma = pDistPars
     pop.simean, pop.sisigma = siDistPars
@@ -126,6 +134,15 @@ def generate(ngen,
         except ValueError:
             raise PopulateException('Not enough lum distn parameters')
 
+    if pop.velDistType == 'gauss':
+        try:
+            pop.velmean, pop.velsigma = \
+                velDistPars[0], velDistPars[1]
+        except ValueError:
+            raise PopulateException('Not enough velocity distn parameters')
+    else:
+        sys.exit()
+        
     pop.zscaleType = zscaleType
     pop.zscale = zscale
 
@@ -189,6 +206,12 @@ def generate(ngen,
         elif pop.pDistType == 'lorimer12':
             p.period = _lorimer2012_msp_periods()
 
+        # Draw perp  velocity components from independent normal dist           
+        if pop.velDistType == 'gauss':
+            p.vx = random.gauss(pop.velmean, pop.velsigma)
+            p.vy = random.gauss(pop.velmean, pop.velsigma)
+            p.vz = random.gauss(pop.velmean, pop.velsigma)
+            
         if duty_percent > 0.:
             # use a simple duty cycle for each pulsar
             # with a log-normal scatter
@@ -517,6 +540,17 @@ if __name__ == '__main__':
                         help='luminosity distribution mean and std dev \
                              (def = [-1.1, 0.9], Faucher-Giguere&Kaspi, 2006)')
 
+    # 2D velocity distribution parameters
+    parser.add_argument('-veldist', nargs=1, required=False, default=['gauss'],
+                        help='type of distribution to use for transverse \
+                                velocities',
+                        choices=['gauss'])
+
+    parser.add_argument('-vel', nargs=2, required=False, type=float,
+                        default=[0, 86.17],
+                        help='velocity distribution mean and std dev in km/s \
+                                 (def= [0, 196.3], Hobbs et al. 2005)')
+    
     # radial distribution type
     parser.add_argument('-rdist', type=str, nargs=1, required=False,
                         default=['lfl06'],
@@ -573,6 +607,7 @@ if __name__ == '__main__':
                    radialDistPars=args.r,
                    pDistPars=args.p,
                    lumDistPars=args.l,
+                   velDistPars=args.vel,
                    siDistPars=args.si,
                    zscaleType=args.zdist[0],
                    zscale=args.z,

@@ -6,6 +6,8 @@ import random
 from orbit import Orbit
 import galacticops as go
 
+RSUN = 8.5 #kpc
+VSUN_CIRC = go.vcirc(RSUN)
 
 class PulsarException(Exception):
     pass
@@ -55,7 +57,10 @@ class Pulsar(Orbit):
         self.galCoords = galCoords
         self.r0 = r0
         self.dtrue = dtrue
-
+        self.vx = None
+        self.vy = None
+        self.vz = None
+        
         self.lum_1400 = lum_1400
         self.spindex = spindex
         self.scindex = scindex
