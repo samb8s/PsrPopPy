@@ -120,3 +120,34 @@ class Pulsar(Orbit):
 
         pdot_15 = self.pdot * 1.0E15
         return 3.95E31 * pdot_15 / (self.period/1000.)**3
+
+    @property
+    def pm(self):
+        """
+        Compute proper motion in mas/yr
+        """
+        required_attr = ['galCoords', 'vx', 'vy', 'vz', 'dtrue']
+        for attr in required_attr:
+            if getattr(self, attr) is None:
+                raise PulsarException(
+                    '{} is not defined.'.format(attr))
+            
+        x, y, z = self.galCoords
+        r = math.sqrt(x ** 2 + y ** 2) # cyclindrical radius
+        t = math.atan2(y, x)
+
+        v_r = go.vcirc(r)
+        
+        # velocity components
+        vtot_x = self.vx + v_r * math.sin(t) - VSUN_CIRC
+        vtot_y = self.vy - v_r * math.cos(t)
+        vtot_z = self.vz
+        vtot = math.sqrt(vtot_x ** 2 + vtot_y ** 2 + vtot_z ** 2)
+        norm = math.sqrt(x ** 2 + (y - RSUN) ** 2 + z ** 2)
+        v_para = (vtot_x * x + vtot_y * (y - RSUN) + vtot_z * z) / norm
+        v_perp = math.sqrt(vtot ** 2 - v_para ** 2)
+
+        # Compute proper motion from 2D v component perp to LOS
+        pm = v_perp * 0.211 / self.dtrue
+        
+        return pm
