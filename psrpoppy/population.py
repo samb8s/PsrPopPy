@@ -14,12 +14,15 @@ class Population:
                  pDistType=None,
                  radialDistType=None,
                  lumDistType=None,
+                 velDistType=None,
                  pmean=None,
                  psigma=None,
                  simean=None,
                  sisigma=None,
                  lummean=None,
                  lumsigma=None,
+                 velmean=None,
+                 velsigma=None,
                  zscale=None,
                  electronModel=None,
                  gpsFrac=None,
@@ -37,6 +40,7 @@ class Population:
         self.pDistType = pDistType
         self.radialDistType = radialDistType
         self.lumDistType = lumDistType
+        self.velDistType = velDistType
         self.electronModel = electronModel
 
         # distribution values
@@ -49,6 +53,9 @@ class Population:
         self.lummean = lummean
         self.lumsigma = lumsigma
 
+        self.velmean = velmean
+        self.velsigma = velsigma
+        
         self.zscale = zscale
 
         self.ref_freq = ref_freq

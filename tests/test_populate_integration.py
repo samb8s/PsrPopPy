@@ -214,6 +214,35 @@ class test_populate_generate_distributions(unittest.TestCase):
             np.std(galcoord, ddof=1), std,
             rtol=0, atol=5 * std_sterr,
             err_msg="x==sgal{0}, y==np.std(gal{0}, ddof=1)".format(coordname))
+
+    @ptzd.parameterized.expand([("x",),
+                                ("y",),
+                                ("z",),],
+                               name_func=lambda fxn, n, par : "{}".format(ptzd.parameterized.to_safe_name(str(par.args[0]))).join(fxn.__name__.split("COORD")))
+    def test_velDistType_gauss_vCOORD_mean_std(self, coord):
+        random.seed(12345)
+        npsrs = 1000
+        N = npsrs
+        sigma = 196.3
+        mean = 0
+        pop = populate.generate(npsrs,
+                                velDistType='gauss',
+                                velDistPars=[0, sigma],
+                                nostdout=True)
+        v = np.array([getattr(p, "v" + coord) for p in pop.population])
+        mean_sterr = sigma / np.sqrt(npsrs)
+        mu4 = 3 * sigma ** 4.
+        std_sterr = np.sqrt((mu4 - (sigma ** 4.) * (N - 3) / (N - 1)) / N) / \
+            (2 * sigma)
+        np.testing.assert_allclose(
+            np.mean(v), mean,
+            rtol=0, atol=5 * mean_sterr,
+            err_msg="x==E(v{0}), y==np.mean(v{0})".format(coord))
+        np.testing.assert_allclose(
+            np.std(v, ddof=1), sigma,
+            rtol=0, atol=5 * std_sterr,
+            err_msg="x==s_v{0}, y==np.std(v{0}, ddof=1)".format(coord))
+        
         
 def powerlaw_moment(k, alpha, a, b):
     if alpha == 1.:
