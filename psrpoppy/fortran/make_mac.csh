@@ -11,6 +11,6 @@ $gf -dynamiclib -o libykarea.so -fno-second-underscore ykarea.o psrran.o
 $gf -dynamiclib -o libsla.so -fno-second-underscore galtfeq.o sla.o
 $gf -dynamiclib -o libvxyz.so -fno-second-underscore vxyz.o rkqc.o rk4.o
 $gf -dynamiclib -o libgamma.so -fno-second-underscore gamma.o
-
+$gf -dynamiclib -o libgetseed.so -fno-second-underscore getseed.o clock.o
 
 rm *.o
