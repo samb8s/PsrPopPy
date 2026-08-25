@@ -94,7 +94,7 @@ def generate(ngen,
     if velDistType not in ['gauss']:
        print "Unsupported velocity distribution: {0}".format(velDistType)
         
-    if pDistType not in ['lnorm', 'norm', 'cc97', 'lorimer12']:
+    if pDistType not in ['lnorm', 'norm', 'cc97', 'lorimer12', 'lnorm-e']:
         print "Unsupported period distribution: {0}".format(pDistType)
 
     if radialDistType not in ['lfl06', 'yk04', 'isotropic',
@@ -205,6 +205,9 @@ def generate(ngen,
             sys.exit()
         elif pop.pDistType == 'lorimer12':
             p.period = _lorimer2012_msp_periods()
+        elif pop.pDistType == 'lnorm-e':
+            p.period = np.random.lognormal(pop.pmean, pop.psigma)
+            
 
         # Draw perp  velocity components from independent normal dist           
         if pop.velDistType == 'gauss':
@@ -524,7 +527,7 @@ if __name__ == '__main__':
     # period distribution parameters
     parser.add_argument('-pdist', nargs=1, required=False, default=['lnorm'],
                         help='type of distribution to use for pulse periods',
-                        choices=['lnorm', 'norm', 'cc97', 'lorimer12'])
+                        choices=['lnorm', 'norm', 'cc97', 'lorimer12', 'lnorm-e'])
 
     parser.add_argument('-p', nargs=2, required=False, type=float,
                         default=[2.7, -0.34],

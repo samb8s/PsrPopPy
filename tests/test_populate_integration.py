@@ -91,12 +91,11 @@ class test_populate_generate_distributions(unittest.TestCase):
         Test base-e lnorm_e period sample mean and standard deviation match 
         pop.pmean and pop.psigma to 5 x standard error
         """
-        self.skipTest("This should be for a base-e log-normal distribution")
         random.seed(12345)
         mu_ln = 1.5
         sig_ln = 0.58
         pop = populate.generate(npsrs,
-                                pDistType='lnorm_e',
+                                pDistType='lnorm-e',
                                 pDistPars=[mu_ln, sig_ln],
                                 nostdout=True)
         periods = np.array([p.period for p in pop.population])
