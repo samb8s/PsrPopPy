@@ -1,6 +1,6 @@
 #!/bin/tcsh
 
-set gf = /usr/bin/gfortran
+set gf = gfortran
 
 $gf -O2 -fPIC -fno-second-underscore -c -I. -std=legacy *.f
 
