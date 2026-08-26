@@ -32,6 +32,7 @@ libpath = os.path.join('psrpoppy', 'fortran')
 
 # check whether installing on a Mac
 if 'Darwin' in os.uname()[0]:
+    env['SHLIBSUFFIX'] = '.so'	
     env.Append(CFLAGS=['-m 32'])
     env.Append(CPPFLAGS=['-dynamiclib', '-O2', '-fPIC', '-fno-second-underscore', '-c', '-std=legacy'])
 else:
@@ -72,7 +73,7 @@ executables = ['dosurvey', 'evolve', 'populate']
 insbins = env.InstallAs(target=[os.path.join(installprefix, 'bin', ex) for ex in executables],
                source=[os.path.join(pyprefix, ex+'.py') for ex in executables])
 
-otherfiles = Glob('psrpoppy/fortran/*.so') + Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')
+otherfiles = Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')
 
 platlib = env.Whl('platlib', py_source + libs + otherfiles, root='')
 whl = env.WhlFile(source=platlib)
@@ -88,9 +89,9 @@ sdist = env.SDist(source=sdist_source)
 env.Alias('sdist', sdist)
 
 if GetOption('user'):
-    install = env.Command("#DUMMY", whl, ' '.join([sys.executable, '-m', 'pip', 'install', '--no-deps', '--user', '$SOURCE']))
+    install = env.Command("#DUMMY", whl, ' '.join([sys.executable, '-m', 'pip', 'install', '--no-deps', '--force-reinstall', '--user', '$SOURCE']))
 else:
-    install = env.Command("#DUMMY", whl, ' '.join(['PYTHONUSERBASE={}'.format(installprefix), sys.executable, '-m', 'pip', 'install', '--no-deps', '--user', '$SOURCE']))
+    install = env.Command("#DUMMY", whl, ' '.join(['PYTHONUSERBASE={}'.format(installprefix), sys.executable, '-m', 'pip', 'install', '--no-deps', '--force-reinstall', '--user', '$SOURCE']))
 env.Alias('install', install + insbins)
 env.AlwaysBuild(install + insbins)
 
