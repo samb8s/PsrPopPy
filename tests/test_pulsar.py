@@ -51,3 +51,10 @@ class test_proper_motion(unittest.TestCase):
                 testpsr.vy = 100.
                 testpsr.vz = 0.
                 self.assertAlmostEqual(testpsr.pm, 0.)
+
+class test_pulsar_width_ms_property(unittest.TestCase):
+
+    def test_width_ms(self):
+        p = Pulsar(period=1.,
+                   width_degree=360.)
+        self.assertEqual(p.width_ms, 1.)
