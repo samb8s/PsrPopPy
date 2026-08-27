@@ -161,8 +161,7 @@ class Survey:
                     try:
                         # try to open pointing file in the surveys dir
                         __dir__ = os.path.dirname(os.path.abspath(__file__))
-                        __libdir__ = os.path.dirname(__dir__)
-                        filepath = os.path.join(__libdir__,
+                        filepath = os.path.join(__dir__,
                                                 'surveys',
                                                 pointfname)
                         # pointfptr = open(filepath, 'r')
