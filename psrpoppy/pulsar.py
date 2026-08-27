@@ -151,3 +151,9 @@ class Pulsar(Orbit):
         pm = v_perp * 0.211 / self.dtrue
         
         return pm
+
+    @property
+    def width_ms(self):
+        """W50 in ms"""
+        return self.width_degree * self.period / 360.
+    
