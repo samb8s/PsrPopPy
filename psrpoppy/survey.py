@@ -103,7 +103,7 @@ def makepointing(coord1, coord2, coordtype):
         gl = coord1
         gb = coord2
 
-    return (coord1, coord2)
+    return (gl, gb)
 
 
 class Survey:
