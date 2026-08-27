@@ -60,3 +60,10 @@ class test_vcirc(unittest.TestCase):
     def test_vcirc_at_R0(self):
         """See K&J (89) Table 2"""
         np.testing.assert_allclose(go.vcirc(7.8), 222., rtol=0.01)
+
+class test_scale_bhat(unittest.TestCase):
+
+    def test_default_tscatter_increases_as_frequency_increases(self):
+        tscatter_1400 = go.scale_bhat(1., 1400.)
+        tscatter_2000 = go.scale_bhat(1., 2000.)
+        np.testing.assert_array_less(tscatter_2000, tscatter_1400)
