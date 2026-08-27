@@ -425,7 +425,7 @@ class Survey:
             tscat = go.scatter_bhat(pulsar.dm, pulsar.scindex, self.freq)
 
         # Calculate the effective width
-        width_ms = pulsar.width_degree * pulsar.period / 360.0
+        width_ms = pulsar.width_ms
         weff_ms = math.sqrt(width_ms**2 + self.tsamp**2 + tdm**2 + tscat**2)
 
         # calculate duty cycle (period is in ms)
