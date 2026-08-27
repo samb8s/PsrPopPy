@@ -288,7 +288,7 @@ def scatter_bhat(dm,
 
 def scale_bhat(timescale,
                frequency,
-               scaling_power=3.86):
+               scaling_power=-3.86):
     """Scale the scattering timescale from 1.4 GHz to frequency"""
 
     return timescale * (frequency/1400.0)**scaling_power
