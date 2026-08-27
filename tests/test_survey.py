@@ -5,7 +5,10 @@ import unittest
 import tempfile
 import os
 from os import path
+import numpy as np
+import parameterized as ptzd
 from psrpoppy.survey import Survey
+from psrpoppy import survey
 import psrpoppy
 
 class test_survey_pointing_list_IO(unittest.TestCase):
@@ -50,3 +53,18 @@ testsurv.glgb ! pointing list galactic
         with open(point_path, "w") as f:
             f.write("0.\t0.")
         surv = Survey("testsurv")
+
+class test_makepointing(unittest.TestCase):
+    """integration tests for survey.makepointing"""
+    
+    def test_makepointing_eq_to_galactic_conversion_northpole(self):
+        ra = 192.8593127
+        dec = 27.1283484
+        gl, gb = survey.makepointing(ra, dec, "eq")
+        np.testing.assert_allclose(gb, 90., rtol=1e-4)
+
+    def test_makepointing_eq_to_galactic_conversion_southpole(self):
+        ra = 12.85
+        dec = -27.1283484
+        gl, gb = survey.makepointing(ra, dec, "eq")
+        np.testing.assert_allclose(gb, -90., rtol=1e-4)
