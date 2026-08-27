@@ -4,6 +4,7 @@ import os
 import math
 import unittest
 import numpy as np
+from mock import patch
 import psrpoppy.galacticops as go
 
 class test_double_sided_exp(unittest.TestCase):
@@ -60,3 +61,21 @@ class test_vcirc(unittest.TestCase):
     def test_vcirc_at_R0(self):
         """See K&J (89) Table 2"""
         np.testing.assert_allclose(go.vcirc(7.8), 222., rtol=0.01)
+
+class test_scale_bhat(unittest.TestCase):
+
+    def test_default_tscatter_increases_as_frequency_increases(self):
+        tscatter_1400 = go.scale_bhat(1., 1400.)
+        tscatter_2000 = go.scale_bhat(1., 2000.)
+        np.testing.assert_array_less(tscatter_2000, tscatter_1400)
+
+class test_scatter_bhat(unittest.TestCase):
+    """
+    patch random.gauss so result is deterministic
+    """
+    def test_tscatter_1GHz(self):
+        with patch('psrpoppy.galacticops.random.gauss',
+                   side_effect=lambda mu, sigma: mu):
+            np.testing.assert_allclose(go.scatter_bhat(100., freq_mhz=1000.),
+                                       10 ** -1.872)                
+
