@@ -417,8 +417,8 @@ def _cc97():
     """A model for MSP period distribution."""
     p = 0.0
 
-    # pick p from the distribution, but cut off at 1 and 30 ms
-    while p < 1.0 or p > 30.0:
+    # pick p from the distribution, but cut off at 1 and 20 ms
+    while p < 1.0 or p > 20.0:
         p = 0.65 / (1 - random.random())
 
     return p
