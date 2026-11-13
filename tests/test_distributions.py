@@ -6,12 +6,13 @@ import pytest
 import random
 import numpy as np
 import parameterized as ptzd
+from scipy.stats import invweibull, lognorm, kstest
 from psrpoppy import distributions as dists
 
 class test_ppdot_cohen27_posterior_draws(unittest.TestCase):
 
     def setUp(self):
-        self.rng = np.random.RandomState(12345)
+        self.seed = 12345
         self.nsamp = 10000
         
     @ptzd.parameterized.expand([("k_P", 2.142086, 0.136349),
@@ -29,7 +30,7 @@ class test_ppdot_cohen27_posterior_draws(unittest.TestCase):
         joint_samp, names = dists.ppdot_cohen27_posterior_draws(
             fpath="correlated_invWeibull-P_lognormal-Pdot_multivarnorm_approx.npz",
             size=self.nsamp,
-            rng=self.rng)
+            rng=np.random.RandomState(self.seed))
         param_draws = np.squeeze(joint_samp[np.argwhere(names == param)])
         
         mean_sterr = sigma / np.sqrt(N)
