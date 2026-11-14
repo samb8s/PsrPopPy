@@ -5,7 +5,7 @@ import math
 import random
 from os import path
 import numpy as np
-from scipy.special import expit
+from scipy.special import expit, log_ndtr
 
 __dir__ = path.dirname(path.abspath(__file__))
 
@@ -113,3 +113,35 @@ def ppdot_cohen27_posterior_draws(
     draws = samples.T
 
     return draws, names
+
+def ppdot_cohen27(k_p, theta_nu, mu_logpdot,
+                  sigma_logpdot, rho, n_samp=1, rng=None):
+    """
+    Correlated inverse-Weibull-period, lognormal-Pdot joined by a Gaussian
+    copula from Cohen et al. (2027, in prep)
+
+    Parameters:
+    ----------
+    k_p : (float) inverse-Weibull k parameter
+    theta_nu : (float) inverse-Weibull theta parameter (ms^-1)
+    mu_logpdot : (float) mean of normal log(Pdot)
+    sigma_logpdot : (float) std of normal log(Pdot)
+    rho : (float) correlation parameter of Gaussian copula
+
+    Returns:
+    -------
+    p : (float) period (ms)
+    pdot_int : (float) intrinsic period derivative (s/s)
+    """
+    if rng is None:
+        rng = np.random.RandomState()
+
+    z_p, z_pdot = rng.standard_normal((2, n_samp))
+
+    # CDF(z_p) ~ U(0,1), CDF^-1(U) ~ InverseWeibull
+    p = (-log_ndtr(z_p)) ** (-1.0 / k_p) / theta_nu
+
+    # from Cholesky-factorized correlation matrix
+    pdot_int = np.exp(mu_logpdot + sigma_logpdot \
+                      * (rho * z_p + np.sqrt(1.0 - rho ** 2) * z_pdot))
+    return p, pdot_int

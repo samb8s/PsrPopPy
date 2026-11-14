@@ -7,6 +7,7 @@ import random
 import numpy as np
 import parameterized as ptzd
 from scipy.stats import invweibull, lognorm, kstest
+from scipy.special import ndtr, ndtri
 from psrpoppy import distributions as dists
 
 class test_ppdot_cohen27_posterior_draws(unittest.TestCase):
@@ -45,3 +46,65 @@ class test_ppdot_cohen27_posterior_draws(unittest.TestCase):
             np.std(param_draws, ddof=1), sigma,
             rtol=0, atol=5 * std_sterr,
             err_msg="x==s_{0}, y==np.std({0}, ddof=1)".format(param))
+
+@ptzd.parameterized_class(
+    ("k_p", "theta_nu", "mu_logpdot", "sigma_logpdot","rho"),
+    [(2.142, 0.326, -46.344, 1.269, 0.290),]
+                          )
+class test_ppdot_cohen27(unittest.TestCase):
+
+    def setUp(self):
+        self.seed = 12345
+        self.nsamp = 100000
+        self.p, self.pdot = dists.ppdot_cohen27(
+            self.k_p, self.theta_nu,
+            self.mu_logpdot, self.sigma_logpdot,
+            self.rho,
+            n_samp=self.nsamp,
+            rng=np.random.RandomState(self.seed)
+        )
+        
+    # the K-S tests are not great, they could still fail
+    # due to random fluctuation even if dists are very close
+    def test_P_marginal_vs_scipy_kstest(self):
+
+        p_dist = invweibull(c=self.k_p, scale=1.0 / self.theta_nu)
+
+        ks_result = kstest(self.p, p_dist.cdf)
+        self.assertLess(ks_result.statistic, 0.01)
+
+    def test_Pdot_marginal_vs_scipy_kstest(self):
+        pdot_dist = lognorm(s=self.sigma_logpdot, scale=np.exp(self.mu_logpdot))
+
+        ks_result = kstest(self.pdot, pdot_dist.cdf)
+        self.assertLess(ks_result.statistic, 0.01)
+
+    def test_P_marginal_vs_scipy_draws(self):
+        # Reproduce the Gaussian inputs used by the sampler.
+        z_p, z_2 = np.random.RandomState(self.seed).standard_normal((2, self.nsamp))
+
+        p_reference = invweibull.ppf(ndtr(z_p),
+                                     c=self.k_p,
+                                     scale=1.0 / self.theta_nu)
+
+        np.testing.assert_allclose(self.p, p_reference, rtol=1e-9, atol=0)
+
+    def test_Pdot_correlation_recoveres_zscores(self):
+        """
+        test if correlation recovers expected Gaussian zscores
+        """
+        p_dist = invweibull(c=self.k_p, scale=1.0 / self.theta_nu)
+        pdot_dist = lognorm(s=self.sigma_logpdot, scale=np.exp(self.mu_logpdot))
+
+        u = p_dist.cdf(self.p) 
+        v = pdot_dist.cdf(self.pdot)
+        # Protect against numerical rounding to 0 or 1.
+        eps = np.finfo(float).eps
+        # recover normal z scores
+        z_p = ndtri(np.clip(u, eps, 1.0 - eps))
+        z_pdot = ndtri(np.clip(v, eps, 1.0 - eps))
+        z_2_recovered = (z_pdot - self.rho * z_p) / np.sqrt(1.0 - self.rho**2)
+        z_1_expected, z_2_expected = \
+            np.random.RandomState(self.seed).standard_normal((2, self.nsamp))
+        np.testing.assert_allclose(z_2_recovered, z_2_expected,
+                                   rtol=1e-7, atol=1e-7)
