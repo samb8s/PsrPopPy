@@ -118,7 +118,8 @@ def generate(ngen,
     pop.velDistType = velDistType
     
     pop.rsigma = radialDistPars
-    pop.pmean, pop.psigma = pDistPars
+    if pop.pDistType in ['lnorm', 'norm', 'lnorm-e']:
+        pop.pmean, pop.psigma = pDistPars
     pop.simean, pop.sisigma = siDistPars
 
     pop.gpsFrac, pop.gpsA = gpsArgs
