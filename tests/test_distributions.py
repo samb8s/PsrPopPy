@@ -4,6 +4,7 @@ Unit tests for distributions module
 import unittest
 import pytest
 import random
+from os import path
 import numpy as np
 import parameterized as ptzd
 from scipy.stats import invweibull, lognorm, kstest
@@ -15,6 +16,14 @@ class test_ppdot_cohen27_posterior_draws(unittest.TestCase):
     def setUp(self):
         self.seed = 12345
         self.nsamp = 10000
+
+    def test_npz_parameter_names_match_expected(self):
+        npz = "correlated_invWeibull-P_lognormal-Pdot_multivarnorm_approx.npz"
+        dat = np.load(path.join(dists.__dir__, npz))
+        np.testing.assert_array_equal(
+            dat["parameter_names"],
+            np.array(['k_P', 'theta_nu_ms', 'mu_logPdot', 'sigma_logPdot', 'rho'])
+            )
         
     @ptzd.parameterized.expand([("k_P", 2.142086, 0.136349),
                                 ("theta_nu_ms", 0.325553, 0.011591),
@@ -63,21 +72,22 @@ class test_ppdot_cohen27(unittest.TestCase):
             n_samp=self.nsamp,
             rng=np.random.RandomState(self.seed)
         )
+        # KS test statistic should be within DVK inequality bounds
+        dvk_alpha = 1e-6 # false failure probability
+        self.ks_limit = np.sqrt(np.log(2.0 / dvk_alpha) / (2.0 * self.nsamp))
         
-    # the K-S tests are not great, they could still fail
-    # due to random fluctuation even if dists are very close
     def test_P_marginal_vs_scipy_kstest(self):
-
+        
         p_dist = invweibull(c=self.k_p, scale=1.0 / self.theta_nu)
 
         ks_result = kstest(self.p, p_dist.cdf)
-        self.assertLess(ks_result.statistic, 0.01)
+        self.assertLess(ks_result.statistic, self.ks_limit)
 
     def test_Pdot_marginal_vs_scipy_kstest(self):
         pdot_dist = lognorm(s=self.sigma_logpdot, scale=np.exp(self.mu_logpdot))
 
         ks_result = kstest(self.pdot, pdot_dist.cdf)
-        self.assertLess(ks_result.statistic, 0.01)
+        self.assertLess(ks_result.statistic, self.ks_limit)
 
     def test_P_marginal_vs_scipy_draws(self):
         # Reproduce the Gaussian inputs used by the sampler.
