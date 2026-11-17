@@ -60,7 +60,8 @@ def generate(ngen,
              doubleSpec=[None, None],
              nostdout=False,
              pattern='gaussian',
-             orbits=False):
+             orbits=False,
+             ppdotDistType=None):
 
     """
     Generate a population of pulsars.
@@ -70,6 +71,7 @@ def generate(ngen,
     surveyList -- a list of surveys you want to use to try and detect
         the pulsars
     pDistType -- the pulsar period distribution model to use (def=lnorm)
+    ppdotDistType -- a joint P-Pdot model, overrides pDistType
     radialDistType -- radial distribution model
     electronModel -- mode to use for Galactic electron distribution
     pDistPars -- parameters to use for period distribution
@@ -97,6 +99,16 @@ def generate(ngen,
     if pDistType not in ['lnorm', 'norm', 'cc97', 'lorimer12', 'lnorm-e']:
         print "Unsupported period distribution: {0}".format(pDistType)
 
+    valid_ppdotDistType = ["cohen27", None]
+    if ppdotDistType not in valid_ppdotDistType:
+        raise ValueError(
+            "{} not a valid ppdotDistType. "
+            "Valid ppdotDistType are: {}".format(
+                repr(ppdotDistType),
+                ", ".join([repr(t) for t in valid_ppdotDistType])
+            )
+        )
+        
     if radialDistType not in ['lfl06', 'yk04', 'isotropic',
                               'slab', 'disk', 'gauss']:
         print "Unsupported radial distribution: {0}".format(radialDistType)
@@ -111,14 +123,28 @@ def generate(ngen,
         print "Unsupported value of duty cycle: {0}".format(duty_percent)
 
     # need to use properties in this class so they're get/set-type props
-    pop.pDistType = pDistType
+    if ppdotDistType is not None:
+        pop.ppdotDistType = ppdotDistType
+        pop.pDistType = None
+    else:
+        pop.ppdotDistType = None
+        pop.pDistType = pDistType
+
+    if pop.ppdotDistType == 'cohen27':
+        ppdot_post_draws, parnames = dists.ppdot_cohen27_posterior_draws(size=1)
+        pop.ppdotDistParams = dict(
+            (str(name), float(draw))
+            for name, draw in zip(parnames, ppdot_post_draws[:, 0])
+        )
+        
     pop.radialDistType = radialDistType
     pop.electronModel = electronModel
     pop.lumDistType = lumDistType
     pop.velDistType = velDistType
     
     pop.rsigma = radialDistPars
-    pop.pmean, pop.psigma = pDistPars
+    if pop.pDistType in ['lnorm', 'norm', 'lnorm-e']:
+        pop.pmean, pop.psigma = pDistPars
     pop.simean, pop.sisigma = siDistPars
 
     pop.gpsFrac, pop.gpsA = gpsArgs
@@ -193,21 +219,32 @@ def generate(ngen,
 
         # period, alpha, rho, width distribution calls
         # Start creating the pulsar!
-        if pop.pDistType == 'lnorm':
-            p.period = dists.drawlnorm(pop.pmean, pop.psigma)
-        elif pop.pDistType == 'norm':
-            p.period = stats.truncnorm.rvs(-pop.pmean / pop.psigma, np.inf,
-                                           loc=pop.pmean, scale=pop.psigma)
-        elif pop.pDistType == 'cc97':
-            p.period = _cc97()
-        elif pop.pDistType == 'gamma':
-            print "Gamma function not yet supported"
-            sys.exit()
-        elif pop.pDistType == 'lorimer12':
-            p.period = _lorimer2012_msp_periods()
-        elif pop.pDistType == 'lnorm-e':
-            p.period = np.random.lognormal(pop.pmean, pop.psigma)
-            
+        if pop.ppdotDistType == 'cohen27':
+            pars = pop.ppdotDistParams
+
+            period, pdot = dists.ppdot_cohen27(pars['k_P'],
+                                               pars['theta_nu_ms'],
+                                               pars['mu_logPdot'],
+                                               pars['sigma_logPdot'],
+                                               pars['rho'])
+            p.period = float(period[0])
+            p.pdot = float(pdot[0])
+        else:
+            if pop.pDistType == 'lnorm':
+                p.period = dists.drawlnorm(pop.pmean, pop.psigma)
+            elif pop.pDistType == 'norm':
+                p.period = stats.truncnorm.rvs(-pop.pmean / pop.psigma, np.inf,
+                                               loc=pop.pmean, scale=pop.psigma)
+            elif pop.pDistType == 'cc97':
+                p.period = _cc97()
+            elif pop.pDistType == 'gamma':
+                print "Gamma function not yet supported"
+                sys.exit()
+            elif pop.pDistType == 'lorimer12':
+                p.period = _lorimer2012_msp_periods()
+            elif pop.pDistType == 'lnorm-e':
+                p.period = np.random.lognormal(pop.pmean, pop.psigma)
+
 
         # Draw perp  velocity components from independent normal dist           
         if pop.velDistType == 'gauss':
@@ -533,7 +570,10 @@ if __name__ == '__main__':
                         default=[2.7, -0.34],
                         help='period distribution mean and std dev \
                                  (def= [2.7, -0.34], Lorimer et al. 2006)')
-
+    # p-pdot distribution parameters
+    parser.add_argument('-ppdotdist', nargs=1, required=False, default=[None],
+                        help='joint period-period derivative distribution; overrides -pdist',
+                        choices=['cohen27'])
     # luminosity distribution parameters
     parser.add_argument('-ldist', nargs=1, required=False, default=['lnorm'],
                         help='distribution to use for luminosities',
@@ -605,6 +645,7 @@ if __name__ == '__main__':
     pop = generate(args.n,
                    surveyList=args.surveys,
                    pDistType=args.pdist[0],
+                   ppdotDistType=args.ppdotdist[0],
                    lumDistType=args.ldist[0],
                    radialDistType=args.rdist[0],
                    radialDistPars=args.r,
