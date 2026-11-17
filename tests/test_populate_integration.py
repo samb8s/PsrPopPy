@@ -5,6 +5,12 @@ import unittest
 import pytest
 import random
 import numpy as np
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
+from scipy import stats
+from scipy.special import ndtri
 import parameterized as ptzd
 from psrpoppy import populate
 
@@ -241,7 +247,132 @@ class test_populate_generate_distributions(unittest.TestCase):
             np.std(v, ddof=1), sigma,
             rtol=0, atol=5 * std_sterr,
             err_msg="x==s_v{0}, y==np.std(v{0}, ddof=1)".format(coord))
+
+class test_ppdotDistType_cohen27(unittest.TestCase):
+
+    def setUp(self):
+        self.dvk_alpha = 1e-6
+        # expected distribution
+        self.k_p = 2.142086
+        self.theta_nu = 0.325553
+        self.mu_logpdot = -46.344261
+        self.sig_logpdot = 1.269051
+        self.rho = 0.290428        
+        self.draws = np.array([[self.k_p],   
+                               [self.theta_nu],
+                               [self.mu_logpdot],
+                               [self.sig_logpdot],
+                               [self.rho]])
+        self.names = np.array(['k_P',
+                               'theta_nu_ms',
+                               'mu_logPdot',
+                               'sigma_logPdot',
+                               'rho'])
+    
+    def test_population_ppdotDistParams_match_expected(self):
+        npsrs = 10
+        pop = populate.generate(npsrs,
+                                ppdotDistType='cohen27',
+                                nostdout=True)
+        expected = ["k_P", "theta_nu_ms", "mu_logPdot", "sigma_logPdot", "rho"]
+        result = pop.ppdotDistParams.keys()
+        np.testing.assert_array_equal(sorted(expected), sorted(result))
+
+    def test_population_pDistType_is_None(self):
+        npsrs = 10
+        pop = populate.generate(npsrs,
+                                ppdotDistType='cohen27',
+                                nostdout=True)
+        self.assertEqual(pop.pDistType, None)
+
+    def test_period_invweibull_kstest(self):
+        """
+        Tests whether the CDF of npsrs period samples has a Kolmogorov-Smirnov 
+        test statistic within the Dvoretsky-Kieffer-Wolfowitz inequality with 
+        false failure rate given by dvk_alpha, 
+        mocks ppdot_cohen27_posterior_draws, 
+        can still fail by (small) random chance
+        """
+        npsrs = 5000
+        p_dist = stats.invweibull(c=self.k_p, scale=1.0 / self.theta_nu)        
         
+        with patch(
+                'psrpoppy.populate.dists.ppdot_cohen27_posterior_draws',
+                return_value=(self.draws, self.names)):
+            pop = populate.generate(npsrs,
+                                    ppdotDistType='cohen27',
+                                    nostdout=True)
+            
+        periods = np.array([p.period for p in pop.population])
+        
+        # DVK inequality bound
+        ks_limit = np.sqrt(np.log(2.0 / self.dvk_alpha) / (2.0 * len(periods)))
+        ks_result = stats.kstest(periods, p_dist.cdf)
+        self.assertLess(ks_result.statistic, ks_limit)
+
+    def test_pdot_mean_std(self):
+        npsrs = 5000
+        
+        with patch(
+                'psrpoppy.populate.dists.ppdot_cohen27_posterior_draws',
+                return_value=(self.draws, self.names)):
+            pop = populate.generate(npsrs,
+                                    ppdotDistType='cohen27',
+                                    nostdout=True)
+            
+        pdots = np.array([p.pdot for p in pop.population])
+        sampmean = np.exp(self.mu_logpdot + 0.5 * (self.sig_logpdot ** 2.))
+        sampstd = np.sqrt((np.exp(self.sig_logpdot ** 2.) -1) * \
+                          np.exp(2 * self.mu_logpdot + self.sig_logpdot ** 2.))
+        sampmean_sterr = sampstd / np.sqrt(npsrs)
+        beta2 = np.exp(4 * self.sig_logpdot**2) + 2 \
+            * np.exp(3 * self.sig_logpdot**2) \
+            + 3 * np.exp(2 * self.sig_logpdot**2) - 3
+        sampstd_sterr = sampstd / (2 * np.sqrt(npsrs)) \
+            * np.sqrt(beta2 - (npsrs - 3.) / (npsrs - 1.))
+        np.testing.assert_allclose(np.mean(pdots), sampmean,
+                                   rtol=0, atol=5 * sampmean_sterr,
+                                   err_msg="x==E(Pdot), y==np.mean(pdots)")
+        np.testing.assert_allclose(np.std(pdots, ddof=1), sampstd,
+                                   rtol=0, atol=5 * sampstd_sterr,
+                                   err_msg="x==sPdot, y==np.std(pdots, ddof=1)")
+        
+    def test_p_pdot_sample_correlation_matches_input(self):
+        """
+        test if correlation recovers expected Gaussian zscores
+        """
+        npsrs = 5000
+        seed = 12345
+        p_dist = stats.invweibull(c=self.k_p,
+                                  scale=1.0 / self.theta_nu)
+        pdot_dist = stats.lognorm(s=self.sig_logpdot,
+                                  scale=np.exp(self.mu_logpdot))
+
+        with patch(
+                'psrpoppy.populate.dists.ppdot_cohen27_posterior_draws',
+                return_value=(self.draws, self.names)):
+            pop = populate.generate(npsrs,
+                                    ppdotDistType='cohen27',
+                                    nostdout=True)
+        periods = np.array([p.period for p in pop.population])
+        pdots = np.array([p.pdot for p in pop.population])        
+        u = p_dist.cdf(periods) 
+        v = pdot_dist.cdf(pdots)
+        # Protect against numerical rounding to 0 or 1.
+        eps = np.finfo(float).eps
+        # recover normal z scores
+        z_p = ndtri(np.clip(u, eps, 1.0 - eps))
+        z_pdot = ndtri(np.clip(v, eps, 1.0 - eps))
+        rho_recovered = np.corrcoef(z_p, z_pdot)[0, 1]
+
+        # fisher transform to ~normal dist
+        fisher_recovered = np.arctanh(rho_recovered)
+        fisher_expected = np.arctanh(self.rho)
+        fisher_se = 1.0 / np.sqrt(npsrs - 3.0)
+
+        # difference must be within 5 fisher std of expected
+        self.assertLess(abs(fisher_recovered - fisher_expected),
+                        5.0 * fisher_se)
         
 def powerlaw_moment(k, alpha, a, b):
     if alpha == 1.:

@@ -12,6 +12,7 @@ class Population:
 
     def __init__(self,
                  pDistType=None,
+                 ppdotDistType=None,
                  radialDistType=None,
                  lumDistType=None,
                  velDistType=None,
@@ -38,6 +39,8 @@ class Population:
 
         # distribution types
         self.pDistType = pDistType
+        self.ppdotDistType = ppdotDistType
+        self.ppdotDistParams = None
         self.radialDistType = radialDistType
         self.lumDistType = lumDistType
         self.velDistType = velDistType
