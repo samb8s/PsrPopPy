@@ -12,12 +12,16 @@ class Population:
 
     def __init__(self,
                  pDistType=None,
+                 pdotDistType=None,
                  ppdotDistType=None,
                  radialDistType=None,
                  lumDistType=None,
                  velDistType=None,
                  pmean=None,
                  psigma=None,
+                 pdotmu=None,
+                 pdotsigma=None,
+                 pdotdof=None,
                  simean=None,
                  sisigma=None,
                  lummean=None,
@@ -39,6 +43,7 @@ class Population:
 
         # distribution types
         self.pDistType = pDistType
+        self.pdotDistType = pdotDistType
         self.ppdotDistType = ppdotDistType
         self.ppdotDistParams = None
         self.radialDistType = radialDistType
@@ -49,6 +54,9 @@ class Population:
         # distribution values
         self.pmean = pmean
         self.psigma = psigma
+        self.pdotmu = pdotmu
+        self.pdotsigma = pdotsigma
+        self.pdotdof = pdotdof
 
         self.simean = simean
         self.sisigma = sisigma
