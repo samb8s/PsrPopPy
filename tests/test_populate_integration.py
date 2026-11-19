@@ -248,6 +248,40 @@ class test_populate_generate_distributions(unittest.TestCase):
             rtol=0, atol=5 * std_sterr,
             err_msg="x==s_v{0}, y==np.std(v{0}, ddof=1)".format(coord))
 
+
+class test_pdotDistType(unittest.TestCase):
+
+    def setUp(self):
+        self.dvk_alpha = 1e-6
+        self.dof = 2.67
+        self.mu = -33.65
+        self.sig = 1.48
+    
+    def test_pdotDistType_logt_kstest(self):
+        npsrs = 5000
+        logpdot_dist = stats.t(df=self.dof, loc=self.mu, scale=self.sig)
+        pop = populate.generate(npsrs,
+                                pdotDistType='logt',
+                                pdotDistPars=[self.dof, self.mu, self.sig],
+                                nostdout=True)
+            
+        logpdots = np.log(np.array([p.pdot for p in pop.population]))
+        
+        # DVK inequality bound
+        ks_limit = np.sqrt(np.log(2.0 / self.dvk_alpha) / (2.0 * len(logpdots)))
+        ks_result = stats.kstest(logpdots, logpdot_dist.cdf)
+        self.assertLess(ks_result.statistic, ks_limit)
+
+    def test_pdotDistType_logt_population_attributes_set(self):
+        npsrs = 10
+        pop = populate.generate(npsrs,
+                                pdotDistType='logt',
+                                pdotDistPars=[self.dof, self.mu, self.sig],
+                                nostdout=True)
+        self.assertEqual(pop.pdotdof, self.dof)
+        self.assertEqual(pop.pdotmu, self.mu)
+        self.assertEqual(pop.pdotsigma, self.sig)        
+        
 class test_ppdotDistType_cohen27(unittest.TestCase):
 
     def setUp(self):
@@ -411,7 +445,7 @@ class test_populate_generate_error_handling(unittest.TestCase):
                                          nostdout=True,
                                          **{pars_varname: params,
                                             dist_varname: disttype})
-            
+
         
 def powerlaw_moment(k, alpha, a, b):
     if alpha == 1.:

@@ -43,10 +43,12 @@ class PopulateException(Exception):
 def generate(ngen,
              surveyList=None,
              pDistType='lnorm',
+             pdotDistType='logt',
              radialDistType='lfl06',
              radialDistPars=7.5,
              electronModel='ne2001',
              pDistPars=[2.7, -0.34],
+             pdotDistPars=[2.67, -33.65, 1.48],
              siDistPars=[-1.6, 0.35],
              lumDistType='lnorm',
              lumDistPars=[-1.1, 0.9],
@@ -71,7 +73,8 @@ def generate(ngen,
     surveyList -- a list of surveys you want to use to try and detect
         the pulsars
     pDistType -- the pulsar period distribution model to use (def=lnorm)
-    ppdotDistType -- a joint P-Pdot model, overrides pDistType
+    pdotDistType -- the pulsar period derivative distribution model to use (def=logt)
+    ppdotDistType -- a joint P-Pdot model, overrides pDistType and pdotDistType
     radialDistType -- radial distribution model
     electronModel -- mode to use for Galactic electron distribution
     pDistPars -- parameters to use for period distribution
@@ -98,6 +101,16 @@ def generate(ngen,
         
     if pDistType not in ['lnorm', 'norm', 'cc97', 'lorimer12', 'lnorm-e']:
         print "Unsupported period distribution: {0}".format(pDistType)
+
+    valid_pdotDistType = ["logt", "lnorm-e"]
+    if pdotDistType not in valid_pdotDistType:
+        raise ValueError(
+            "{} not a valid pdotDistType. "
+            "Valid pdotDistType are: {}".format(
+                repr(pdotDistType),
+                ", ".join([repr(t) for t in valid_pdotDistType])
+            )
+        )
 
     valid_ppdotDistType = ["cohen27", None]
     if ppdotDistType not in valid_ppdotDistType:
@@ -129,7 +142,7 @@ def generate(ngen,
     else:
         pop.ppdotDistType = None
         pop.pDistType = pDistType
-
+        pop.pdotDistType = pdotDistType
     if pop.ppdotDistType == 'cohen27':
         ppdot_post_draws, parnames = dists.ppdot_cohen27_posterior_draws(size=1)
         pop.ppdotDistParams = dict(
@@ -145,6 +158,19 @@ def generate(ngen,
     pop.rsigma = radialDistPars
     if pop.pDistType in ['lnorm', 'norm', 'lnorm-e']:
         pop.pmean, pop.psigma = pDistPars
+    if pop.pdotDistType == 'lnorm-e':
+        try:
+            pop.pdotmu, pop.pdotsigma = pdotDistPars
+        except ValueError:
+            raise PopulateException("pdotDistType 'lnorm-e' requires exactly "
+                                    "2 parameters.")
+    if pop.pdotDistType == 'logt':
+        try:
+            pop.pdotdof, pop.pdotmu, pop.pdotsigma = pdotDistPars
+        except ValueError:
+            raise PopulateException("pdotDistType 'logt' requires exactly "
+                                    "3 parameters.")
+        
     pop.simean, pop.sisigma = siDistPars
 
     pop.gpsFrac, pop.gpsA = gpsArgs
@@ -233,19 +259,27 @@ def generate(ngen,
             p.period = float(period[0])
             p.pdot = float(pdot[0])
         else:
+
+            if pop.pdotDistType == 'logt':
+                p.pdot = np.exp(stats.t.rvs(df=pop.pdotdof,
+                                            loc=pop.pdotmu,
+                                            scale=pop.pdotsigma))
+            if pop.pdotDistType == 'lnorm-e':
+                p.period = np.random.lognormal(pop.pdotmu, pop.pdotsigma)
+                
             if pop.pDistType == 'lnorm':
                 p.period = dists.drawlnorm(pop.pmean, pop.psigma)
-            elif pop.pDistType == 'norm':
+            if pop.pDistType == 'norm':
                 p.period = stats.truncnorm.rvs(-pop.pmean / pop.psigma, np.inf,
                                                loc=pop.pmean, scale=pop.psigma)
-            elif pop.pDistType == 'cc97':
+            if pop.pDistType == 'cc97':
                 p.period = _cc97()
-            elif pop.pDistType == 'gamma':
+            if pop.pDistType == 'gamma':
                 print "Gamma function not yet supported"
                 sys.exit()
-            elif pop.pDistType == 'lorimer12':
+            if pop.pDistType == 'lorimer12':
                 p.period = _lorimer2012_msp_periods()
-            elif pop.pDistType == 'lnorm-e':
+            if pop.pDistType == 'lnorm-e':
                 p.period = np.random.lognormal(pop.pmean, pop.psigma)
 
 
@@ -573,6 +607,16 @@ if __name__ == '__main__':
                         default=[2.7, -0.34],
                         help='period distribution mean and std dev \
                                  (def= [2.7, -0.34], Lorimer et al. 2006)')
+    # period derivative distribution parameters
+    parser.add_argument(
+        '-pdotdist', nargs=1, required=False, default=['logt'],
+        help='type of distribution to use for pulse period derivatives',
+        choices=['logt', 'lnorm-e']
+    )
+
+    parser.add_argument('-pdot', nargs='+', required=False, type=float,
+                        default=[2.67, -33.65, 1.48],
+                        help='period derivative distribution parameters')    
     # p-pdot distribution parameters
     parser.add_argument('-ppdotdist', nargs=1, required=False, default=[None],
                         help='joint period-period derivative distribution; overrides -pdist',
