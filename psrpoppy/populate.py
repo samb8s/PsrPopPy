@@ -151,21 +151,24 @@ def generate(ngen,
     pop.brokenFrac, pop.brokenSI = doubleSpec
 
     if pop.lumDistType == 'lnorm':
-        pop.lummean, pop.lumsigma = \
-                lumDistPars[0], lumDistPars[1]
+        try:
+            pop.lummean, pop.lumsigma = lumDistPars
+        except ValueError:
+            raise PopulateException("lumDistType 'lnorm' requires exactly "
+                                    "2 parameters.")    
     else:
         try:
-            pop.lummin, pop.lummax, pop.lumpow = \
-                lumDistPars[0], lumDistPars[1], lumDistPars[2]
+            pop.lummin, pop.lummax, pop.lumpow = lumDistPars
         except ValueError:
-            raise PopulateException('Not enough lum distn parameters')
+            raise PopulateException("lumDistType 'pow' requires exactly "
+                                    "3 parameters.")
 
     if pop.velDistType == 'gauss':
         try:
-            pop.velmean, pop.velsigma = \
-                velDistPars[0], velDistPars[1]
+            pop.velmean, pop.velsigma = velDistPars
         except ValueError:
-            raise PopulateException('Not enough velocity distn parameters')
+            raise PopulateException("velDistType 'gauss' requires exactly "
+                                    "2 parameters.")
     else:
         sys.exit()
         

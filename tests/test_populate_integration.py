@@ -373,6 +373,45 @@ class test_ppdotDistType_cohen27(unittest.TestCase):
         # difference must be within 5 fisher std of expected
         self.assertLess(abs(fisher_recovered - fisher_expected),
                         5.0 * fisher_se)
+
+class test_populate_generate_error_handling(unittest.TestCase):
+    
+        @ptzd.parameterized.expand(
+            [
+                ("lumDistPars", [1,2,3,4], "lumDistType", "pow"),
+                ("lumDistPars", [1,2,3,4], "lumDistType", "lnorm"),                
+                ("velDistPars", [1,2,3,4], "velDistType", "gauss"),
+                ("lumDistPars", [1,], "lumDistType", "pow"),
+                ("lumDistPars", [1,], "lumDistType", "lnorm"),                
+                ("velDistPars", [1,], "velDistType", "gauss"),
+            ],
+            name_func=lambda fxn, n, par: fxn.__name__.replace(
+                "DISTVAR",
+                str(par.args[2])
+            ).replace(
+                "DISTTYPE",
+                str(par.args[3])
+            ).replace(
+                "DISTPARS",
+                ptzd.parameterized.to_safe_name(str(par.args[0]))
+            ).replace(
+                "PARLEN",
+                str(len(par.args[1]))
+            )
+        )
+        def test_assert_DISTVAR_DISTTYPE_with_DISTPARS_len_PARLEN_raises_PopulateException(
+                self,
+                pars_varname,
+                params,
+                dist_varname,
+                disttype
+        ):
+            with self.assertRaises(populate.PopulateException):
+                 pop = populate.generate(10,
+                                         nostdout=True,
+                                         **{pars_varname: params,
+                                            dist_varname: disttype})
+            
         
 def powerlaw_moment(k, alpha, a, b):
     if alpha == 1.:
