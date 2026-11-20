@@ -265,7 +265,7 @@ def generate(ngen,
                                             loc=pop.pdotmu,
                                             scale=pop.pdotsigma))
             if pop.pdotDistType == 'lnorm-e':
-                p.period = np.random.lognormal(pop.pdotmu, pop.pdotsigma)
+                p.pdot = np.random.lognormal(pop.pdotmu, pop.pdotsigma)
                 
             if pop.pDistType == 'lnorm':
                 p.period = dists.drawlnorm(pop.pmean, pop.psigma)
@@ -692,11 +692,13 @@ if __name__ == '__main__':
     pop = generate(args.n,
                    surveyList=args.surveys,
                    pDistType=args.pdist[0],
+                   pdotDistType=args.pdotdist[0],                   
                    ppdotDistType=args.ppdotdist[0],
                    lumDistType=args.ldist[0],
                    radialDistType=args.rdist[0],
                    radialDistPars=args.r,
                    pDistPars=args.p,
+                   pdotDistPars=args.pdot,                   
                    lumDistPars=args.l,
                    velDistPars=args.vel,
                    siDistPars=args.si,
