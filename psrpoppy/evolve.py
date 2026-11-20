@@ -260,10 +260,10 @@ def generate(ngen,
 
             # luminosity
             if lumDistType == 'fk06':
-                luminosity_fk06(pulsar,
-                                alpha=pop.lumPar1,
-                                beta=pop.lumPar2,
-                                gamma=pop.lumPar3)
+                dists.luminosity_fk06(pulsar,
+                                      alpha=pop.lumPar1,
+                                      beta=pop.lumPar2,
+                                      gamma=pop.lumPar3)
 
             elif lumDistType == 'lnorm':
                 pulsar.lum_1400 = dists.drawlnorm(pop.lumPar1, pop.lumPar2)
@@ -498,19 +498,6 @@ def pulsar_beaming(pulsar, bM):
         pulsar.beaming = True
     else:
         pulsar.beaming = False
-
-
-def luminosity_fk06(pulsar, alpha=-1.5, beta=0.5, gamma=0.18):
-    """ Equation 14 from  Ridley & Lorimer """
-    # variables to use in the equation
-    delta_l = random.gauss(0.0, 0.8)
-
-    # the equation
-    logL = math.log10(gamma) + alpha*math.log10(pulsar.period/1000.) + \
-        beta * math.log10(pulsar.pdot * 1.0e15) + delta_l
-
-    # set L
-    pulsar.lum_1400 = 10.0**logL
 
 
 def spindown_fk06(pulsar):
