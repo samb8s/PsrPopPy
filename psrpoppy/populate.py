@@ -265,7 +265,7 @@ def generate(ngen,
                                             loc=pop.pdotmu,
                                             scale=pop.pdotsigma))
             if pop.pdotDistType == 'lnorm-e':
-                p.period = np.random.lognormal(pop.pdotmu, pop.pdotsigma)
+                p.pdot = np.random.lognormal(pop.pdotmu, pop.pdotsigma)
                 
             if pop.pDistType == 'lnorm':
                 p.period = dists.drawlnorm(pop.pmean, pop.psigma)
