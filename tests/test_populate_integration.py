@@ -248,8 +248,37 @@ class test_populate_generate_distributions(unittest.TestCase):
             rtol=0, atol=5 * std_sterr,
             err_msg="x==s_v{0}, y==np.std(v{0}, ddof=1)".format(coord))
 
+    def test_pdotDistType_lnorm_e_mean_std(self):
+        """
+        Test lognormal pdot sample mean and standard deviation match 
+        pop.pdotmean and pop.pdotsigma to 5 x standard error
+        """
+        npsrs = 1000
+        random.seed(12345)
+        mu_ln = -33.75
+        sig_ln = 2.59
+        pop = populate.generate(npsrs,
+                                pdotDistType='lnorm-e',
+                                pdotDistPars=[mu_ln, sig_ln],
+                                nostdout=True)
+        pdots = np.array([p.pdot for p in pop.population])
+        sampmean = np.exp(mu_ln + 0.5 * (sig_ln ** 2.))
+        sampstd = np.sqrt((np.exp(sig_ln ** 2.) -1) * \
+                          np.exp(2 * mu_ln + sig_ln ** 2.))
+        sampmean_sterr = sampstd / np.sqrt(npsrs)
+        beta2 = np.exp(4 * sig_ln**2) + 2 * np.exp(3 * sig_ln**2) +\
+             3 * np.exp(2 * sig_ln**2) - 3
+        sampstd_sterr = sampstd / (2 * np.sqrt(npsrs)) *\
+            np.sqrt(beta2 - (npsrs - 3.) / (npsrs - 1.))
+        np.testing.assert_allclose(np.mean(pdots), sampmean,
+                                   rtol=0, atol=5 * sampmean_sterr,
+                                   err_msg="x==E(Pdot), y==np.mean(pdots)")
+        np.testing.assert_allclose(np.std(pdots, ddof=1), sampstd,
+                                   rtol=0, atol=5 * sampstd_sterr,
+                                   err_msg="x==sPdot, y==np.std(pdots, ddof=1)")
+        
 
-class test_pdotDistType(unittest.TestCase):
+class test_pdotDistType_logt(unittest.TestCase):
 
     def setUp(self):
         self.dvk_alpha = 1e-6
@@ -257,7 +286,7 @@ class test_pdotDistType(unittest.TestCase):
         self.mu = -33.65
         self.sig = 1.48
     
-    def test_pdotDistType_logt_kstest(self):
+    def test_generated_pdots_match_scipy_kstest(self):
         npsrs = 5000
         logpdot_dist = stats.t(df=self.dof, loc=self.mu, scale=self.sig)
         pop = populate.generate(npsrs,
@@ -272,7 +301,7 @@ class test_pdotDistType(unittest.TestCase):
         ks_result = stats.kstest(logpdots, logpdot_dist.cdf)
         self.assertLess(ks_result.statistic, ks_limit)
 
-    def test_pdotDistType_logt_population_attributes_set(self):
+    def test_pdot_population_attributes_set(self):
         npsrs = 10
         pop = populate.generate(npsrs,
                                 pdotDistType='logt',
