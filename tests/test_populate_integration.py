@@ -479,10 +479,12 @@ class test_populate_generate_error_handling(unittest.TestCase):
         @ptzd.parameterized.expand(
             [
                 ("lumDistPars", [1,2,3,4], "lumDistType", "pow"),
-                ("lumDistPars", [1,2,3,4], "lumDistType", "lnorm"),                
+                ("lumDistPars", [1,2,3,4], "lumDistType", "lnorm"),
+                ("lumDistPars", [1,2,3,4], "lumDistType", "fk06"),
                 ("velDistPars", [1,2,3,4], "velDistType", "gauss"),
                 ("lumDistPars", [1,], "lumDistType", "pow"),
-                ("lumDistPars", [1,], "lumDistType", "lnorm"),                
+                ("lumDistPars", [1,], "lumDistType", "lnorm"),
+                ("lumDistPars", [1,], "lumDistType", "fk06"),
                 ("velDistPars", [1,], "velDistType", "gauss"),
             ],
             name_func=lambda fxn, n, par: fxn.__name__.replace(
