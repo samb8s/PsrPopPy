@@ -93,7 +93,7 @@ def generate(ngen,
     pop = Population()
 
     # check that the distribution types are supported....
-    if lumDistType not in ['lnorm', 'pow']:
+    if lumDistType not in ['lnorm', 'pow', 'fk06']:
         print "Unsupported luminosity distribution: {0}".format(lumDistType)
 
     if velDistType not in ['gauss']:
@@ -182,13 +182,19 @@ def generate(ngen,
         except ValueError:
             raise PopulateException("lumDistType 'lnorm' requires exactly "
                                     "2 parameters.")    
-    else:
+    if pop.lumDistType == 'pow':
         try:
             pop.lummin, pop.lummax, pop.lumpow = lumDistPars
         except ValueError:
             raise PopulateException("lumDistType 'pow' requires exactly "
                                     "3 parameters.")
-
+    if pop.lumDistType == 'fk06':
+        try:
+            pop.lumPar1, pop.lumPar2, pop.lumPar3 = lumDistPars 
+        except ValueError:
+            raise PopulateException("lumDistType 'fk06' requires exactly "
+                                    "3 parameters.")
+        
     if pop.velDistType == 'gauss':
         try:
             pop.velmean, pop.velsigma = velDistPars
@@ -387,10 +393,15 @@ def generate(ngen,
         if pop.lumDistType == 'lnorm':
             p.lum_1400 = dists.drawlnorm(pop.lummean,
                                          pop.lumsigma)
-        else:
+        if pop.lumDistType == 'pow':
             p.lum_1400 = dists.powerlaw(pop.lummin,
                                         pop.lummax,
                                         pop.lumpow)
+        if lumDistType == 'fk06':
+            dists.luminosity_fk06(p, # updates p.lum_1400 in place
+                                  alpha=pop.lumPar1,
+                                  beta=pop.lumPar2,
+                                  gamma=pop.lumPar3)
 
         # add in orbital parameters
         if orbits:
@@ -624,7 +635,7 @@ if __name__ == '__main__':
     # luminosity distribution parameters
     parser.add_argument('-ldist', nargs=1, required=False, default=['lnorm'],
                         help='distribution to use for luminosities',
-                        choices=['lnorm', 'pow'])
+                        choices=['lnorm', 'pow', 'fk06'])
     parser.add_argument('-l', nargs='+', required=False, type=float,
                         default=[-1.1, 0.9],
                         help='luminosity distribution mean and std dev \

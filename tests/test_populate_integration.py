@@ -276,6 +276,43 @@ class test_populate_generate_distributions(unittest.TestCase):
         np.testing.assert_allclose(np.std(pdots, ddof=1), sampstd,
                                    rtol=0, atol=5 * sampstd_sterr,
                                    err_msg="x==sPdot, y==np.std(pdots, ddof=1)")
+
+    def test_lumDistType_fk06_mean_std(self):
+        """
+        reconstruct lum_14000 scatter from fk06 params and check if
+        delta_L ~ N(0, 0.8)
+        """
+        npsrs = 1000
+        alpha = -1.5
+        beta = 0.5
+        gamma = 0.18
+
+        pop = populate.generate(npsrs,
+                                lumDistType='fk06',
+                                lumDistPars=[alpha, beta, gamma],
+                                nostdout=True)
+
+        # reconstruct lum_1400 scatter from fk06 params
+        delta_l = np.array([np.log10(p.lum_1400)
+                            - np.log10(gamma)
+                            - alpha * np.log10(p.period / 1000.)
+                            - beta * np.log10(p.pdot * 1.e15)
+                            for p in pop.population])
+
+        n = len(delta_l)
+        expected_mean = 0.0
+        expected_std = 0.8
+
+        mean_se = expected_std / np.sqrt(n)
+        std_se = expected_std / np.sqrt(2.0 * (n - 1))
+
+        # reconstructed residual should be < 5 * MC standard err
+        self.assertLess(abs(np.mean(delta_l) - expected_mean),
+                        5.0 * mean_se)
+
+        self.assertLess(abs(np.std(delta_l, ddof=1) - expected_std),
+                        5.0 * std_se)
+
         
 
 class test_pdotDistType_logt(unittest.TestCase):
