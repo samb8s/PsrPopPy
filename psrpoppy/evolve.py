@@ -52,7 +52,7 @@ def generate(ngen,
              siDistPars=[-1.6, 0.35],
              alignModel='orthogonal',
              lumDistType='fk06',
-             lumDistPars=[-1.5, 0.5],
+             lumDistPars=[-1.5, 0.5, 0.18],
              alignTime=None,
              spinModel='fk06',
              beamModel='tm98',
@@ -75,22 +75,34 @@ def generate(ngen,
     pop.pmean, pop.psigma = pDistPars
     pop.bmean, pop.bsigma = bFieldPars
 
+    valid_lumDistType = ['pow', 'fk06', 'lnorm']
+    if lumDistType not in valid_lumDistType:
+        raise ValueError(
+            "{} not a valid lumDistType. "
+            "Valid lumDistType are: {}".format(
+                repr(lumDistType),
+                ", ".join([repr(t) for t in valid_lumDistType])
+            )
+        )
+    
     if lumDistType == 'pow':
         try:
             pop.lummin, pop.lummax, pop.lumpow = lumDistPars
         except ValueError:
             raise EvolveException("lumDistType 'pow' requires exactly "
                                   "3 parameters.")
-
-    elif lumDistType == 'fk06':
-        pop.lumPar1, pop.lumPar2 = lumDistPars[0], lumDistPars[1]
-        if len(lumDistPars) == 3:
-            pop.lumPar3 = lumDistPars[2]
-        else:
-            pop.lumPar3 = 0.18
-
-    else:
-        pop.lumPar1, pop.lumPar2 = lumDistPars
+    if lumDistType == 'fk06':
+        try:
+            pop.lumPar1, pop.lumPar2, pop.lumPar3 = lumDistPars
+        except ValueError:
+            raise EvolveException("lumDistType 'fk06' requires exactly "
+                                  "3 parameters.")
+    if lumDistType == 'lnorm':
+        try:
+            pop.lumPar1, pop.lumPar2 = lumDistPars
+        except ValueError:
+            raise EvolveException("lumDistType 'lnorm' requires exactly "
+                                  "2 parameters.")
 
     pop.simean, pop.sisigma = siDistPars
     pop.birthvmean, pop.birthvsigma = birthVPars
@@ -265,16 +277,13 @@ def generate(ngen,
                                       beta=pop.lumPar2,
                                       gamma=pop.lumPar3)
 
-            elif lumDistType == 'lnorm':
+            if lumDistType == 'lnorm':
                 pulsar.lum_1400 = dists.drawlnorm(pop.lumPar1, pop.lumPar2)
 
-            elif lumDistType == 'pow':
+            if lumDistType == 'pow':
                 pulsar.lum_1400 = dists.powerlaw(pop.lummin,
                                                  pop.lummax,
                                                  pop.lumpow)
-            else:
-                # something's wrong!
-                raise EvolveException('Invalid luminosity distn selected')
 
             # apply efficiency cutoff
             if efficiencycut is not None:
