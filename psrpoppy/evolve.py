@@ -77,10 +77,10 @@ def generate(ngen,
 
     if lumDistType == 'pow':
         try:
-            pop.lummin, pop.lummax, pop.lumpow = \
-                lumDistPars[0], lumDistPars[1], lumDistPars[2]
+            pop.lummin, pop.lummax, pop.lumpow = lumDistPars
         except ValueError:
-            raise EvolveException('Not enough lum distn parameters for "pow"')
+            raise EvolveException("lumDistType 'pow' requires exactly "
+                                  "3 parameters.")
 
     elif lumDistType == 'fk06':
         pop.lumPar1, pop.lumPar2 = lumDistPars[0], lumDistPars[1]
