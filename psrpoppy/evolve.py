@@ -104,6 +104,7 @@ def generate(ngen,
             raise EvolveException("lumDistType 'lnorm' requires exactly "
                                   "2 parameters.")
 
+    pop.lumDistType = lumDistType
     pop.simean, pop.sisigma = siDistPars
     pop.birthvmean, pop.birthvsigma = birthVPars
 
