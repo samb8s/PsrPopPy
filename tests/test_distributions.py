@@ -2,6 +2,10 @@
 Unit tests for distributions module
 """
 import unittest
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 import pytest
 import random
 from os import path
@@ -10,6 +14,7 @@ import parameterized as ptzd
 from scipy.stats import invweibull, lognorm, kstest
 from scipy.special import ndtr, ndtri
 from psrpoppy import distributions as dists
+from psrpoppy.pulsar import Pulsar
 
 class test_ppdot_cohen27_posterior_draws(unittest.TestCase):
 
@@ -118,3 +123,20 @@ class test_ppdot_cohen27(unittest.TestCase):
             np.random.RandomState(self.seed).standard_normal((2, self.nsamp))
         np.testing.assert_allclose(z_2_recovered, z_2_expected,
                                    rtol=1e-7, atol=1e-7)
+
+class test_luminosity_fk06(unittest.TestCase):
+
+    @ptzd.parameterized.expand([
+        (1000., 1e-15, 0.18),
+        (250., 4e-15, 0.18 * 16.),
+    ])
+    def test_fk06_table6_parameters_no_dither(self, period, pdot, lum1400):
+        pulsar = Pulsar(period=period, pdot=pdot)
+
+        with patch('psrpoppy.distributions.random.gauss', return_value=0.0):
+            dists.luminosity_fk06(pulsar,
+                                  alpha=-1.5,
+                                  beta=0.5,
+                                  gamma=0.18)
+
+        self.assertAlmostEqual(pulsar.lum_1400, lum1400)
