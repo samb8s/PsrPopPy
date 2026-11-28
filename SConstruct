@@ -73,6 +73,8 @@ executables = ['dosurvey', 'evolve', 'populate']
 insbins = env.InstallAs(target=[os.path.join(installprefix, 'bin', ex) for ex in executables],
                source=[os.path.join(pyprefix, ex+'.py') for ex in executables])
 
+env.AddPostAction(insbins, Chmod('$TARGET', 0o755))
+
 otherfiles = Glob('psrpoppy/fortran/lookuptables/*') + Glob('psrpoppy/models/*') + Glob('psrpoppy/surveys/*')
 
 platlib = env.Whl('platlib', py_source + libs + otherfiles, root='')
